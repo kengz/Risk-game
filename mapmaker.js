@@ -72,11 +72,46 @@ exports.g = g;
 
 
 
-// import the radius matrices for computeAMs
-// RMs = require('./data/radius-matrices.json');
-// console.log(RMs);
-// Import AM?
-var compAMs = require('./matrix-computer.js').computeAMs;
-var meh = compAMs(0, 'p1');
-console.log(g);
+// Import from matrix computer
+var matcomp = require('./matrix-computer.js');
+// the function to create Node-Matrices and Army-Matrices from g here
+var RMstoNMs = matcomp.RMstoNMs;
+var NMstoAMs = matcomp.NMstoAMs;
 
+// The dynamic Node Matrices
+// var NMs = RMstoNMs(g);
+// console.log(NMs);
+// The dynamic Army Matrices from NMs
+// var AMs = NMstoAMs('p1', NMs);
+// console.log(AMs[38]);
+
+// g.nodes[39].army = 222;
+
+// AMs = NMstoAMs('p1', NMs);
+// console.log(AMs[38]);
+
+
+// // the static RM from json
+// var RMs = require('./data/radius-matrices.json');
+// console.log(RMs[1]);
+// // Now part to chunk the AM from origin country i
+// function chunking(i) {
+
+// }
+
+
+// console.log(RMs[0]);
+// // var apart = partRM(0);
+// var apart = partRMs();
+// console.log(apart);
+
+// Finally, can combine this with the army matrix
+// fix RMs
+
+// var m = require('mathjs');
+// var boo = m.sqrt(4);
+// console.log(boo);
+// var m1 = [[1,2], [3,4]];
+// // var m2=m.pow(m1, 2);
+// var m2=m.multiply(m1, 2);
+// console.log(m2);

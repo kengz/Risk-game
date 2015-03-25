@@ -16,7 +16,7 @@ var clist = _.range(42);
 var mat = [];
 // var level = 5;
 // add country 0 to checked
-var checked = [0];
+var checked = [];
 // new matrix for expanding mat
 var newmat = [];
 
@@ -110,7 +110,7 @@ function computeRM(i) {
 	checked = [i];
 	// init mat with first radius
 	mat = []; newmat = [];
-	_.each(g.nodes[0].adjList, function(adj) {
+	_.each(g.nodes[i].adjList, function(adj) {
 		mat.push([adj]);
 	})
 	// update checked
@@ -136,55 +136,128 @@ function computeRMs() {
 	return RMs;
 }
 
-computeRMs();
-// import the radius matrices for computeAMs
-// var RMs = require('./data/radius-matrices.json');
-// console.log(RMs);
+// computeRMs();
 
-var RMs;
+
+// import the radius matrices for use below
+var RMs = require('./data/radius-matrices.json');
+
+
+
+//////////////////
+// RM partition //
+//////////////////
+///This is directly dependent of the RM generated
+
+// partition RMs[i] by the first entry of RMrow.
+// returns array whose entry = number of rows with same first node,
+// array.length = the degree of country i
+function partRM(i) {
+	// Init part and prevhead term
+	var part = [0];
+	var prevhead = RMs[i][0][0];
+	_.each(RMs[i], function(row) {
+		// if row diff from previous head term, push new counter = 1
+		if (row[0] != prevhead) {
+			part.push(1);
+		}
+		else {
+			// else increment this counter by 1
+			part.push(part.pop()+1);
+		}
+		// update prevhead for next turn
+		prevhead = row[0];
+	})
+	return part;
+}
+// Primary function: partition all RMs
+function partRMs() {
+	RMpart = {};
+	_.each(clist, function(i) {
+		RMpart[i] = partRM(i);
+	})
+	// save to output
+	fs.writeFileSync("./data/RM-partition.json", JSON.stringify(RMpart, null, 4));
+	return RMpart;
+}
+
+// partRMs();
+
+
+
+/////////////////
+// Node-Matrix //
+/////////////////
+///With dynamic graph dg passed as param
+
+// Convert static RM to Node-Matrix, for a country, from dynamic graph dg
+function RMtoNM(country, dg) {
+	// a radius matrix, copied
+	var NM = [];
+	var RM = RMs[country];
+	_.each(RM, function(row) {
+		var NMrow = [];
+		_.each(row, function(country) {
+			// dynamic dependency on g here
+			// push whole node to use pointer: (object by reference)
+			// entry is undefined if invalid index -1
+			// forces can be transformed into +- by node.owner
+			NMrow.push( { node: dg.nodes[country] } );
+		});
+		// end of a row, push NMrow to NM
+		NM.push(NMrow);
+	})
+	return NM;
+}
+
+// Convert static all RMs to Node-Matrices, from input dynamic graph dg
+function RMstoNMs(dg) {
+	// The All Army-Matrices object. Is dynamic of graph g and game turn.
+	var NMs = {};
+	_.each(clist, function(i) {
+		var mat = RMtoNM(i, dg);
+		NMs[i] = mat;
+	});
+	return NMs;
+}
+
+
 /////////////////
 // Army Matrix //
 /////////////////
-///Dynamic: depends on each turn 'g', country's owner, current army
-///Might wanna migrate this back into graph.js tho. Faster
+///With external Node-matrix passed as param.
 
-// Compute a army matrix for a country, from a player's standpoint
-function computeAM(country, player) {
-	// a radius matrix, copied
+// convert One NM to val, +- according to player == owner
+function NMtoAM(i, player, NMs) {
 	var AM = [];
-	var RM = RMs[country];
-	_.each(RM, function(row) {
+	_.each(NMs[i], function(row) {
 		var AMrow = [];
-		_.each(row, function(country) {
-			// if country invalid, push 0 army
-			if (country == -1) { AMrow.push(0) }
-			// else push army number, -ve if is enemy
-		else {
-			// dynamic dependency on g here
-			var c = g.nodes[country];
-			var army = c.army;
-			if (c.owner != player) {
-				army *= -1;
+		_.each(row, function(ptr) {
+			// if country invalid, push 0
+			if (ptr.node == undefined)
+				AMrow.push(0);
+			else
+			{
+				// if country owned by player, push positive
+				if (ptr.node.owner == player)
+					AMrow.push(ptr.node.army);	
+				// else push negative army number
+				else 
+					AMrow.push(-1 * ptr.node.army);	
 			}
-			AMrow.push(army);
-		}
-	});
-		// end of a row, push AMrow to AM
+		})
+		// end of row, push row to AM
 		AM.push(AMrow);
 	})
 	return AM;
 }
 
-
-
-// The primary function to compute all the Army Matrices. 
-function computeAMs() {
-	// Import RMs for computing AMs
-	RMs = require('./data/radius-matrices.json');
+// The primary function to convert Node matrices to Army Matrices. 
+function NMstoAMs(player, NMs) {
 	// The All Army-Matrices object. Is dynamic of graph g and game turn.
 	var AMs = {};
 	_.each(clist, function(i) {
-		var mat = computeAM(i);
+		var mat = NMtoAM(i, player, NMs);
 		AMs[i] = mat;
 	});
 	return AMs;
@@ -193,5 +266,7 @@ function computeAMs() {
 
 // Export modules
 exports.uniqMat = uniqMat;
+
 exports.computeRMs = computeRMs;
-exports.computeAMs = computeAMs;
+exports.RMstoNMs = RMstoNMs;
+exports.NMstoAMs = NMstoAMs;

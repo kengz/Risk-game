@@ -4,7 +4,8 @@
   "description": "Implementation of the 2-player Risk game and the AI to play it, for Math 335 Probability project.",
   "main": "graph.js",
   "dependencies": {
-    "underscore": "^1.8.2"
+    "underscore": "^1.8.2",
+    "mathjs": "^1.4.0",
   },
   "devDependencies": {},
   "scripts": {
