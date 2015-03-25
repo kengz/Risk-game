@@ -132,7 +132,7 @@ function computeRMs() {
 		RMs[i] = mat;
 	});
 	// save to output
-	fs.writeFileSync("./data/radius-matrices.json", JSON.stringify(RMs, null, 4));
+	fs.writeFileSync("./srcdata/radius-matrices.json", JSON.stringify(RMs, null, 4));
 	return RMs;
 }
 
@@ -140,7 +140,7 @@ function computeRMs() {
 
 
 // import the radius matrices for use below
-var RMs = require('./data/radius-matrices.json');
+var RMs = require('./srcdata/radius-matrices.json');
 
 
 
@@ -177,7 +177,7 @@ function partRMs() {
 		RMpart[i] = partRM(i);
 	})
 	// save to output
-	fs.writeFileSync("./data/RM-partition.json", JSON.stringify(RMpart, null, 4));
+	fs.writeFileSync("./srcdata/RM-partition.json", JSON.stringify(RMpart, null, 4));
 	return RMpart;
 }
 

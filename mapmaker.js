@@ -6,9 +6,13 @@ var _ = require('underscore');
 var fs = require('fs');
 var JSGraph = require('./graph.js').Graph;
 // import static map data
-var rawMap = fs.readFileSync('./data/world-map.pyg', 'utf8').split("\n");
-var rawCont  =  fs.readFileSync('./data/world-continent.txt', 'utf8').split("\n");
+var rawMap = fs.readFileSync('./srcdata/world-map.pyg', 'utf8').split("\n");
+var rawCont  =  fs.readFileSync('./srcdata/world-continent.txt', 'utf8').split("\n");
 
+
+/////////////////
+// Data fields //
+/////////////////
 
 // the graph = map
 var g = new JSGraph();
@@ -18,6 +22,8 @@ var cont = {};
 var clist = _.range(42);
 // the player countries
 var p1c, p2c, p3c;
+
+
 
 // Make the graph/map
 function makeG() {
@@ -77,6 +83,32 @@ var matcomp = require('./matrix-computer.js');
 // the function to create Node-Matrices and Army-Matrices from g here
 var RMstoNMs = matcomp.RMstoNMs;
 var NMstoAMs = matcomp.NMstoAMs;
+var RMpart = require('./srcdata/RM-partition.json');
+
+var f = require('./functions.js').fn;
+
+
+
+// // the static RM from json
+// var RMs = require('./srcdata/radius-matrices.json');
+// console.log(RMs[1]);
+
+
+// console.log(RMpart);
+
+
+function partAM(i) {
+	var guide = RMpart[i];
+}
+
+var ar = _.range(1,6);
+console.log(ar);
+console.log("renorm", f.renorm(ar));
+console.log("eDecay", f.ExpDecay(ar));
+console.log("gauss", f.Gauss(ar));
+console.log("survival", f.Survival(ar));
+console.log("logistic", f.Logistic(ar));
+console.log("logfrac", f.Logit(ar));
 
 // The dynamic Node Matrices
 // var NMs = RMstoNMs(g);
@@ -91,24 +123,7 @@ var NMstoAMs = matcomp.NMstoAMs;
 // console.log(AMs[38]);
 
 
-// // the static RM from json
-// var RMs = require('./data/radius-matrices.json');
-// console.log(RMs[1]);
-// // Now part to chunk the AM from origin country i
-// function chunking(i) {
 
-// }
-
-
-// console.log(RMs[0]);
-// // var apart = partRM(0);
-// var apart = partRMs();
-// console.log(apart);
-
-// Finally, can combine this with the army matrix
-// fix RMs
-
-// var m = require('mathjs');
 // var boo = m.sqrt(4);
 // console.log(boo);
 // var m1 = [[1,2], [3,4]];
