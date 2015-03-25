@@ -1,0 +1,24 @@
+{
+  "name": "Risk-game",
+  "version": "1.0.0",
+  "description": "Implementation of the 2-player Risk game and the AI to play it, for Math 335 Probability project.",
+  "main": "graph.js",
+  "dependencies": {
+    "underscore": "^1.8.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kengz/Risk-game.git"
+  },
+  "keywords": [],
+  "author": "Wah Loon Keng",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kengz/Risk-game/issues"
+  },
+  "homepage": "https://github.com/kengz/Risk-game"
+}

@@ -1,0 +1,53 @@
+North-America
+0 alaska
+1 northwest-territory
+2 alberta
+3 ontario
+4 quebec
+5 greenland
+6 western-united-states
+7 eastern-united-states
+8 central-america
+
+South-America
+9 venezuela
+10 brazil
+11 peru
+12 argentina
+
+Europe
+13 iceland
+14 great-britain
+15 scandinavia
+16 ukraine
+17 northern-europe
+18 southern-europe
+19 western-europe
+
+Africa
+20 north-africa
+21 egypt
+22 east-africa
+23 congo
+24 south-africa
+25 madagascar
+
+Asia
+26 ural
+27 siberia
+28 yakutsk
+29 kamchatka
+30 irkutsk
+31 mongolia
+32 japan
+33 afganistan
+34 china
+35 middle-east
+36 india
+37 siam
+
+Australia
+38 indonesia
+39 new-guinea
+40 western-australia
+41 eastern-australia
