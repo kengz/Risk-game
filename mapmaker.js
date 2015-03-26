@@ -70,7 +70,7 @@ function initMap() {
 	assignCountries();
 }
 
-// call of primary function
+// call of primary function. Init map and assign countries randomly to plyr
 initMap();
 
 // export module: for computing static RM, and for dynamic game-play
@@ -78,55 +78,125 @@ exports.g = g;
 
 
 
+
+// 'partition' of matrix here = partition by chunk: all has the same first entry
+var RMpart = require('./srcdata/RM-partition.json');
+// import the functions module
+var f = require('./functions.js').fn;
+
 // Import from matrix computer
 var matcomp = require('./matrix-computer.js');
 // the function to create Node-Matrices and Army-Matrices from g here
 var RMstoNMs = matcomp.RMstoNMs;
 var NMstoAMs = matcomp.NMstoAMs;
-var RMpart = require('./srcdata/RM-partition.json');
 
-var f = require('./functions.js').fn;
+// The dynamic Node Matrices, made from NM with initialized g.
+// Called just once per game
+var NMs = RMstoNMs(g);
 
-
-
-// // the static RM from json
-// var RMs = require('./srcdata/radius-matrices.json');
-// console.log(RMs[1]);
-
-
-// console.log(RMpart);
+// The dynamic Army Matrices from NMs. Called at every turn when armies shift
+var AMs = NMstoAMs('p1', NMs);
+// the position variable for the army weight function
+var pos = _.range(1,6);
 
 
-function partAM(i) {
+// Helper: Apply the candidate weight function wf to army numbers in every row,
+// then partition AMs[i]
+function partWeighAM(i, wf) {
+	var AMpart = [];
+
+	// the partition structure
 	var guide = RMpart[i];
+	var leap = 0;
+	_.each(guide, function(step) {
+		// for each partition(chunk) consisting of step rows
+		var chunk = [];
+		// grab the corresponding rows in AM, compute
+		for (var r = leap; r < leap+step; r++) {
+			// console.log(r);
+			// for AMs[i], row r; dot the army with the weight wf(pos)
+			chunk.push( f.vecdot(AMs[i][r], wf(pos)) );
+		}
+		// reset index for next chunk
+		leap += step;
+		// push computed chunk
+		AMpart.push(chunk);
+	})
+	// return the AM, transformed and partitioned
+	return AMpart;
 }
 
-var ar = _.range(1,6);
-console.log(ar);
-console.log("renorm", f.renorm(ar));
-console.log("eDecay", f.ExpDecay(ar));
-console.log("gauss", f.Gauss(ar));
-console.log("survival", f.Survival(ar));
-console.log("logistic", f.Logistic(ar));
-console.log("logfrac", f.Logit(ar));
 
-// The dynamic Node Matrices
-// var NMs = RMstoNMs(g);
-// console.log(NMs);
-// The dynamic Army Matrices from NMs
-// var AMs = NMstoAMs('p1', NMs);
-// console.log(AMs[38]);
-
-// g.nodes[39].army = 222;
-
-// AMs = NMstoAMs('p1', NMs);
-// console.log(AMs[38]);
+// get AMchunkdegree from RM since it's invariant
 
 
+var partdegs = require('./srcdata/RM-partdegree.json');
+var RMs = require('./srcdata/radius-matrices.json');
 
-// var boo = m.sqrt(4);
-// console.log(boo);
-// var m1 = [[1,2], [3,4]];
-// // var m2=m.pow(m1, 2);
-// var m2=m.multiply(m1, 2);
-// console.log(m2);
+// var nodesdeg = _.map(g.nodes, function(n) {
+// 	return n.adjList.length;
+// });
+
+//////////////////////////////
+// Don't average so quickly //
+//////////////////////////////
+
+// Helper: Scalarize all the AMs using wf. Return 42 scalars
+// Turn all AMs into scalar using a army weight-function wf of choice; 
+// internally call the partition-weight-AM func
+function scalarizeAMs(wf) {
+	var scal = [];
+	_.each(clist, function(i) {
+	// _.each(playerlist, function(i) {
+	// partition the wf-weighted AM
+		var foo = partWeighAM(i, wf);
+		scal.push(f.scalAMByDeg(foo, partdegs[i]));
+	})
+	// console.log("dotted with partdeg", );
+	return scal;
+}
+
+// Helper: Scalarize AM partitions for all AMs. return 42 vectors of chunk scals
+// Turn all AMs into scalar using a army weight-function wf of choice; 
+// internally call the partition-weight-AM func
+function scalarizeAMsPart(wf) {
+	var scal = [];
+	_.each(clist, function(i) {
+	// _.each(playerlist, function(i) {
+		var foo = partWeighAM(i, wf);
+		scal.push(f.scalPartByDeg(foo, partdegs[i]));
+	})
+	// console.log("dotted with partdeg", );
+	return scal;
+}
+
+console.log(scalarizeAMsPart(f.Gauss));
+
+
+// Primary: Re-Scalarize at each new turn, for player, using his wf
+// i.e. army = +ve if owned by player, -ve if enermy, 0 if invalid
+// return the AM scalar for all 42 countries, ordered in an array
+function rescalarizeAMs(player, wf) {
+	// update AMs
+	AMs = NMstoAMs(player, NMs);
+	// scalarize it as wanted
+	// return scalarizeAMs(wf);
+	return scalarizeAMsPart(wf);
+}
+
+// console.log(rescalarizeAMs('p1', f.Gauss));
+
+var start = new Date().getTime();
+
+for (i = 0; i < 100; ++i) {
+	// initMap();
+	// partWeighAM(0, f.Gauss);
+	// scalarizeAMs(f.Gauss);
+	// f.Gauss(pos);
+	rescalarizeAMs('p1', f.Gauss);
+}
+
+var end = new Date().getTime();
+var time = end - start;
+console.log('Execution time: ' + time);
+// console.log(g);

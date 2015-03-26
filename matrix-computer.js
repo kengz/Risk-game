@@ -152,7 +152,11 @@ var RMs = require('./srcdata/radius-matrices.json');
 // partition RMs[i] by the first entry of RMrow.
 // returns array whose entry = number of rows with same first node,
 // array.length = the degree of country i
+var alldegs = [];
+// The partition degrees: i.e. degree of the chunk's head node
+var partdeg;
 function partRM(i) {
+	partdeg = [];
 	// Init part and prevhead term
 	var part = [0];
 	var prevhead = RMs[i][0][0];
@@ -160,6 +164,8 @@ function partRM(i) {
 		// if row diff from previous head term, push new counter = 1
 		if (row[0] != prevhead) {
 			part.push(1);
+			// push deg
+			partdeg.push(g.nodes[prevhead].adjList.length);
 		}
 		else {
 			// else increment this counter by 1
@@ -168,6 +174,9 @@ function partRM(i) {
 		// update prevhead for next turn
 		prevhead = row[0];
 	})
+	// push deg of final chunk
+	partdeg.push(g.nodes[prevhead].adjList.length);
+	alldegs.push(partdeg);
 	return part;
 }
 // Primary function: partition all RMs
@@ -178,6 +187,7 @@ function partRMs() {
 	})
 	// save to output
 	fs.writeFileSync("./srcdata/RM-partition.json", JSON.stringify(RMpart, null, 4));
+	fs.writeFileSync("./srcdata/RM-partdegree.json", JSON.stringify(alldegs, null, 4));
 	return RMpart;
 }
 

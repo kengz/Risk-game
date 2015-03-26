@@ -11,7 +11,6 @@ function Graph(){
 	this.removeNode=removeNode;
 	this.nodeExist=nodeExist;
 	this.getAllNodes=getAllNodes;
-	this.pathing=pathing;
 	function addNode(Name){
 		temp=new Node(Name);
 		this.nodes.push(temp);
