@@ -102,7 +102,7 @@ var pos = _.range(1,6);
 
 // Helper: Apply the candidate weight function wf to army numbers in every row,
 // then partition AMs[i]
-function partWeighAM(i, wf) {
+function wfpAM(i, wf) {
 	var AMpart = [];
 
 	// the partition structure
@@ -141,61 +141,48 @@ var RMs = require('./srcdata/radius-matrices.json');
 // Don't average so quickly //
 //////////////////////////////
 
-// Helper: Scalarize all the AMs using wf. Return 42 scalars
-// Turn all AMs into scalar using a army weight-function wf of choice; 
-// internally call the partition-weight-AM func
-function scalarizeAMs(wf) {
+// Helper: dot sum: the whole AMs into scalar, using wf, return 42 scalars
+function dotAMs(wf) {
 	var scal = [];
 	_.each(clist, function(i) {
 	// _.each(playerlist, function(i) {
 	// partition the wf-weighted AM
-		var foo = partWeighAM(i, wf);
+		var foo = wfpAM(i, wf);
 		scal.push(f.scalAMByDeg(foo, partdegs[i]));
 	})
-	// console.log("dotted with partdeg", );
 	return scal;
 }
 
-// Helper: Scalarize AM partitions for all AMs. return 42 vectors of chunk scals
-// Turn all AMs into scalar using a army weight-function wf of choice; 
-// internally call the partition-weight-AM func
-function scalarizeAMsPart(wf) {
-	var scal = [];
-	_.each(clist, function(i) {
-	// _.each(playerlist, function(i) {
-		var foo = partWeighAM(i, wf);
-		scal.push(f.scalPartByDeg(foo, partdegs[i]));
-	})
-	// console.log("dotted with partdeg", );
-	return scal;
+// Helper: dot sum: AM into vector of chunk-scalar. return 42 vectors
+function dotAMsPart(wf) {
+	return _.map(clist, function(i) {
+		return f.scalPartByDeg( wfpAM(i, wf) , partdegs[i] );
+	});
 }
 
-console.log(scalarizeAMsPart(f.Gauss));
+console.log(dotAMsPart(f.Gauss));
 
 
-// Primary: Re-Scalarize at each new turn, for player, using his wf
-// i.e. army = +ve if owned by player, -ve if enermy, 0 if invalid
-// return the AM scalar for all 42 countries, ordered in an array
-function rescalarizeAMs(player, wf) {
+// Primary: per-turn, update AMs, re-dot for player.
+// i.e. army = +ve if owned by player, -ve if enermy, 0 if invalid.
+function redotAMs(player, wf) {
 	// update AMs
 	AMs = NMstoAMs(player, NMs);
-	// scalarize it as wanted
-	// return scalarizeAMs(wf);
-	return scalarizeAMsPart(wf);
+	// dot it as wanted
+	// return dotAMs(wf);
+	return dotAMsPart(wf);
 }
 
-// console.log(rescalarizeAMs('p1', f.Gauss));
+// console.log(redotAMs('p1', f.Gauss));
 
 var start = new Date().getTime();
-
 for (i = 0; i < 100; ++i) {
 	// initMap();
-	// partWeighAM(0, f.Gauss);
-	// scalarizeAMs(f.Gauss);
+	// wfpAM(0, f.Gauss);
+	// dotAMs(f.Gauss);
 	// f.Gauss(pos);
-	rescalarizeAMs('p1', f.Gauss);
+	redotAMs('p1', f.Gauss);
 }
-
 var end = new Date().getTime();
 var time = end - start;
 console.log('Execution time: ' + time);
