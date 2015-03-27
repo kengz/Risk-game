@@ -5,8 +5,10 @@
 // Dependencies
 var _ = require('underscore');
 var m = require('mathjs');
+var fs = require('fs');
 
 var partdegs = require('./srcdata/RM-partdegree.json');
+var pos = _.range(1,6);
 
 // declare as object for export
 var fn = {
@@ -59,10 +61,10 @@ var fn = {
 
 
 	// Candidate strategy/ army-weight functions
+	// i.e. Threat-perception
 	
 	// Exp[-x]
 	ExpDecay: function(v) {
-		var parent = this;
 		return fn.renorm(
 			tmp = m.exp( m.dotMultiply( v, -1) )
 			);
@@ -107,6 +109,30 @@ var fn = {
 		return fn.renorm(
 			_.map(v, f)
 			);
+	},
+
+	// Constant metric
+	Constant: function(v) {
+		function f(x) { return 1; }
+		return fn.renorm(
+			_.map(v, f)
+			);
+	},
+
+	// Linear (decreasing)
+	Linear: function(v) {
+		function f(x) { return 6-x; }
+		return fn.renorm(
+			_.map(v, f)
+			);
+	},
+
+	// import the metricdata; survives with the fn object
+	metricdata: require('./srcdata/metric.json'),
+
+	// return the metric for wf, i.e. wfpos
+	metric: function(wf) {
+		return fn.metricdata[wf];
 	}
 	
 
@@ -114,10 +140,27 @@ var fn = {
 
 exports.fn = fn;
 
+// Precalculate the pos vector transformed with wf
+function preCalculate() {
+	var metric = {};
+	metric.ExpDecay = fn.ExpDecay(pos);
+	metric.Gauss = fn.Gauss(pos);
+	metric.Survival = fn.Survival(pos);
+	metric.Logistic = fn.Logistic(pos);
+	metric.Logit = fn.Logit(pos);
+	metric.Constant = fn.Constant(pos);
+	metric.Linear = fn.Linear(pos);
+	fs.writeFileSync("./srcdata/metric.json", JSON.stringify(metric, null, 4));
+}
+
+// preCalculate();
+
 // var ar = _.range(1,6);
 // console.log(ar);
-// console.log("eDecay", fn.ExpDecay(ar));
+// console.log("eDecay", fn.ExpDecay(pos));
 // console.log("gauss", fn.Gauss(ar));
 // console.log("survival", fn.Survival(ar));
 // console.log("logistic", fn.Logistic(ar));
 // console.log("logfrac", fn.Logit(ar));
+// console.log("const", fn.Constant(ar));
+// console.log("const", fn.Linear(ar));
