@@ -59,15 +59,29 @@ Furthermore note that army placement shall be optimal, i.e. sufficient to defend
 Another thing to consider is that placement cannot be homogenous; i.e. it might be good to have extremes, some nodes can be sacrificed, and some reinforced fiercely. It may also be better to accumulate armies at every other border point than to spread out evenly.
 
 
-### Putting all together
+Putting these all together, we have
+
+<!-- Modularize the listing algorithm, can sub for different strategies: defend first attack later, or vice versa -->
+<!-- ###  -->
+
+### The Placement Algorithm
+<!-- Isolate the algorithm to create a list of importance  -->
+<!-- this algorithm shall only have placement: optimal homogen then extra accumulation -->
+
+1. Enumerate regions and border nodes
+2. Abandon islands, `region size < 3`
+3. Calculate the shape for each region kept, list the radii-difference `max radius - min radius (error +- percent variation)`, identify node-pair of min radius
+4. Call the sub-algorithm from stage 2 for computing AMs.
+5. Call the sub-algorithm from stage 2 for choosing attack targets.
+Form an ordered list of attack-targets by importance.
+6. Using information above, compute an ordered list of nodes to reinforce by importance. (Defend first, attack later. For nodes to defend, see the Fortifying algorithm 2. This list of attack targets is used there).
+7. (Safety first, attack with excess) Calculate an optimal homogenous placement of armies (along borders), with a threshold minimum. While possible, accumulate (add) more armies at the important nodes listed above.
 
 
-general: Consider optimality, lower and upper threshold
-Record your previous scalars for your countries (note this is like DFA, only the previous config accessible), and compare with the current one, to detect pattern:
 
+## Stage 2: Attacking
 
-
-## Stage 2: The Attack-Algorithm
+### The Attack Algorithm
 ```
 1. Among the attackable countries, choose one you wish to attack.
 2. See from where can you attack it.
@@ -98,30 +112,44 @@ We further expand each one above:
 
 
 ## Stage 3: Fortifying
-Different from placing new armies: is moving armies existing on the board from a single territory into a single adjacent territory.
+This is different from placing new armies: it is moving armies existing on the board from a single territory into a single adjacent territory, and can be performed only once per turn.
 
-Idea: shift like white blood cells react to infection: move to it, leaving vacuum behind, which further attracts those behind.
-Scan for border point with lowest AM scalar, move to it:
-center of thin part will have lower AM, thus reinforced more.
-center of thick part will have higher AM, thus can be cleared out.
-
-Is a really slow part of the game since only one move. thus can be used in combining two huge forces
-
-1. Defend
-To counter enemy influence (shift to where enemy AM is strong)
-2. Attack
-Shift to where enemy AM is weak
-accumulation in a single territory:
+Idea: shift armies like how white blood cells react to infection: move to it, leaving vacuum behind, which further attracts those behind.
 
 Distribution pattern:
 Center-weak/frontline-strong.
 
-1. Shifting for troop distribution based on the shape of your owned region.
+Scan for border point with lowest AM scalar, move to it:
+- the center of thin part will have lower AM, thus reinforced more.
+- the center of thick part will have higher AM, thus can be cleared out.
 
-1. Center-out: 
+Is a really slow part of the game since only one move. thus can be used in combining two huge forces, for use in:
+
+1. Defending
+To counter enemy influence (shift to where your AM is weak)
+2. Attacking
+Shift to where enemy AM is weak
+accumulation in a single territory:
+
+
+
+### The Fortifying Algorithm
+1. Update the AM.
+
+<!-- move all computation to above -->
+
+2. (Safety first, attack with excess) Retrieve the unabandoned regions, out of their border nodes, rank them from the most negative scalar (needy) of reinforcement, if any of them exceeds a threshold.
+3. Append the list of attack target from the Placement Algorithm to this list.
+3. Starting from the first of the list, if there exists a neighbor that can give armies without compromising security, do it, recurse for the next node in list, and terminate when a fortification occurs.
+
 
 #### Sketch of factors:
 degree of node
 ease of reinforcing
 AM
 accumulation of army
+
+
+
+
+
