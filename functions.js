@@ -7,7 +7,9 @@ var _ = require('underscore');
 var m = require('mathjs');
 var fs = require('fs');
 
+// degrees of the partition in RM
 var partdegs = require('./srcdata/RM-partdegree.json');
+// posititon vector for metric
 var pos = _.range(1,6);
 
 // declare as object for export

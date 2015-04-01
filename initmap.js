@@ -99,10 +99,8 @@ function initMap() {
 
 // call of primary function. Init map and assign countries randomly to plyr
 // initMap();
+// exports.g = g;
 
 // Export to arena to call
 exports.initMap = initMap;
-
-// export module: for computing static RM, and for dynamic game-play
-// exports.g = g;
 
