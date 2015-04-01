@@ -1,6 +1,8 @@
-// The player class
+// The Player class
 
+// dependencies
 var _ = require('underscore');
+
 
 function Player(name) {
 	this.name = name;
