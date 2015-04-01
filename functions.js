@@ -41,23 +41,33 @@ var fn = {
 	msr: function(a) {
 		return _.compose(fn.mean, fn.sumrow)(a);
 	},
+
+	// for each partition of AM, reduce to mean-sum-row, then dotMultiply with degree of partition
+	scalPartByDeg: function(AMpart, partdeg) {
+		return m.dotMultiply(_.map(AMpart, fn.msr), partdeg);
+	},
+
+
+
+	////////////////
+	// Pressure: //
+	////////////////
+	// reduce for each AM the vector of partition scalars into a single weighted average
+	// Current candidate is by Degree of partition. Used for all players
+
 	// Scalarize the partitioned AM into a scalar
 	// by summing row – taking mean per partition, 
 	// then summing all scalars in partitions
 	// Yields a scalar for each chunk, then sum them
-	scalAM: function(partAM) {
-		return m.sum(_.map(partAM, fn.msr));
+	pressureNaive: function(AMpart) {
+		return m.sum(_.map(AMpart, fn.msr));
 	},
 
-	// same as above, but linear combo with weight = degree of partition
-	scalAMByDeg: function(partAM, partdeg) {
-		return m.dot(_.map(partAM, fn.msr), partdeg);
+	// same as above, but sum the partitions to get a single scalar for AM
+	pressureDeg: function(AMpart, partdeg) {
+		return m.dot(_.map(AMpart, fn.msr), partdeg);
 	},
 
-	// Scalarize each partition of AM, by degree of node
-	scalPartByDeg: function(AMpart, partdeg) {
-		return m.dotMultiply(_.map(AMpart, fn.msr), partdeg);
-	},
 
 
 	// Candidate strategy/ army-weight functions

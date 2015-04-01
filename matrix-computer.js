@@ -7,9 +7,13 @@
 // Dependencies
 var fs = require('fs');
 var _ = require('underscore');
-var g =  require('./mapmaker.js').g;
+// var g =  require('./initmap.js').g;
+var g =  require('./arena.js').g;
 
-// Setup:
+///////////////////////////////////////
+// Helper fields for functions below //
+///////////////////////////////////////
+
 // the list 0-41, representing countries
 var clist = _.range(42);
 // Init matrix, set level
@@ -19,7 +23,6 @@ var mat = [];
 var checked = [];
 // new matrix for expanding mat
 var newmat = [];
-
 
 // Helper method: Produce new set of unique arrays from old
 function uniqMat(old) {
@@ -274,9 +277,117 @@ function NMstoAMs(player, NMs) {
 }
 
 
+
+
+
+
+
+/////////////////////////
+// Pressure calculator //
+/////////////////////////
+
+
+// 'partition' of matrix here = partition by chunk: all has the same first entry
+var RMpart = require('./srcdata/RM-partition.json');
+// import the functions module
+var f = require('./functions.js').fn;
+// g gotten from above
+
+// Import from matrix computer
+// var matcomp = require('./matrix-computer.js');
+// the function to create Node-Matrices and Army-Matrices from g here
+// var RMstoNMs = matcomp.RMstoNMs;
+// var NMstoAMs = matcomp.NMstoAMs;
+
+// DYNAMIC: All DYM moved into arena
+// The dynamic Node Matrices, made from NM with initialized g.
+// Called just once per game, then this g object is refered to by descendants
+// var NMs = RMstoNMs(g);
+
+// DYNAMIC
+// The dynamic Army Matrices from NMs. Called at every turn when armies shift
+// var AMs = NMstoAMs('p1', NMs);
+
+
+// Helper: Apply the candidate weight function wf to army numbers in every row,
+// then partition AMs[i]
+function wfpAM(i, wf, AMs) {
+	var AMpart = [];
+
+	// the partition structure
+	var guide = RMpart[i];
+	var leap = 0;
+	_.each(guide, function(step) {
+		// for each partition(chunk) consisting of step rows
+		var chunk = [];
+		// grab the corresponding rows in AM, compute
+		for (var r = leap; r < leap+step; r++) {
+			// console.log(r);
+			// for AMs[i], row r; dot the army with the metric using weight wf
+			chunk.push( f.vecdot( AMs[i][r], f.metric(wf) ) );
+		}
+		// reset index for next chunk
+		leap += step;
+		// push computed chunk
+		AMpart.push(chunk);
+	})
+	// return the AM, transformed and partitioned
+	return AMpart;
+}
+
+
+// The degree of the partitions of RM. Its structure is the same as partAM
+var partdegs = require('./srcdata/RM-partdegree.json');
+var RMs = require('./srcdata/radius-matrices.json');
+
+
+// Helper: calculate the pressure: Turn AM into wfpAM, then reduce it to chunks-scalars, then dot with chunk-degree for final pressure
+function calcPressure(wf, AMs) {
+	// for every of the 42 countries
+	return _.map(clist, function(i) {
+		// eval the pressure for each AM
+		return f.pressureDeg( wfpAM(i, wf, AMs) , partdegs[i] );
+	});
+}
+
+
+// DYNAMIC
+// Primary: per-turn, update AMs, recalc pressure for player.
+// i.e. army = +ve if owned by player, -ve if enermy, 0 if invalid.
+// function updatePressures(player, wf) {
+// 	// update AMs
+// 	AMs = NMstoAMs(player, NMs);
+// 	// dot it as wanted
+// 	return calcPressure(wf, AMs);
+// }
+
+
+
+
+
+
+// console.log(updatePressures('p1', 'Gauss'));
+
+
+// var start = new Date().getTime();
+// for (i = 0; i < 100; ++i) {
+// 	// initMap();
+// 	// wfpAM(0, f.Gauss);
+// 	// dotAMs(f.Gauss);
+// 	// f.Gauss(pos);
+// 	var boo = updatePressures('p1', 'Gauss');
+// 	// console.log(boo.length);
+// }
+// var end = new Date().getTime();
+// var time = end - start;
+// console.log('Execution time: ' + time);
+// // console.log(g);
+
+
+
 // Export modules
 exports.uniqMat = uniqMat;
-
-exports.computeRMs = computeRMs;
+// exports.computeRMs = computeRMs;
 exports.RMstoNMs = RMstoNMs;
 exports.NMstoAMs = NMstoAMs;
+exports.calcPressure = calcPressure;
