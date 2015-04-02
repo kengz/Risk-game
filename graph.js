@@ -1,5 +1,4 @@
-// The basic graph class
-//Modified from @author devenbhooshan
+// The graph class and graph methods
 
 // Dependencies
 var _ = require('underscore');
@@ -7,87 +6,86 @@ var _ = require('underscore');
 // INSERT:
 // scan for region, disconnected subgraph, find min n max dist bet any pair of border points
 
-
+// The graph class = world map
 function Graph(){
-	// this.isWeighted=false;
 	this.nodes=[];
 	this.addNode=addNode;
-	// this.removeNode=removeNode;
-	// this.nodeExist=nodeExist;
-	// this.getAllNodes=getAllNodes;
 	function addNode(Name){
 		temp=new Node(Name);
 		this.nodes.push(temp);
 		return temp;
 	}
-	// function removeNode(Name){
-		
-	// 	index=this.nodes.indexOf(Name);
-	// 	if(index>-1){
-	// 		this.nodes.splice(index,1);
-	// 		len=this.nodes.length;
-
-	// 		for (var i = 0; i < len; i++) {
-	// 			if(this.nodes[i].adjList.indexOf(Name)>-1){
-	// 				this.nodes[i].adjList.slice(this.nodes[i].adjList.indexOf(Name));
-	// 				this.nodes[i].weight.slice(this.nodes[i].adjList.indexOf(Name));
-	// 			}
-	// 		}
-	// 	}
-		
-	// }
-	// function nodeExist(Name){
-	// 	index=this.nodes.indexOf(Name);
-	// 	if(index>-1){
-	// 		return true;
-	// 	}
-	// 	return false;
-	// }
-
-	// function getAllNodes(){
-	// 	return this.nodes;
-	// }
-
-
-
 }
-
+// The node for graph. game = country index
 function Node(Name){
 	this.name=Name;
 	this.adjList=[];
-	// this.weight=[];
 	this.addEdge=addEdge;
-	// this.compare=compare;
 	function addEdge(neighbour){
-		if (this.adjList.indexOf(neighbour) == -1) {
-			// console.log(this.adjList.indexOf(neighbour));
+		if (this.adjList.indexOf(neighbour) == -1)
 			this.adjList.push(neighbour);
-			// this.weight.push(weight);
-			// return this.adjList;
-		};
 	}
-	
-	function getAdjList(){
-		return adjList;
-	}
-	// function compare(node2){
-	// 	return this.weight-node2.weight;
-	// }
-
-	// special fields for the game
+	// fields for the game:
+	// player owning this node
 	this.owner="none";
-	// this.setOwner=setOwner;
-	// function setOwner(ownerName) {
-	// 	this.owner = ownerName;
-	// }
-	// army of the owner
+	// number of owner's army on this node
 	this.army=0;
-	// this.addArmy=addArmy;
-	// function addArmy(num) {
-	// 	this.army += num;
-	// }
-
-
 }
 
+
+
+// split player's countries into regions = connected subgraph, of the dynamic graph dg
+function regionSplit(playercountries, dg) {
+	// list of my regions
+	var myregions = [];
+	// my countries
+	var mine = _.sortBy(playercountries);
+
+	// function to find next of your connected region
+	function enumNextRegion() {
+		// add first base to new region
+		var newreg = [mine[0]];
+		// then remove first from nodes
+		mine = _.rest(mine);
+		// new region found, add
+		newreg = _.union(newreg, myconnected(newreg[0]));
+		myregions.push(newreg);
+		// update mine
+		mine = _.difference(mine, newreg);
+	}
+
+	// my nodes that are already checked
+	var checked = [];
+	// get my nodes that are connected
+	function myconnected(i) {
+		// get neigh of i
+		var adj = dg.nodes[i].adjList;
+		// adjacent of i that are mine:
+		// move out: exclude checked nodes
+		var neighmine = _.difference(_.intersection(adj, mine), checked);
+		// then update, mark neigh as checked
+		checked = _.union(checked, neighmine);
+		// if found any adj nodes that're mine
+		if (neighmine.length != 0) {
+			// call for each of neighmine, then join
+			return _.uniq(
+				_.flatten(
+					neighmine, 
+					_.map(neighmine, myconnected)
+					)
+				);
+		}
+		else
+			return [];
+	}
+
+	// call enum
+	while (mine.length != 0) {
+		enumNextRegion();
+	}
+	return myregions;
+}
+
+
 exports.Graph = Graph;
+exports.regionSplit = regionSplit;

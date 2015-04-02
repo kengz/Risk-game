@@ -52,7 +52,7 @@ NMs = RMstoNMs(g);
 function updatePressures(player, wf) {
     // update AMs
     var AMs = NMstoAMs(player, NMs);
-    // recalc pressure for player. +ve = this player strong
+    // recalc pressure for player. you = +ve
     return calcPressure(wf, AMs);
 }
 
@@ -63,69 +63,14 @@ function updatePressures(player, wf) {
 console.log(p1);
 // console.log(g.nodes[0]);
 
-function regionSplit() {
-	// list of my regions
-	var myregions = [];
-	// my countries
-	// var mine = p1.countries;
-	var mine = [ 6, 3, 30, 38, 31, 25, 29, 35, 21, 5, 41, 34, 10 ];
-
-
-	function foo() {
-		// add first base to new region
-		var newreg = [mine[0]];
-		console.log("set newref", newreg);
-		// then remove first from nodes
-		mine = _.rest(mine);
-		console.log("set mine", mine);
-
-		newreg = _.union(newreg, myconnected(newreg[0]));
-		// newreg = [40, 38, 31];
-		myregions.push(newreg);
-
-		mine = _.difference(mine, newreg);
-
-		console.log(newreg);
-		console.log(mine);
-	}
-
-	// while (mine.length != 0) {
-	// 	foo();
-	// }
-
-	foo();
-	console.log();
-	foo();
-
-	// var region 
-
-	// get my nodes that are connected
-	function myconnected(i) {
-		// recursive call needs to go forward, not backward
-		// get neigh of i
-		var adj = g.nodes[i].adjList;
-		// adjacent of i that are mine:
-		var neighmine = _.intersection(adj, mine);
-		// if found any adj nodes that're mine
-		if (neighmine.length != 0) {
-			// call for each of neighmine
-			return _.uniq(
-				_.flatten(
-					neighmine, 
-					_.map(neighmine, myconnected)
-					)
-				);
-		}
-		else
-			return [];
-	}
-
-	// var meh = myconnected(40);
-	// console.log(meh);
+// method to get the current regions of player
+var RS = require('./graph.js').regionSplit;
+function regions(player) {
+	return RS(player.countries, g);
 }
 
-regionSplit();
-
+var meh = regions(p1);
+console.log(meh);
 
 
 
@@ -143,7 +88,7 @@ var cont = require('./srcdata/continents.json');
 // Timer
 var start = new Date().getTime();
 for (i = 0; i < 100; ++i) {
-	// regionSplit();
+	regions(p1);
     // var boo = updatePressures('p1', 'Gauss');
     // console.log(boo.length);
 }
