@@ -59,21 +59,40 @@ function updatePressures(player, wf) {
 
 
 
-// Region enumerator
-console.log(p1);
+///////////////////////
+// Region enumerator //
+///////////////////////
+
+// console.log(p1);
 // console.log(g.nodes[0]);
 
 // method to get the current regions of player
-var RS = require('./graph.js').regionSplit;
+var ghelper = require('./graph.js').helper;
+var gh = new ghelper(g);
+
 function regions(player) {
-	return RS(player.countries, g);
+	return gh.regionSplit(player.countries);
 }
 
 var meh = regions(p1);
 console.log(meh);
 
 
+// var distG = graphHelper.dist;
+function dist(i, j) {
+	return gh.dist(i, j);
+}
 
+
+
+var d = dist(3, 3);
+var d2 = dist(3, 5);
+var d3 = dist(3, 13);
+var d4 = dist(3, 15);
+console.log("distance", d);
+console.log("distance", d2);
+console.log("distance", d3);
+console.log("distance", d4);
 // console.log(deck);
 // console.log(p1);
 
@@ -88,7 +107,7 @@ var cont = require('./srcdata/continents.json');
 // Timer
 var start = new Date().getTime();
 for (i = 0; i < 100; ++i) {
-	regions(p1);
+	// regions(p1);
     // var boo = updatePressures('p1', 'Gauss');
     // console.log(boo.length);
 }
