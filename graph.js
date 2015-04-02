@@ -40,19 +40,21 @@ function Node(Name) {
 // The helper methods for graph //
 //////////////////////////////////
 
-function helper(g) {
-    this.regionSplit = regionSplit;
+function helper(dg) {
+    this.regions = regions;
     this.dist = dist;
+    this.shape = shape;
+    this.borders = borders;
 
     // the dynamic graph for use below
-    var dg = g;
+    var g = dg;
 
     // split player's countries into regions = connected subgraph, of the dynamic graph dg
-    function regionSplit(playercountries) {
+    function regions(player) {
         // list of my regions
         var myregions = [];
         // my countries
-        var mine = _.sortBy(playercountries);
+        var mine = _.sortBy(player.countries);
 
         // function to find next of your connected region
         function enumNextRegion(srcnode) {
@@ -72,7 +74,7 @@ function helper(g) {
         // get my nodes that are connected
         function myconnected(i) {
             // get neigh of i
-            var adj = dg.nodes[i].adjList;
+            var adj = g.nodes[i].adjList;
             // adjacent of i that are mine:
             // move out: exclude checked nodes
             var neighmine = _.difference(_.intersection(adj, mine), checked);
@@ -99,7 +101,6 @@ function helper(g) {
     };
 
 
-
     // min distance between nodes i,j
     function dist(i, j) {
         // distance 0 first, init wave
@@ -109,7 +110,7 @@ function helper(g) {
         while (!_.contains(wave, j)) {
             // expand wave
             _.each(wave, function(n) {
-                    _.each(dg.nodes[n].adjList, function(k) {
+                    _.each(g.nodes[n].adjList, function(k) {
                         if (!_.contains(wave, k)) wave.push(k);
                     })
                 })
@@ -117,12 +118,81 @@ function helper(g) {
             d++;
         }
         return d;
-    }
+    };
 
 
-}
+    // Calc the shape of a region, i.e. connected countries. by max - min
+    // Return a random max/min pair of pairs
+    function shape(reg) {
+        // enumerate pairs subsets
+        // var pairs = [];
+        // the node-pair with min/max dist
+        var minpair = {
+                d: 50
+            },
+            maxpair = {
+                d: 0
+            };
+        // upperbound = reg size
+        var up = reg.length;
+        if (up > 1) {
+            // enum pair of reg
+            for (var i = 0; i < up - 1; i++) {
+                for (var j = i + 1; j < up; j++) {
+                    var dis = dist(reg[i], reg[j]);
+                    // if find new min pair, update
+                    if (dis < minpair.d) {
+                        minpair.d = dis;
+                        minpair['i'] = i;
+                        minpair['j'] = j;
+                    }
+                    // if find max pair, update
+                    if (maxpair.d < dis) {
+                        maxpair.d = dis;
+                        maxpair['i'] = i;
+                        maxpair['j'] = j;
+                    }
+                };
+            };
+            // the difference in radius
+            var diff = maxpair.d - minpair.d;
+            return {
+                diff: diff,
+                minpair: minpair,
+                maxpair: maxpair
+            }
+        }
+        // if reg has only one node
+        else {
+            return {
+                diff: 0,
+                minpair: reg[0],
+                maxpair: reg[0]
+            }
+        }
+    };
+
+    // enum the border nodes of a player
+    function borders(player) {
+        var bnodes = [];
+        _.each(player.countries, function(n) {
+            // find the first neigh that
+            var enemy = _.find(g.nodes[n].adjList, function(i) {
+                    // belongs to a different owner
+                    return g.nodes[i].owner != player.name;
+                })
+                // if found enemy in adj
+            if (enemy != undefined) {
+                bnodes.push(n);
+            }
+        })
+        return bnodes;
+    };
+
+
+} //helper ends
 
 exports.Graph = Graph;
-// exports.regionSplit = regionSplit;
+// exports.regions = regions;
 // exports.dist = dist;
 exports.helper = helper;

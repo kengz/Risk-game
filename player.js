@@ -16,6 +16,9 @@ function Player(name) {
 	this.continents = [];
 	// compute the regions owned, i.e. connected subgraphs
 	this.regions;
+	// its pressures in the last turn
+	this.prevPressures;
+	this.currentPressures;
 	// methods
 	this.initCountries = initCountries;
 

@@ -56,7 +56,9 @@ function updatePressures(player, wf) {
     return calcPressure(wf, AMs);
 }
 
+console.log(p1)
 
+// per turn update player's pressures, regions
 
 
 ///////////////////////
@@ -68,31 +70,43 @@ function updatePressures(player, wf) {
 
 // method to get the current regions of player
 var ghelper = require('./graph.js').helper;
+// pass graph g for dynamicism
 var gh = new ghelper(g);
+// the gh functions: {regions, dist, shape}
 
-function regions(player) {
-	return gh.regionSplit(player.countries);
-}
 
-var meh = regions(p1);
+var meh = gh.regions(p1);
 console.log(meh);
 
 
-// var distG = graphHelper.dist;
-function dist(i, j) {
-	return gh.dist(i, j);
-}
+var r1 = meh[1];
+
+var moo = gh.shape(r1);
+console.log(moo);
 
 
 
-var d = dist(3, 3);
-var d2 = dist(3, 5);
-var d3 = dist(3, 13);
-var d4 = dist(3, 15);
-console.log("distance", d);
-console.log("distance", d2);
-console.log("distance", d3);
-console.log("distance", d4);
+// Prepare for Priority sub-algorithms,
+// export as modules
+
+
+// var d = gh.dist(3, 3);
+// var d2 = gh.dist(3, 5);
+// var d3 = gh.dist(3, 13);
+// var d4 = gh.dist(3, 15);
+// console.log("distance", d);
+// console.log("distance", d2);
+// console.log("distance", d3);
+// console.log("distance", d4);
+
+
+var test = gh.borders(p1);
+console.log(test);
+
+
+
+
+
 // console.log(deck);
 // console.log(p1);
 
@@ -107,7 +121,8 @@ var cont = require('./srcdata/continents.json');
 // Timer
 var start = new Date().getTime();
 for (i = 0; i < 100; ++i) {
-	// regions(p1);
+	// gh.dist(3,15);
+	gh.regions(p1);
     // var boo = updatePressures('p1', 'Gauss');
     // console.log(boo.length);
 }
