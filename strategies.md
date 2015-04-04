@@ -65,7 +65,7 @@ This is the internal algorithm for stage 1 and 3, i.e. it's used to form the ord
 
 From a player's perspective,
 1. Enumerate regions, borders (nodes), attackable nodes. Shape of each region.
-2. Update pressure.
+<!-- 2. Update pressure. -->
 3. Eval. values of all nodes (enemy's for attacking, your's for defending).
 1. Enumerate regions, their sizes and their border nodes; all attackable nodes, i.e. union of neighs of borders that aren't yours.
 <!-- 2. Abandon islands, i.e. `region size < 3`. Do not consider their nodes for all steps below. -->

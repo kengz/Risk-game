@@ -103,16 +103,16 @@ var gh = new ghelper(g);
 // var test = gh.borders(p1);
 // console.log(test);
 
-
+// update priority for player p
 function updateForPriority() {
 	// for each player in bench
 	_.each(bench, function(p) {
 		p.regions = gh.regions(p);
-		p.shape = _.map(p.regions, function(r) {
-			return gh.shape(p, r);
-		})
 		p.borders = gh.borders(p);
 		p.attackable = gh.attackable(p, p.borders);
+		p.shapes = _.map(p.regions, function(r) {
+			return gh.shape(p, r);
+		})
 	})
 }
 
@@ -128,26 +128,62 @@ function updateForPriority() {
 
 // eval values for all nodes: yours and enemies'
 // by neutral attributes
-function evaluateNode(i) {
-    this.node = g.nodes[i];
+function evalNode(i, regsize, round) {
+	// set node, prevent repeated calling for efficacy
+	var node = g.nodes[i];
 
-    // 2. continent-completion: get fraction
-    continentFrac(node);
-    // 4. shape: 
-    
-    // 1. node degree
+    // 1. continent-completion: get fraction
+    var contFrac = continentFrac(node);
+
+    // 2. region expansion. make big region even bigger? i.e. adj to nodes of a big region
+    // the size of region node belongs to
+    var regsize = regsize;
+
+    // 3. shape: 
+    var roundness = round;
+
+    // if i is in mins or max or none
+
+    // 4. node degree
     this.degree = node.adjList.length;
-    // 3. region expansion. make big region even bigger? i.e. adj to nodes of a big region
-
-    // 5. retrieve it's current pressure from update
-
+    
+    // 5. retrieve its current pressure from update
+    node.pressure;
+    
     // call a metric to calc the value from above
     // set node's worth
+    // node.worth = 
 }
 
-// eval all nodes, groupby, sortby
+// eval all nodes, groupby, sortby worth
 
 // sortby value all node-group: enemy a batch, yours a batch
+// by region
+
+function foo(p) {
+	// do by each region
+	for (var i = 0; i < p.regions.length; i++) {
+		// corresponding shape of region
+		var shape = p.shapes[i];
+		var region = p.regions[i];
+
+		var regsize = region.length;
+		var roundness = shape.roundness;
+		var mins = shape.mins;
+		var maxs = shape.maxs;
+		// call evalNodeworth, with shape and reg size as input
+		_.each(region, function(n) {
+			_.contains(mins, n);
+			evalNode(n);
+		})
+	};
+}
+
+function bar() {
+	_.each(bench, function(p) {
+		foo(p);
+	})
+}
 
 
 // the continents object
@@ -155,14 +191,14 @@ var cont = require('./srcdata/continents.json');
 console.log(cont);
 
 function continentFrac(node) {
-    var allyNum = 0;
-    var owner = node.owner;
-    var icont = node.continent;
-    var contclist = cont[icont];
-    _.each(contclist, function(n) {
-        if (g.nodes[n].owner == owner) allyNum++;
-    })
-    return allyNum / contclist.length;
+	var allyNum = 0;
+	var owner = node.owner;
+	var icont = node.continent;
+	var contclist = cont[icont];
+	_.each(contclist, function(n) {
+		if (g.nodes[n].owner == owner) allyNum++;
+	})
+	return allyNum / contclist.length;
 }
 
 console.log(continentFrac(g.nodes[0]));
@@ -176,13 +212,14 @@ console.log(continentFrac(g.nodes[0]));
 console.log(p1);
 updateForPriority();
 console.log(p1);
+console.log(p1.shapes[1].mins);
 
 // Timer
 var start = new Date().getTime();
 for (i = 0; i < 100; ++i) {
     // gh.dist(3,15);
-    gh.regions(p1);
-    // updateForPriority();
+    // gh.regions(p1);
+    updateForPriority();
     // var boo = updatePressures('p1', 'Gauss');
     // console.log(boo.length);
 }

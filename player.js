@@ -16,6 +16,7 @@ function Player(name) {
 	this.continents = [];
 	// compute the regions owned, i.e. connected subgraphs
 	this.regions;
+	this.shapes;
 	this.borders;
 	this.attackable;
 	// its pressures in the last turn

@@ -167,6 +167,7 @@ function helper(dg) {
     function shape(player, region) {
         // calc radius only for border nodes in a region
         var reg = _.intersection(region, player.borders);
+        // var reg = region;
         // the node-pair with min/max dist
         var minpair = {
             d: 50,
@@ -213,10 +214,10 @@ function helper(dg) {
             };
             // the difference in radius
             var diff = maxpair.d - minpair.d;
-            var round = diff/maxpair.d;
+            var roundness = diff/maxpair.d;
             return {
                 // measure roundness, 0 = round, 1 = not
-                round: round,
+                roundness: roundness,
                 mins: minpair.nodes,
                 maxs: maxpair.nodes
             }
@@ -224,9 +225,9 @@ function helper(dg) {
         // if reg has only one node
         else {
             return {
-                round: 0,
-                mins: [reg[0]],
-                maxs: [reg[0]]
+                roundness: -1,
+                mins: reg,
+                maxs: reg
             }
         }
     };
