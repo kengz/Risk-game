@@ -72,17 +72,17 @@ console.log(p1)
 var ghelper = require('./graph.js').helper;
 // pass graph g for dynamicism
 var gh = new ghelper(g);
-// the gh functions: {regions, dist, shape}
+// the gh functions: {regions, dist, shape, borders}
 
 
-var meh = gh.regions(p1);
-console.log(meh);
+// var meh = gh.regions(p1);
+// console.log(meh);
 
 
-var r1 = meh[1];
+// var r1 = meh[1];
 
-var moo = gh.shape(r1);
-console.log(moo);
+// var moo = gh.shape(r1);
+// console.log(moo);
 
 
 
@@ -100,29 +100,89 @@ console.log(moo);
 // console.log("distance", d4);
 
 
-var test = gh.borders(p1);
-console.log(test);
+// var test = gh.borders(p1);
+// console.log(test);
 
 
+function updateForPriority() {
+	// for each player in bench
+	_.each(bench, function(p) {
+		p.regions = gh.regions(p);
+		p.shape = _.map(p.regions, function(r) {
+			return gh.shape(p, r);
+		})
+		p.borders = gh.borders(p);
+		p.attackable = gh.attackable(p, p.borders);
+	})
+}
 
 
+///////////////////////////
+// Choosing target nodes //
+///////////////////////////
 
-// console.log(deck);
-// console.log(p1);
+// Don't exclude islands,
+// but rank all nodes by order
 
+// Enum for player all the needed things
+
+// eval values for all nodes: yours and enemies'
+// by neutral attributes
+function evaluateNode(i) {
+    this.node = g.nodes[i];
+
+    // 2. continent-completion: get fraction
+    continentFrac(node);
+    // 4. shape: 
+    
+    // 1. node degree
+    this.degree = node.adjList.length;
+    // 3. region expansion. make big region even bigger? i.e. adj to nodes of a big region
+
+    // 5. retrieve it's current pressure from update
+
+    // call a metric to calc the value from above
+    // set node's worth
+}
+
+// eval all nodes, groupby, sortby
+
+// sortby value all node-group: enemy a batch, yours a batch
 
 
 // the continents object
 var cont = require('./srcdata/continents.json');
+console.log(cont);
+
+function continentFrac(node) {
+    var allyNum = 0;
+    var owner = node.owner;
+    var icont = node.continent;
+    var contclist = cont[icont];
+    _.each(contclist, function(n) {
+        if (g.nodes[n].owner == owner) allyNum++;
+    })
+    return allyNum / contclist.length;
+}
+
+console.log(continentFrac(g.nodes[0]));
+
+// console.log(deck);
+// console.log(p1);
+
+// console.log(g.nodes[0]);
 
 
-
+console.log(p1);
+updateForPriority();
+console.log(p1);
 
 // Timer
 var start = new Date().getTime();
 for (i = 0; i < 100; ++i) {
-	// gh.dist(3,15);
-	gh.regions(p1);
+    // gh.dist(3,15);
+    gh.regions(p1);
+    // updateForPriority();
     // var boo = updatePressures('p1', 'Gauss');
     // console.log(boo.length);
 }

@@ -35,12 +35,17 @@ function writeContinentObject() {
 }
 // writeContinentObject();
 
-
 // Make the graph/map
 function makeG() {
+	// enum the index - continent map
+	var conti = {};
+	_.map(rawCont, function(c) {
+		var s = c.split(" ");
+		conti[s[1]] = s[0];
+	})
 	// there's 42 countries indexed  0-41; access by g.nodes[i]
 	_.each(clist, function(country) {
-		g.addNode(country);
+		g.addNode(country, conti[country]);
 	});
 	// add the adjacent edges for all countries in map
 	_.each(rawMap, function(line) {

@@ -63,10 +63,14 @@ Putting these all together, we have
 ### The Priority Algorithm
 This is the internal algorithm for stage 1 and 3, i.e. it's used to form the ordered list of priority nodes to reinforce and fortify. The list decides the strategies use, such as defend-then-attack, or attack-then-defend, or some other variation.
 
-1. Enumerate regions, their sizes and their border nodes.
-2. Abandon islands, i.e. `region size < 3`. Do not consider their nodes for all steps below.
+From a player's perspective,
+1. Enumerate regions, borders (nodes), attackable nodes. Shape of each region.
+2. Update pressure.
+3. Eval. values of all nodes (enemy's for attacking, your's for defending).
+1. Enumerate regions, their sizes and their border nodes; all attackable nodes, i.e. union of neighs of borders that aren't yours.
+<!-- 2. Abandon islands, i.e. `region size < 3`. Do not consider their nodes for all steps below. -->
 3. For each kept region, calculate the shape, i.e. radii-difference `max radius - min radius (error +- percent variation)`; identify the node-pair of min radius for future expansion.
-4. Call the sub-algorithm from stage 2 for computing AMs scalars.
+4. Call the sub-algorithm from stage 2 for computing AMs scalars – update pressure.
 5. Next we enumerate the sublists, of finite length (say 3), that will form a final priority list:
 6. Attack wanted nodes: Call the sub-algorithm for choosing target in stage 2 to enumerate targets(includes step 1,2,3 above). For each target, choose its origin of attack by considering it's degree and original AM. Add the origin to the list, called `list-attack`.
 7. Attack weakened nodes: See if any of your AM scalars increase, implying enemy weakens. Add these nodes from the steepest increase, and that are not neighbors to those already added to, `list-weaken`.

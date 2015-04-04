@@ -8,30 +8,35 @@ var _ = require('underscore');
 
 // The graph class = world map
 function Graph() {
-        this.nodes = [];
-        this.addNode = addNode;
+    this.nodes = [];
+    this.addNode = addNode;
 
-        function addNode(Name) {
-            temp = new Node(Name);
-            this.nodes.push(temp);
-            return temp;
-        }
+    function addNode(Name, continent) {
+        temp = new Node(Name, continent);
+        this.nodes.push(temp);
+        return temp;
     }
-    // The node for graph. game = country index
-function Node(Name) {
+}
+// The node for graph. game = country index
+function Node(Name, Continent) {
     this.name = Name;
+    this.continent = Continent;
     this.adjList = [];
     this.addEdge = addEdge;
 
     function addEdge(neighbour) {
-            if (this.adjList.indexOf(neighbour) == -1)
-                this.adjList.push(neighbour);
-        }
-        // fields for the game:
-        // player owning this node
+        if (this.adjList.indexOf(neighbour) == -1)
+            this.adjList.push(neighbour);
+    }
+    // fields for the game:
+    // player owning this node
     this.owner = "none";
     // number of owner's army on this node
     this.army = 0;
+    // pressure from AM matrix
+    this.pressure = 0;
+    // worth, or value, from degree, etc
+    this.worth = 0;
 }
 
 
@@ -42,9 +47,10 @@ function Node(Name) {
 
 function helper(dg) {
     this.regions = regions;
+    this.borders = borders;
+    this.attackable = attackable;
     this.dist = dist;
     this.shape = shape;
-    this.borders = borders;
 
     // the dynamic graph for use below
     var g = dg;
@@ -87,10 +93,10 @@ function helper(dg) {
                     _.flatten(
                         neighmine,
                         _.map(neighmine, myconnected)
-                    )
-                );
+                        )
+                    );
             } else
-                return [];
+            return [];
         }
 
         // call enum
@@ -98,6 +104,41 @@ function helper(dg) {
             enumNextRegion(mine[0]);
         }
         return myregions;
+    };
+
+    // enum the border nodes of a player
+    function borders(player) {
+        var bnodes = [];
+        _.each(player.countries, function(n) {
+            // find the first neigh that
+            var enemy = _.find(g.nodes[n].adjList, function(i) {
+                // belongs to a different owner
+                return g.nodes[i].owner != player.name;
+            })
+            // if found enemy in adj
+            if (enemy != undefined) {
+                bnodes.push(n);
+            }
+        })
+        return bnodes;
+    };
+
+    // all the attackable nodes from player's borders
+    function attackable(player, borders) {
+        var att = [];
+        // for each border node of player
+        _.each(borders, function(b) {
+            // check its neighs
+            _.each(g.nodes[b].adjList, function(a) {
+                // if not in player countries, is enemy
+                if (!_.contains(player.countries, a)) {
+                    if (!_.contains(att, a)) {
+                        att.push(a);
+                    }
+                };
+            })
+        })
+        return att;
     };
 
 
@@ -110,29 +151,31 @@ function helper(dg) {
         while (!_.contains(wave, j)) {
             // expand wave
             _.each(wave, function(n) {
-                    _.each(g.nodes[n].adjList, function(k) {
-                        if (!_.contains(wave, k)) wave.push(k);
-                    })
+                _.each(g.nodes[n].adjList, function(k) {
+                    if (!_.contains(wave, k)) wave.push(k);
                 })
+            })
                 // increment d for a radius expansion
-            d++;
-        }
-        return d;
-    };
+                d++;
+            }
+            return d;
+        };
 
 
     // Calc the shape of a region, i.e. connected countries. by max - min
     // Return a random max/min pair of pairs
-    function shape(reg) {
-        // enumerate pairs subsets
-        // var pairs = [];
+    function shape(player, region) {
+        // calc radius only for border nodes in a region
+        var reg = _.intersection(region, player.borders);
         // the node-pair with min/max dist
         var minpair = {
-                d: 50
-            },
-            maxpair = {
-                d: 0
-            };
+            d: 50,
+            nodes: []
+        },
+        maxpair = {
+            d: 0,
+            nodes: []
+        };
         // upperbound = reg size
         var up = reg.length;
         if (up > 1) {
@@ -143,51 +186,52 @@ function helper(dg) {
                     // if find new min pair, update
                     if (dis < minpair.d) {
                         minpair.d = dis;
-                        minpair['i'] = i;
-                        minpair['j'] = j;
+                        // nodes forming min-pairs
+                        minpair.nodes = [i, j];
+                        // minpair['i'] = i;
+                        // minpair['j'] = j;
+                    }
+                    // if another max found, add
+                    if (dis == minpair.d) {
+                        minpair.nodes.push(i);
+                        minpair.nodes.push(j);
                     }
                     // if find max pair, update
                     if (maxpair.d < dis) {
                         maxpair.d = dis;
-                        maxpair['i'] = i;
-                        maxpair['j'] = j;
+                        // nodes forming max-pairs
+                        minpair.nodes = [i, j];
+                        // maxpair['i'] = i;
+                        // maxpair['j'] = j;
+                    }
+                    // if another max found, add
+                    if (dis == maxpair.d) {
+                        maxpair.nodes.push(i);
+                        maxpair.nodes.push(j);
                     }
                 };
             };
             // the difference in radius
             var diff = maxpair.d - minpair.d;
+            var round = diff/maxpair.d;
             return {
-                diff: diff,
-                minpair: minpair,
-                maxpair: maxpair
+                // measure roundness, 0 = round, 1 = not
+                round: round,
+                mins: minpair.nodes,
+                maxs: maxpair.nodes
             }
         }
         // if reg has only one node
         else {
             return {
-                diff: 0,
-                minpair: reg[0],
-                maxpair: reg[0]
+                round: 0,
+                mins: [reg[0]],
+                maxs: [reg[0]]
             }
         }
     };
 
-    // enum the border nodes of a player
-    function borders(player) {
-        var bnodes = [];
-        _.each(player.countries, function(n) {
-            // find the first neigh that
-            var enemy = _.find(g.nodes[n].adjList, function(i) {
-                    // belongs to a different owner
-                    return g.nodes[i].owner != player.name;
-                })
-                // if found enemy in adj
-            if (enemy != undefined) {
-                bnodes.push(n);
-            }
-        })
-        return bnodes;
-    };
+    
 
 
 } //helper ends
