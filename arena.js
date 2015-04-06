@@ -47,14 +47,6 @@ var PA = new PrioAlg.PA(g, bench);
 // 3. Reinforce based on priority lists and origin-map
 // 4. attack by list
 
-// PA.updateForPriority(p1, 'Gauss');
-// console.log(p1);
-
-// // for all the lists, simply enum the targets, the attOrgMap will deal with origin
-// var attOrgMap = PA.mapAttOrigins(p1);
-// // console.log(attOrgMap);
-// console.log("roll", PA.enumPriority(p1, [0, 1, 2, 3], 5));
-
 
 // AI updating its info before moves
 function AIupdate(AI) {
@@ -85,5 +77,4 @@ var time = end - start;
 // console.log(g.nodes[0]);
 console.log('Execution time: ' + time);
 
-// console.log(new Array(10).fill(0));
 // console.log(g);

@@ -6,7 +6,6 @@ var f = require('./functions.js').fn;
 var ghelper = require('./graph.js').helper;
 
 
-// function pressureMod(dg) {
 
 // Priority Algorithm: update worths, pressures, enunm priority list and att origins. 
 // Input graph dg and bench = players
@@ -14,8 +13,6 @@ function PA(dg, bench) {
     this.enumPriority = enumPriority;
     this.mapAttOrigins = mapAttOrigins;
     this.updateForPriority = updateForPriority;
-    // this.updatePressures = updatePressures;
-    // this.updateWorths = updateWorths;
 
     // fields
     var g = dg;
@@ -72,8 +69,6 @@ function PA(dg, bench) {
     function pressureDrop(i) {
         return g.nodes[i].pressure - g.nodes[i].prevPressure;
     };
-
-
 
     // Primary: Attack-origin map: gives the best origin of attack for the priority lists: 
     // for attackable, choose highest pressure of adj that's yours; for borders(own), choose self, so the point itself is reinforced
