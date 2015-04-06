@@ -6,39 +6,77 @@ var f = require('./functions.js').fn;
 var ghelper = require('./graph.js').helper;
 
 
-// the module for calc nodes' worth. Input graph dg and bench = players
-function worthMod(dg, bench) {
-	this.updateWorth = updateWorth;
+// function pressureMod(dg) {
 
-	var g = dg;
-	// graph helper
+// the module for calc nodes' worth. Input graph dg and bench = players
+function refresher(dg, bench) {
+    this.updatePressures = updatePressures;
+    this.updateWorth = updateWorth;
+
+    // fields
+    var g = dg;
+    // graph helper
     var gh = new ghelper(g);
+
+
+    ///////////////////////
+    // Pressure computer //
+    ///////////////////////
+    
+    // Import from matrix computer
+    var mcomp = require('./matrix-computer.js');
+    // to create Node-Matrices and Army-Matrices; calcPressure
+    var RMstoNMs = mcomp.RMstoNMs;
+    var NMstoAMs = mcomp.NMstoAMs;
+    var calcPressure = mcomp.calcPressure;
+    NMs = RMstoNMs(dg);
+
+    // helper-Primary: per-turn, update pressure
+    function updatePressures(player, wf) {
+        // update AMs
+        var AMs = NMstoAMs(player, NMs);
+        // update prevPressures
+        player.prevPressures = player.pressures;
+        // then update current pressures
+        player.pressures = calcPressure(wf, AMs);
+        // update on nodes for worth-calc
+        for (var i = 0; i < player.pressures.length; i++) {
+            g.nodes[i].pressure = player.pressures[i];
+        };
+        return player.pressures;
+    }
+
+
+    ////////////////////
+    // Worth Computer //
+    ////////////////////
 
     // primary: calc and update the worth of every node, from your player perspective. return sorted node lists
     function updateWorth(you) {
-    	// update worth from your perspective
-    	updateCriterion();
-    	evalWorthByPlayers(you);
-    	// then partition by your/enemy's, sort nodes
-    	return sortByWorth(you);
+        // update worth from your perspective
+        updateCriterion();
+        evalWorthByPlayers(you);
+        // then partition by your/enemy's, sort nodes
+        you.worths = sortByWorth(you);
+        return you.worths;
     };
 
     // sort all nodes by evaluated worth, from perspective of you
     function sortByWorth(you) {
-    	var clist = _.range(42);
-    	// sort by self and enemy
-    	var self = you.countries;
-    	var sortSelf = _.sortBy(self, worthSort);
-    	var enemies = _.difference(clist, self);
-    	var sortEnemy = _.sortBy(enemies, worthSort);
-    	return {
-    		self: sortSelf,
-    		enemy: sortEnemy
-    	}
+        var clist = _.range(42);
+        // sort by self and enemy
+        var self = you.countries;
+        var sortSelf = _.sortBy(self, worthSort);
+        var enemies = _.difference(clist, self);
+        var sortEnemy = _.sortBy(enemies, worthSort);
+        return {
+            self: sortSelf,
+            enemy: sortEnemy
+        }
     };
     // the sort function for worth, used above
     function worthSort(i) {
-    	return -g.nodes[i].worth;
+        return -g.nodes[i].worth;
     };
 
     // update priority for all players
@@ -135,4 +173,5 @@ function worthMod(dg, bench) {
 }
 
 
-exports.worthMod = worthMod;
+exports.refresher = refresher;
+// exports.pressureMod = pressureMod;

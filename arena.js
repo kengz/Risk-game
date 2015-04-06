@@ -34,50 +34,22 @@ var shuffle = _.shuffle(_.range(42 + 2));
 
 
 
-
-
-///////////////////////
-// Pressure Computer //
-///////////////////////
-///Locally compute pressure from the dynamic g
-
-// Import from matrix computer
-var mcomp = require('./matrix-computer.js');
-// to create Node-Matrices and Army-Matrices; calcPressure
-var RMstoNMs = mcomp.RMstoNMs;
-var NMstoAMs = mcomp.NMstoAMs;
-var calcPressure = mcomp.calcPressure;
-// DYNAMIC: create Node-Matrices based on this dynamic g
-NMs = RMstoNMs(g);
-
-// helper-Primary: per-turn, update pressure
-function updatePressures(player, wf) {
-    // update AMs
-    var AMs = NMstoAMs(player, NMs);
-    // update prevPressures
-    player.prevPressures = player.pressures;
-    // then update current pressures
-    player.pressures = calcPressure(wf, AMs);
-    // update on nodes for worth-calc
-    for (var i = 0; i < player.pressures.length; i++) {
-    	g.nodes[i].pressure = player.pressures[i];
-    };
-    return player.pressures;
-}
-
 ////////////////////
 // Worth Computer //
 ////////////////////
 
 // Import from AI modules
-var WorthM = require('./AI-modules.js').worthMod;
-WorthM = new WorthM(g, bench);
+var AImod = require('./AI-modules.js');
 
-// helper-Primary: per-turn, update worth
+// construct a refresher
+var refresher = new AImod.refresher(g, bench);
+
+// helper-Primary: per-turn, update worth/pressure
 function updateWorth(player) {
-    // update all node worth from player persp
-	player.worths = WorthM.updateWorth(player);
-	return player.worths;
+    return refresher.updateWorth(player);
+}
+function updatePressures(player, wf) {
+    return refresher.updatePressures(player, wf);
 }
 
 // Primary: update for priority algorithm
@@ -90,6 +62,7 @@ function updateForPriority(player, wf) {
 //////////////////////////////////////////////
 // enum lists: attack, weaken, threat, lost //
 //////////////////////////////////////////////
+
 
 // Then place, recalc? Nah, just use from prev step.
 // per player turn, update AM, done till end of turn
