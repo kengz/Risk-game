@@ -11,10 +11,11 @@ var ghelper = require('./graph.js').helper;
 // Priority Algorithm: update worths, pressures, enunm priority list and att origins. 
 // Input graph dg and bench = players
 function PA(dg, bench) {
-    this.priority = priority;
+    this.enumPriority = enumPriority;
     this.mapAttOrigins = mapAttOrigins;
-    this.updatePressures = updatePressures;
-    this.updateWorths = updateWorths;
+    this.updateForPriority = updateForPriority;
+    // this.updatePressures = updatePressures;
+    // this.updateWorths = updateWorths;
 
     // fields
     var g = dg;
@@ -27,7 +28,7 @@ function PA(dg, bench) {
     ///////////////////
 
     // Primary: priority list by rolling forward
-    function priority(you, permutation, k) {
+    function enumPriority(you, permutation, k) {
         // identity perm = [0,1,2,3]
         var id = [enumAttack, enumWeaken, enumThreat, enumLost];
         // the priority list
@@ -99,6 +100,16 @@ function PA(dg, bench) {
         return -g.nodes[i].pressure;
     };
 
+
+    /////////////////////////
+    // Update for Priority //
+    /////////////////////////
+    // Primary: update for priority algorithm,
+    // call pressure and worth computers
+    function updateForPriority(player, wf) {
+        updateWorths(player);
+        updatePressures(player, wf);
+    };
 
     ///////////////////////
     // Pressure computer //

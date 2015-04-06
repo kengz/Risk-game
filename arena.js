@@ -34,41 +34,36 @@ var shuffle = _.shuffle(_.range(42 + 2));
 
 
 
-////////////////////
-// Worth Computer //
-////////////////////
 
 // Import from priority algorithm, construct PA
 var PrioAlg = require('./priority-alg.js');
 var PA = new PrioAlg.PA(g, bench);
 
-// helper-Primary: per-turn, update worth/pressure
-function updateWorths(player) {
-    return PA.updateWorths(player);
+/////////////////////////////////////
+// Reinforce-attack call sequence: //
+/////////////////////////////////////
+// 1. update worths and pressures for nodes (between enemy turns to detect changes)
+// 2. enumPriority w/ AI personality(permutation)
+// 3. Reinforce based on priority lists and origin-map
+// 4. attack by list
+
+// PA.updateForPriority(p1, 'Gauss');
+// console.log(p1);
+
+// // for all the lists, simply enum the targets, the attOrgMap will deal with origin
+// var attOrgMap = PA.mapAttOrigins(p1);
+// // console.log(attOrgMap);
+// console.log("roll", PA.enumPriority(p1, [0, 1, 2, 3], 5));
+
+
+// AI updating its info before moves
+function AIupdate(AI) {
+    // use AI's(brain of) player object
+    PA.updateForPriority(p1, 'Gauss');
+    var attOrgMap = PA.mapAttOrigins(p1);
+    // use AI personality: permutation
+    PA.enumPriority(p1, [0, 1, 2, 3], 5);
 }
-function updatePressures(player, wf) {
-    return PA.updatePressures(player, wf);
-}
-// Primary: update for priority algorithm
-function updateForPriority(player, wf) {
-    updateWorths(player);
-    updatePressures(player, wf);
-}
-
-updateForPriority(p1, 'Gauss');
-console.log(p1);
-
-// Call by:
-// updateWorth, list worths(to defend) and 
-// enum list of nodes to reinforce by press(prev)
-// reinforce those lists (high press becomes higher)
-// update pressure
-
-
-// for all the lists, simply enum the targets, the attOrgMap will deal with origin
-var attOrgMap = PA.mapAttOrigins(p1);
-// console.log(attOrgMap);
-console.log("roll", PA.priority(p1, [0, 1, 2, 3], 5));
 
 
 // console.log(deck);
@@ -78,6 +73,7 @@ console.log("roll", PA.priority(p1, [0, 1, 2, 3], 5));
 // Timer
 var start = new Date().getTime();
 for (i = 0; i < 100; ++i) {
+    AIupdate();
     // updatePressures(p1, 'Gauss');
     // updateWorths(p1);
     // updateForPriority(p1, 'Gauss');
