@@ -11,7 +11,7 @@ var ghelper = require('./graph.js').helper;
 // the module for calc nodes' worth. Input graph dg and bench = players
 function refresher(dg, bench) {
     this.updatePressures = updatePressures;
-    this.updateWorth = updateWorth;
+    this.updateWorths = updateWorths;
 
     // fields
     var g = dg;
@@ -52,7 +52,7 @@ function refresher(dg, bench) {
     ////////////////////
 
     // primary: calc and update the worth of every node, from your player perspective. return sorted node lists
-    function updateWorth(you) {
+    function updateWorths(you) {
         // update worth from your perspective
         updateCriterion();
         evalWorthByPlayers(you);

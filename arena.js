@@ -45,8 +45,8 @@ var AImod = require('./AI-modules.js');
 var refresher = new AImod.refresher(g, bench);
 
 // helper-Primary: per-turn, update worth/pressure
-function updateWorth(player) {
-    return refresher.updateWorth(player);
+function updateWorths(player) {
+    return refresher.updateWorths(player);
 }
 function updatePressures(player, wf) {
     return refresher.updatePressures(player, wf);
@@ -54,14 +54,17 @@ function updatePressures(player, wf) {
 
 // Primary: update for priority algorithm
 function updateForPriority(player, wf) {
-    updateWorth(player);
+    updateWorths(player);
     updatePressures(player, wf);
 }
+
 
 
 //////////////////////////////////////////////
 // enum lists: attack, weaken, threat, lost //
 //////////////////////////////////////////////
+///from player's worths
+
 
 
 // Then place, recalc? Nah, just use from prev step.
@@ -76,7 +79,7 @@ function updateForPriority(player, wf) {
 var start = new Date().getTime();
 for (i = 0; i < 100; ++i) {
 	// updatePressures(p1, 'Gauss');
-    // updateWorth(p1);
+    // updateWorths(p1);
     updateForPriority(p1, 'Gauss');
 }
 var end = new Date().getTime();
