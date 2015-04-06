@@ -14,7 +14,7 @@ function worthMod(dg, bench) {
 	// graph helper
     var gh = new ghelper(g);
 
-    // primary: calc the worth of every node, from your player perspective
+    // primary: calc and update the worth of every node, from your player perspective. return sorted node lists
     function updateWorth(you) {
     	// update worth from your perspective
     	updateCriterion();
@@ -26,17 +26,17 @@ function worthMod(dg, bench) {
     // sort all nodes by evaluated worth, from perspective of you
     function sortByWorth(you) {
     	var clist = _.range(42);
+    	// sort by self and enemy
     	var self = you.countries;
     	var sortSelf = _.sortBy(self, worthSort);
     	var enemies = _.difference(clist, self);
     	var sortEnemy = _.sortBy(enemies, worthSort);
-
     	return {
     		self: sortSelf,
     		enemy: sortEnemy
     	}
     };
-
+    // the sort function for worth, used above
     function worthSort(i) {
     	return -g.nodes[i].worth;
     };

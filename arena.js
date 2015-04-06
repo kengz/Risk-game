@@ -50,45 +50,67 @@ var calcPressure = mcomp.calcPressure;
 // DYNAMIC: create Node-Matrices based on this dynamic g
 NMs = RMstoNMs(g);
 
-// Primary: per-turn:
+// helper-Primary: per-turn, update pressure
 function updatePressures(player, wf) {
     // update AMs
     var AMs = NMstoAMs(player, NMs);
-    // recalc pressure for player. you = +ve
-    return calcPressure(wf, AMs);
+    // update prevPressures
+    player.prevPressures = player.pressures;
+    // then update current pressures
+    player.pressures = calcPressure(wf, AMs);
+    // update on nodes for worth-calc
+    for (var i = 0; i < player.pressures.length; i++) {
+    	g.nodes[i].pressure = player.pressures[i];
+    };
+    return player.pressures;
 }
-
-// console.log(p1);
-
-// per turn update player's pressures, regions
-
 
 ////////////////////
 // Worth Computer //
 ////////////////////
 
-// console.log(p1);
-
+// Import from AI modules
 var WorthM = require('./AI-modules.js').worthMod;
 WorthM = new WorthM(g, bench);
 
-var foo = WorthM.updateWorth(p1);
-console.log(foo['self']);
+// helper-Primary: per-turn, update worth
+function updateWorth(player) {
+    // update all node worth from player persp
+	player.worths = WorthM.updateWorth(player);
+	return player.worths;
+}
 
-// console.log(continentFrac(g.nodes[0]));
+// Primary: update for priority algorithm
+function updateForPriority(player, wf) {
+    updateWorth(player);
+    updatePressures(player, wf);
+}
+
+
+//////////////////////////////////////////////
+// enum lists: attack, weaken, threat, lost //
+//////////////////////////////////////////////
+
+// Then place, recalc? Nah, just use from prev step.
+// per player turn, update AM, done till end of turn
+
 
 // console.log(deck);
 // console.log(p1);
-
-// console.log(g.nodes[0]);
 
 
 // Timer
 var start = new Date().getTime();
 for (i = 0; i < 100; ++i) {
-    // WorthM.updateWorth(p1);
+	// updatePressures(p1, 'Gauss');
+    // updateWorth(p1);
+    updateForPriority(p1, 'Gauss');
 }
 var end = new Date().getTime();
 var time = end - start;
+console.log(p1);
+console.log(g.nodes[0]);
 console.log('Execution time: ' + time);
+
+// console.log(new Array(10).fill(0));
 // console.log(g);

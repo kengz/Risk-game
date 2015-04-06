@@ -243,9 +243,9 @@ function helper(dg) {
     };
 
 
-
+    // continents
     var cont = require('./srcdata/continents.json');
-
+    // helper, compute fraction of continent owned
     function continentFrac(node) {
         var allyNum = 0;
         var owner = node.owner;

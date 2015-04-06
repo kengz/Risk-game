@@ -8,7 +8,7 @@
 var fs = require('fs');
 var _ = require('underscore');
 // var g =  require('./initmap.js').g;
-var g =  require('./arena.js').g;
+// var g =  require('./arena.js').g;
 
 ///////////////////////////////////////
 // Helper fields for functions below //
@@ -346,20 +346,22 @@ function calcPressure(wf, AMs) {
 	// for every of the 42 countries
 	return _.map(clist, function(i) {
 		// eval the pressure for each AM
+		// return wfpAM(i, wf, AMs);
 		return f.pressureDeg( wfpAM(i, wf, AMs) , partdegs[i] );
 	});
 }
 
 
+
 // DYNAMIC
 // Primary: per-turn, update AMs, recalc pressure for player.
 // i.e. army = +ve if owned by player, -ve if enermy, 0 if invalid.
-// function updatePressures(player, wf) {
-// 	// update AMs
-// 	AMs = NMstoAMs(player, NMs);
-// 	// dot it as wanted
-// 	return calcPressure(wf, AMs);
-// }
+function updatePressures(player, wf) {
+	// update AMs
+	AMs = NMstoAMs(player, NMs);
+	// dot it as wanted
+	return calcPressure(wf, AMs);
+}
 
 
 
@@ -372,10 +374,11 @@ function calcPressure(wf, AMs) {
 // var start = new Date().getTime();
 // for (i = 0; i < 100; ++i) {
 // 	// initMap();
-// 	// wfpAM(0, f.Gauss);
+// 	// wfpAM(0, 'Gauss', AMs);
+// 	calcPressure('Gauss', AMs);
 // 	// dotAMs(f.Gauss);
 // 	// f.Gauss(pos);
-// 	var boo = updatePressures('p1', 'Gauss');
+// 	// var boo = updatePressures('p1', 'Gauss');
 // 	// console.log(boo.length);
 // }
 // var end = new Date().getTime();
