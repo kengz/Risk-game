@@ -17,6 +17,7 @@ function Player(name) {
 	// compute the regions owned, i.e. connected subgraphs
 	this.regions;
 	this.shapes;
+	// inherits the ordering from regions, i.e. attackable from the biggest region
 	this.borders;
 	this.attackable;
 	// its pressures in the last turn

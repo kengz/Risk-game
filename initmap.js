@@ -70,15 +70,17 @@ var p1 = new Player('p1'), p2 = new Player('p2'), p3 = new Player('p3');
 var bench = [p1, p2, p3];
 
 // assign countries to player randomly
-function assignCountries() {
+// if cntl = true, use the control sl
+function assignCountries(cntl) {
 	// shuffle the clist
-	// var sl = _.shuffle(clist);
+	var sl = _.shuffle(clist);
 	
 	//////////////////////////////////
 	// testing control: no shuffle //
 	//////////////////////////////////
-	
-	var sl = [ 40,6,3,30,38,31,25,29,35,21,5,41,34,10,37,22,26,13,12,20,15,4,19,0,9,36,23,39,8,27,32,18,11,14,17,24,16,7,2,1,33,28 ];
+	if (cntl) {
+	sl = [ 40,6,3,30,38,31,25,29,35,21,5,41,34,10,37,22,26,13,12,20,15,4,19,0,9,36,23,39,8,27,32,18,11,14,17,24,16,7,2,1,33,28 ];
+	}
 	// slice it to 3 parts for 2 players, 1 neutral
 	p1c = sl.slice(0, 14); p2c = sl.slice(14, 2*14); p3c = sl.slice(2*14);
 	// console.log(p1c, p2c, p3c);
@@ -95,10 +97,10 @@ function assignCountries() {
 
 // Primary function to initialize map: 
 // make graph, random assign countries to players
-function initMap() {
+function initMap(cntl) {
 	makeG();
-	assignCountries();
-	console.log("Making graph from map, randomly assign countries to players.");
+	assignCountries(cntl);
+	// console.log("Making graph from map, randomly assign countries to players.");
 	// return graph g, bench = list of new players
 	return {
 		g: g,

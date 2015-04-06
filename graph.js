@@ -51,6 +51,7 @@ function helper(dg) {
     this.attackable = attackable;
     this.dist = dist;
     this.shape = shape;
+    this.continentFrac = continentFrac;
 
     // the dynamic graph for use below
     var g = dg;
@@ -103,13 +104,21 @@ function helper(dg) {
         while (mine.length != 0) {
             enumNextRegion(mine[0]);
         }
+
+        // sort regions by size
+        myregions = _.sortBy(myregions, function(r) {
+            return -r.length;
+        });
+
         return myregions;
     };
 
     // enum the border nodes of a player
+    // Ordered by the regions
     function borders(player) {
         var bnodes = [];
-        _.each(player.countries, function(n) {
+        // start from player regions for ordering
+        _.each(_.flatten(player.regions), function(n) {
             // find the first neigh that
             var enemy = _.find(g.nodes[n].adjList, function(i) {
                 // belongs to a different owner
@@ -124,6 +133,7 @@ function helper(dg) {
     };
 
     // all the attackable nodes from player's borders
+    // retain ordering from borders, from regions
     function attackable(player, borders) {
         var att = [];
         // for each border node of player
@@ -201,7 +211,7 @@ function helper(dg) {
                     if (maxpair.d < dis) {
                         maxpair.d = dis;
                         // nodes forming max-pairs
-                        minpair.nodes = [i, j];
+                        maxpair.nodes = [i, j];
                         // maxpair['i'] = i;
                         // maxpair['j'] = j;
                     }
@@ -218,19 +228,35 @@ function helper(dg) {
             return {
                 // measure roundness, 0 = round, 1 = not
                 roundness: roundness,
-                mins: minpair.nodes,
-                maxs: maxpair.nodes
+                mins: _.map(_.uniq(minpair.nodes), function(i) {return reg[i];}),
+                maxs: _.map(_.uniq(maxpair.nodes), function(i) {return reg[i];})
             }
         }
         // if reg has only one node
         else {
             return {
-                roundness: -1,
+                roundness: 0,
                 mins: reg,
                 maxs: reg
             }
         }
     };
+
+
+
+    var cont = require('./srcdata/continents.json');
+
+    function continentFrac(node) {
+        var allyNum = 0;
+        var owner = node.owner;
+        var icont = node.continent;
+        var contclist = cont[icont];
+        _.each(contclist, function(n) {
+            if (g.nodes[n].owner == owner) allyNum++;
+        })
+        return allyNum / contclist.length;
+    };
+
 
     
 
