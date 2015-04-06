@@ -33,7 +33,8 @@ function Node(Name, Continent) {
     this.owner = "none";
     // number of owner's army on this node
     this.army = 0;
-    // pressure from AM matrix
+    // pressure from AM matrix, previous and current
+    this.prevPressure = 0;
     this.pressure = 0;
     // worth, or value, from degree, etc
     this.worth = 0;

@@ -31,6 +31,8 @@ function Player(name) {
 	this.prevPressures = zeroes42;
 	// pressures of all 42 nodes from player's perspective
 	this.pressures = zeroes42;
+	// worths: self = your nodes, sorted by worth
+	// enemies = attackable nodes, sorted by worth
 	this.worths = zeroes42;
 	// methods
 	this.initCountries = initCountries;

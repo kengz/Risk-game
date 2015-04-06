@@ -8,8 +8,11 @@ var ghelper = require('./graph.js').helper;
 
 // function pressureMod(dg) {
 
-// the module for calc nodes' worth. Input graph dg and bench = players
-function refresher(dg, bench) {
+// Priority Algorithm: update worths, pressures, enunm priority list and att origins. 
+// Input graph dg and bench = players
+function PA(dg, bench) {
+    this.priority = priority;
+    this.mapAttOrigins = mapAttOrigins;
     this.updatePressures = updatePressures;
     this.updateWorths = updateWorths;
 
@@ -19,10 +22,88 @@ function refresher(dg, bench) {
     var gh = new ghelper(g);
 
 
+    ///////////////////
+    // Priority List //
+    ///////////////////
+
+    // Primary: priority list by rolling forward
+    function priority(you, permutation, k) {
+        // identity perm = [0,1,2,3]
+        var id = [enumAttack, enumWeaken, enumThreat, enumLost];
+        // the priority list
+        var plist = [];
+        // roll forward as specified by permutation
+        _.each(permutation, function(i) {
+                plist = rollk(plist, id[i](you), k);
+            })
+            // the list calls att-origin to reinforce
+        return plist;
+    };
+
+    // rollforward: take the first k elements in back that aren't in front, append to it
+    function rollk(front, back, k) {
+        return _.union(front,
+            _.first(
+                // nodes in back but not in front
+                _.difference(back, front), k)
+        )
+    };
+    // list of attackable, ordered by worth
+    var enumAttack = function(you) {
+        return you.worths.enemy;
+    };
+    // list of attackable nodes weakened, from the least pressureDrop = highest pressure rise
+    var enumWeaken = function(you) {
+        return _.sortBy(you.attackable, -pressureDrop);
+    };
+    // list of your borders facing enemy buildup, from the most pressureDrop
+    var enumThreat = function(you) {
+        return _.sortBy(you.borders, pressureDrop);
+    };
+    // list of your lost nodes by worth (now enemy's)
+    var enumLost = function(you) {
+        // nodes in prev but not current
+        var lost = _.difference(you.prevCountries, you.countries);
+        // get the lost, ordered by worths
+        return _.intersection(you.worths.self, lost);
+    };
+    // sort from low to high pressure rise, i.e. higher to lower pressure drop
+    function pressureDrop(i) {
+        return g.nodes[i].pressure - g.nodes[i].prevPressure;
+    };
+
+
+
+    // Primary: Attack-origin map: gives the best origin of attack for the priority lists: 
+    // for attackable, choose highest pressure of adj that's yours; for borders(own), choose self, so the point itself is reinforced
+    function mapAttOrigins(you) {
+        // attack-origin map
+        var attOrgMap = {};
+        // find the best origin of attack for each attackable for reinforce
+        _.each(you.attackable, function(i) {
+                var optOrigins = _.filter(g.nodes[i].adjList,
+                        function(j) {
+                            return g.nodes[j].owner == you.name;
+                        })
+                    // create map: target –> best origin of att
+                attOrgMap[i] = _.min(optOrigins, pressureSort);
+            })
+            // if is your border, simply map to self for reinforce
+        _.each(you.borders, function(j) {
+            attOrgMap[j] = j;
+        })
+        return attOrgMap;
+    };
+    // sort from higher to lower pressure
+    function pressureSort(i) {
+        return -g.nodes[i].pressure;
+    };
+
+
     ///////////////////////
     // Pressure computer //
     ///////////////////////
-    
+
     // Import from matrix computer
     var mcomp = require('./matrix-computer.js');
     // to create Node-Matrices and Army-Matrices; calcPressure
@@ -41,6 +122,7 @@ function refresher(dg, bench) {
         player.pressures = calcPressure(wf, AMs);
         // update on nodes for worth-calc
         for (var i = 0; i < player.pressures.length; i++) {
+            g.nodes[i].prevPressure = g.nodes[i].pressure;
             g.nodes[i].pressure = player.pressures[i];
         };
         return player.pressures;
@@ -63,11 +145,13 @@ function refresher(dg, bench) {
 
     // sort all nodes by evaluated worth, from perspective of you
     function sortByWorth(you) {
-        var clist = _.range(42);
         // sort by self and enemy
-        var self = you.countries;
+        var self = you.borders;
+        // var self = you.countries;
         var sortSelf = _.sortBy(self, worthSort);
-        var enemies = _.difference(clist, self);
+        // var enemies = _.difference(clist, self);
+        // attackable, sorted
+        var enemies = you.attackable;
         var sortEnemy = _.sortBy(enemies, worthSort);
         return {
             self: sortSelf,
@@ -173,5 +257,4 @@ function refresher(dg, bench) {
 }
 
 
-exports.refresher = refresher;
-// exports.pressureMod = pressureMod;
+exports.PA = PA;
