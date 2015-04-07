@@ -10,28 +10,30 @@ var fs = require('fs');
 // Card //
 //////////
 function Card(countryIndex, picture) {
-        this.name = countryIndex;
-        this.picture = picture;
-    }
-    // Make a deck for 2 players = 42 countries + 2 wild. Saved to Json
+    this.name = countryIndex;
+    this.picture = picture;
+};
+// Make a deck for 2 players = 42 countries + 2 wild. Saved to Json
 function makeDeck() {
-        // create the deck and save
-        var clist = _.range(42);
-        var deck = {};
-        _.each(clist, function(i) {
-            deck[i] = new Card(i, i % 3);
-        });
+    // create the deck and save
+    var clist = _.range(42);
+    var deck = {};
+    _.each(clist, function(i) {
+        deck[i] = new Card(i, i % 3);
+    });
 
-        // add wild card. Note deck is used only midst game, not during initmap, so don't worry about the additional wild cards
-        deck[42] = new Card('wild1', 'wild');
-        deck[43] = new Card('wild2', 'wild');
+    // add wild card. Note deck is used only midst game, not during initmap, so don't worry about the additional wild cards
+    deck[42] = new Card('wild1', 'wild');
+    deck[43] = new Card('wild2', 'wild');
 
-        // console.log(deck);
+    // console.log(deck);
 
-        // write to deck object output
-        fs.writeFileSync('./srcdata/deck.json', JSON.stringify(deck, null, 4));
-    }
-    // makeDeck();
+    // write to deck object output
+    fs.writeFileSync('./srcdata/deck.json', JSON.stringify(deck, null, 4));
+};
+// makeDeck();
+
+// need a deck object, to deal cards, and when empty, refresh
 
 
 //////////
