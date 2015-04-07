@@ -43,7 +43,7 @@ var dealer = new dealerM();
 
 var AIM = require('./AI-modules.js').AI;
 
-var test = ['Constant', 'agressive', 'tactical', 'carry'];
+var test = ['Constant', 'agressive', 'tactical', 'rusher'];
 var AI = new AIM(p1, test);
 console.log(AI.trait('wf'));
 
@@ -58,13 +58,15 @@ var PA = new PrioAlg.PA(g, bench);
 
 // AI updating its info before moves
 function AIupdate(AI) {
-    // update node worths and pressures,
-    // using AI's 'wf' trait
+    // update worths, pressures, using AI's 'wf' trait
     PA.updateForPriority(AI.player, AI.trait('wf'));
     // return map of all best origins of attack
     var attOrgMap = PA.mapAttOrigins(AI.player);
     // enumerate the priority target list
-    var plist = PA.enumPriority(AI.player, AI.trait('priority'), 3);
+    var priorityList = PA.enumPriority(AI.player, AI.trait('priority'), 3);
+    // set orgMap and plist for AI
+    AI.attOrgMap = attOrgMap;
+    AI.priorityList = priorityList;
 };
 AIupdate(AI);
 

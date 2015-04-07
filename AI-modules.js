@@ -31,10 +31,7 @@ var _ = require('underscore');
 // global for AI, traits(key): variants: values
 var traitsMap = require('./srcdata/AI-traits.json');
 var traitsKey = _.initial(_.keys(traitsMap));
-
-
-console.log(traitsKey);
-
+// console.log(traitsKey);
 
 
 
@@ -42,16 +39,18 @@ console.log(traitsKey);
 function AI(player, persona) {
 	// player which has all the fields
 	this.player = player;
-	// the map of AI trait to variant
+	// Personality map of AI, e.g. priority: 'agressive'
 	this.personality = _.object(traitsKey, persona);
-	// get this AI's trait's variant's value
+	// get this AI's trait, e.g. priority -> [0,1,2,3]
 	this.trait = trait;
 	function trait(key) {
 		return traitsMap[key][this.personality[key]];
 	};
 
-	this.attOrgMap;
-	this.priorityList;
+	// The attack-origin map and priority list
+	this.attOrgMap = {};
+	this.priorityList = [];
+    
     // methods
     // this.update; // done externally in arena
     this.tradeIn = tradeIn;
@@ -59,7 +58,9 @@ function AI(player, persona) {
     this.placeArmies;
 
     function tradeIn() {
-    	console.log(traitsMap);
+    	// extract personality
+    	console.log("lorem", this.personality['attack']);
+    	
     }
 
 };
