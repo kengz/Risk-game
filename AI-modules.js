@@ -2,7 +2,7 @@
 var _ = require('underscore');
 
 // AI = brain of player, will control the player object
-// contains the personality
+// contains the trait
 // will make moves and decisions
 
 
@@ -20,30 +20,54 @@ var _ = require('underscore');
 // defend-then-attack: [2,3,0,1]
 // conservative-defend-then-attack: [3,2,0,1]
 
+// 1. wf: weight function/metric. i.e. Threat-perception. Use only the last 2.
+// 2. Sequence of enumerating sublists of priority list. See priority-alg.js. Use only the last 2.
+// 3. placement in priority to balance press
+// cautious: balance all your pressure > 0 first, then extra for priority
+// tactical: place armies in priority first till +4 pressure; if leftover repeat in priority +=4
+// 4. pressure threshold to init attack. Also used in keeping cards: rusher = always trade in when can.
+// carry: accumulate forces and attack when likely to win
 
-function AI(player, personality) {
-    // AI brain controls the player
-    this.player = player;
+// global for AI, traits(key): variants: values
+var traitsMap = require('./srcdata/AI-traits.json');
+var traitsKey = _.initial(_.keys(traitsMap));
+
+
+console.log(traitsKey);
+
+
+
+
+// AI brain controls the player
+function AI(player, persona) {
+	// player which has all the fields
+	this.player = player;
+	// the map of AI trait to variant
+	this.personality = _.object(traitsKey, persona);
+	// get this AI's trait's variant's value
+	this.trait = trait;
+	function trait(key) {
+		return traitsMap[key][this.personality[key]];
+	};
+
+	this.attOrgMap;
+	this.priorityList;
     // methods
-    this.update;
-    this.tradeIn;
+    // this.update; // done externally in arena
+    this.tradeIn = tradeIn;
     this.getArmies;
     this.placeArmies;
 
+    function tradeIn() {
+    	console.log(traitsMap);
+    }
 
 };
 
 exports.AI = AI;
 
-var priorityP = {
-    'attack-then-defend': [0, 1, 2, 3],
-    'opportunist-attack-then-defend': [1, 0, 2, 3],
-    'defend-then-attack': [2, 3, 0, 1],
-    'conservative-defend-then-attack': [3, 2, 0, 1]
-}
 
-
-console.log(priorityP);
+// console.log(Ppriority);
 
 // 2. Placement Algorithm
 // 2.1 balance out most pressures
@@ -54,9 +78,6 @@ console.log(priorityP);
 
 // May not be relevant now, is actually done via holding back cards
 // do by wave, or use sin, or const
-function holdback(armies, time) {
-
-}
 
 
 // 3. Attack Algorithm
@@ -69,3 +90,7 @@ var cmb = require('js-combinatorics').Combinatorics;
 var id = [0, 1, 2, 3];
 var foo = cmb.permutation(id);
 // console.log(foo.toArray());
+
+// var prod = cmb.cartesianProduct(_.keys(Pwf), _.keys(Ppriority), _.keys(Pplacement), _.keys(Pattack));
+// console.log(prod.toArray());
+

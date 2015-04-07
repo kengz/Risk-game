@@ -22,7 +22,7 @@ function Player(name) {
 	this.prevCountries;
 	this.countries = [];
 	// continents owned entirely
-	this.continents = ["Asia",0];
+	this.continents = ["Asia"];
 	// compute the regions owned, i.e. connected subgraphs
 	this.regions = [];
 	this.shapes = [];

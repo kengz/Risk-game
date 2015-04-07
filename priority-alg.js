@@ -32,9 +32,9 @@ function PA(dg, bench) {
         var plist = [];
         // roll forward as specified by permutation
         _.each(permutation, function(i) {
-                plist = rollk(plist, id[i](you), k);
-            })
-            // the list calls att-origin to reinforce
+            plist = rollk(plist, id[i](you), k);
+        });
+        // the list calls att-origin to reinforce
         return plist;
     };
 
@@ -125,7 +125,7 @@ function PA(dg, bench) {
         // update prevPressures
         player.prevPressures = player.pressures;
         // calc pressure, reflect army numbers surrounding the origins
-        var pressNoOrigin = calcPressure(wf, AMs); 
+        var pressNoOrigin = calcPressure(wf, AMs);
         // player.pressures = calcPressure(wf, AMs);
         // update pressures on player; on nodes for worth-calc
         for (var i = 0; i < player.pressures.length; i++) {

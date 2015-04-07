@@ -1,3 +1,5 @@
+// Dealer, i.e. the controller class that imposes the rules in dealing cards and giving armies
+
 // dependencies
 var _ = require('underscore');
 

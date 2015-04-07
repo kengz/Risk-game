@@ -27,10 +27,6 @@ p1 = bench[0];
 p2 = bench[1];
 p3 = bench[2];
 
-// after init, return all 42 country cards + 2 wild, shuffle
-// var deck = require('./srcdata/deck.json');
-// var shuffle = _.shuffle(_.range(42 + 2));
-
 
 
 /////////////////////////////////////
@@ -42,36 +38,42 @@ p3 = bench[2];
 // 4. attack by list
 
 
+var dealerM = require('./dealer.js').dealer;
+var dealer = new dealerM();
+
+var AIM = require('./AI-modules.js').AI;
+
+var test = ['Constant', 'agressive', 'tactical', 'carry'];
+var AI = new AIM(p1, test);
+console.log(AI.trait('wf'));
+
+var setofCards = [];
+var arm = dealer.getArmies(AI.player, setofCards);
+console.log(arm);
+
+
 // Import from priority algorithm, construct PA
 var PrioAlg = require('./priority-alg.js');
 var PA = new PrioAlg.PA(g, bench);
 
 // AI updating its info before moves
 function AIupdate(AI) {
-    // use AI's(brain of) player object
-    PA.updateForPriority(p1, 'Gauss');
-    var attOrgMap = PA.mapAttOrigins(p1);
-    // use AI personality: permutation
-    PA.enumPriority(p1, [0, 1, 2, 3], 3);
+    // update node worths and pressures,
+    // using AI's 'wf' trait
+    PA.updateForPriority(AI.player, AI.trait('wf'));
+    // return map of all best origins of attack
+    var attOrgMap = PA.mapAttOrigins(AI.player);
+    // enumerate the priority target list
+    var plist = PA.enumPriority(AI.player, AI.trait('priority'), 3);
 };
-// AIupdate();
-console.log(p1);
+AIupdate(AI);
 
+AI.tradeIn();
 
 // AI will call dealer method with its cards to trade in
 
 
-// move out to arena, external rule imposer
-
-var dealer = require('./dealer.js').dealer;
-
-var AIC = require('./AI-modules.js').AI;
-var AI = new AIC(p1);
-
-var co = new dealer();
-var arm = co.getArmies(AI.player);
-console.log(arm);
-console.log(p1);
+// console.log(p1);
 
 // console.log(AI);
 // console.log(AI.getArmies());
@@ -86,7 +88,7 @@ console.log(p1);
 // Timer
 var start = new Date().getTime();
 for (i = 0; i < 100; ++i) {
-    // AIupdate();
+    // AIupdate(AI);
 }
 var end = new Date().getTime();
 var time = end - start;
