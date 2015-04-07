@@ -5,7 +5,8 @@
   "main": "arena.js",
   "dependencies": {
     "underscore": "^1.8.2",
-    "mathjs": "^1.4.0"
+    "mathjs": "^1.4.0",
+    "js-combinatorics": "^0.4.0"
   },
   "devDependencies": {},
   "scripts": {

@@ -1,4 +1,4 @@
-// Arena: The place where all gamesteps and computations occur.
+// Arena: The place for all gamesteps and computations.
 // All dynamic objects exist in here, and interact here, to maximize speed. All other classes need to exchange dynamic object through here.
 
 
@@ -8,7 +8,6 @@ var _ = require('underscore');
 
 // primary dynamic objects:
 var g; //graph (the board/map)
-var NMs; //the Node-matrices from G to calc pressure
 var bench, p1, p2, p3; // bench = players
 
 
@@ -17,8 +16,7 @@ var bench, p1, p2, p3; // bench = players
 // Initialize map and players //
 ////////////////////////////////
 
-var control = true;
-
+var control = true; //control test: don't randomize
 var init = require('./initmap.js').initMap(control);
 // create graph g.
 g = init.g;
@@ -34,11 +32,6 @@ var shuffle = _.shuffle(_.range(42 + 2));
 
 
 
-
-// Import from priority algorithm, construct PA
-var PrioAlg = require('./priority-alg.js');
-var PA = new PrioAlg.PA(g, bench);
-
 /////////////////////////////////////
 // Reinforce-attack call sequence: //
 /////////////////////////////////////
@@ -47,6 +40,9 @@ var PA = new PrioAlg.PA(g, bench);
 // 3. Reinforce based on priority lists and origin-map
 // 4. attack by list
 
+// Import from priority algorithm, construct PA
+var PrioAlg = require('./priority-alg.js');
+var PA = new PrioAlg.PA(g, bench);
 
 // AI updating its info before moves
 function AIupdate(AI) {
@@ -54,8 +50,11 @@ function AIupdate(AI) {
     PA.updateForPriority(p1, 'Gauss');
     var attOrgMap = PA.mapAttOrigins(p1);
     // use AI personality: permutation
-    PA.enumPriority(p1, [0, 1, 2, 3], 5);
+    PA.enumPriority(p1, [0, 1, 2, 3], 3);
 }
+
+
+
 
 
 // console.log(deck);
@@ -66,10 +65,6 @@ function AIupdate(AI) {
 var start = new Date().getTime();
 for (i = 0; i < 100; ++i) {
     AIupdate();
-    // updatePressures(p1, 'Gauss');
-    // updateWorths(p1);
-    // updateForPriority(p1, 'Gauss');
-    // enumAttack(p1);
 }
 var end = new Date().getTime();
 var time = end - start;
