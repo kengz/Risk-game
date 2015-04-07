@@ -1,3 +1,6 @@
+// dependencies
+var _ = require('underscore');
+
 // AI = brain of player, will control the player object
 // contains the personality
 // will make moves and decisions
@@ -21,22 +24,16 @@
 function AI(player, personality) {
     // AI brain controls the player
     this.player = player;
-    // methods
-    this.getArmies; // primary
+    this.tradeIn;
+    this.getArmies;
 
     this.update;
     this.placeArmies;
 
 
-    function getArmies() {
-        // 1. count territories / 3 (floor). max of this or 3
-        // 2. count continents w/ values (see map)
-        // 3. trade in cards, count n-th set, match territory
-      	var byTerritories = _.max([ Math.floor(this.player.countries.length / 3), 3]);
-      	// var byContinents = 
-    };
+};
 
-}
+exports.AI = AI;
 
 var priorityP = {
     'attack-then-defend': [0, 1, 2, 3],
