@@ -24,10 +24,10 @@ var _ = require('underscore');
 function AI(player, personality) {
     // AI brain controls the player
     this.player = player;
+    // methods
+    this.update;
     this.tradeIn;
     this.getArmies;
-
-    this.update;
     this.placeArmies;
 
 
@@ -46,7 +46,9 @@ var priorityP = {
 console.log(priorityP);
 
 // 2. Placement Algorithm
-// Do only time-sensitive personalities:
+// 2.1 balance out most pressures
+// 2.2 time-sensitive personalities:
+// Keeping cards, delaying trade in:
 // steamroller: attack continously. always expend all forces
 // late-gamer: accumulate forces for late-game 
 
@@ -59,6 +61,7 @@ function holdback(armies, time) {
 
 // 3. Attack Algorithm
 // See number of forces can use now, attack while can
+// Or use threshold: high = conservative, 0 = risky steamroller
 
 
 var cmb = require('js-combinatorics').Combinatorics;

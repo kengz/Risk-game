@@ -60,17 +60,37 @@ console.log(p1);
 // dealer = rule controller
 function controller() {
     this.getArmies = getArmies;
+    this.getCards = getCards;
+
     // sets of cards traded in so far
     var setTraded = 0;
-    var deck = require('./srcdata/deck.json');
-
+    // armies worth per continent
     var contWorth = require('./srcdata/continent-army-worth.json');
+
+    // the deck of cards & shuffle sequence
+    var deck = require('./srcdata/deck.json');
+    var shuffle = _.shuffle(_.range(42 + 2));
+
 
 
     ////////////////
     // Deal cards //
     ////////////////
-
+    // player earns one card per turn if capture any terr
+    function getCards(player) {
+        if (player.countries.length - player.prevCountries.length > 0) {
+            return dealCard();
+        }
+    };
+    // helper: deal the next card
+    function dealCard() {
+        // if depleted cards, open new deck
+        if (shuffle.length == 0) {
+            console.log("shuffle new deck!");
+            shuffle = _.shuffle(_.range(42 + 2));
+        };
+        return shuffle.pop();
+    };
 
 
     /////////////////
@@ -145,6 +165,7 @@ var AI = new AIC(p1);
 var co = new controller();
 var arm = co.getArmies(AI.player);
 console.log(arm);
+console.log(p1);
 
 // console.log(AI);
 // console.log(AI.getArmies());
