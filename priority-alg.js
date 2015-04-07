@@ -124,10 +124,14 @@ function PA(dg, bench) {
         var AMs = NMstoAMs(player, NMs);
         // update prevPressures
         player.prevPressures = player.pressures;
-        // then update current pressures
-        player.pressures = calcPressure(wf, AMs);
-        // update on nodes for worth-calc
+        // calc pressure, reflect army numbers surrounding the origins
+        var pressNoOrigin = calcPressure(wf, AMs); 
+        // player.pressures = calcPressure(wf, AMs);
+        // update pressures on player; on nodes for worth-calc
         for (var i = 0; i < player.pressures.length; i++) {
+            // final pressure = origin's army vs avg army surrounding it
+            player.pressures[i] = g.nodes[i].army + pressNoOrigin[i];
+            // update on nodes for easy calc
             g.nodes[i].prevPressure = g.nodes[i].pressure;
             g.nodes[i].pressure = player.pressures[i];
         };

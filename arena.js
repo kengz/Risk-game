@@ -20,6 +20,7 @@ var control = true; //control test: don't randomize
 var init = require('./initmap.js').initMap(control);
 // create graph g.
 g = init.g;
+exports.g = g;
 // create all players
 bench = init.bench;
 p1 = bench[0];
@@ -40,6 +41,7 @@ var shuffle = _.shuffle(_.range(42 + 2));
 // 3. Reinforce based on priority lists and origin-map
 // 4. attack by list
 
+
 // Import from priority algorithm, construct PA
 var PrioAlg = require('./priority-alg.js');
 var PA = new PrioAlg.PA(g, bench);
@@ -52,7 +54,8 @@ function AIupdate(AI) {
     // use AI personality: permutation
     PA.enumPriority(p1, [0, 1, 2, 3], 3);
 }
-
+AIupdate();
+console.log(p1);
 
 
 
@@ -64,7 +67,7 @@ function AIupdate(AI) {
 // Timer
 var start = new Date().getTime();
 for (i = 0; i < 100; ++i) {
-    AIupdate();
+    // AIupdate();
 }
 var end = new Date().getTime();
 var time = end - start;

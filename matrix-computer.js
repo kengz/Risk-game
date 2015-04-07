@@ -8,7 +8,7 @@
 var fs = require('fs');
 var _ = require('underscore');
 // var g =  require('./initmap.js').g;
-// var g =  require('./arena.js').g;
+var g =  require('./arena.js').g;
 
 ///////////////////////////////////////
 // Helper fields for functions below //
@@ -158,6 +158,8 @@ var RMs = require('./srcdata/radius-matrices.json');
 var alldegs = [];
 // The partition degrees: i.e. degree of the chunk's head node
 var partdeg;
+
+var f = require('./functions.js').fn;
 function partRM(i) {
 	partdeg = [];
 	// Init part and prevhead term
@@ -179,7 +181,8 @@ function partRM(i) {
 	})
 	// push deg of final chunk
 	partdeg.push(g.nodes[prevhead].adjList.length);
-	alldegs.push(partdeg);
+	// renormalize partdegs
+	alldegs.push(f.renorm(partdeg));
 	return part;
 }
 // Primary function: partition all RMs
@@ -342,6 +345,7 @@ var RMs = require('./srcdata/radius-matrices.json');
 
 
 // Helper: calculate the pressure: Turn AM into wfpAM, then reduce it to chunks-scalars, then dot with chunk-degree for final pressure
+// Renormalized over partdegs, reflect average number of armies surrounding the origin.
 function calcPressure(wf, AMs) {
 	// for every of the 42 countries
 	return _.map(clist, function(i) {
@@ -356,12 +360,12 @@ function calcPressure(wf, AMs) {
 // DYNAMIC
 // Primary: per-turn, update AMs, recalc pressure for player.
 // i.e. army = +ve if owned by player, -ve if enermy, 0 if invalid.
-function updatePressures(player, wf) {
-	// update AMs
-	AMs = NMstoAMs(player, NMs);
-	// dot it as wanted
-	return calcPressure(wf, AMs);
-}
+// function updatePressures(player, wf) {
+// 	// update AMs
+// 	AMs = NMstoAMs(player, NMs);
+// 	// dot it as wanted
+// 	return calcPressure(wf, AMs);
+// }
 
 
 

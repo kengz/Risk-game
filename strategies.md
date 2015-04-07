@@ -68,6 +68,7 @@ From a player's perspective,
 <!-- 2. Update pressure. -->
 3. Eval. worth of all nodes (enemy's for attacking, your's for defending).
 1. Enumerate regions, their sizes and their border nodes; all attackable nodes, i.e. union of neighs of borders that aren't yours.
+1. Added: consider the continent node is in, use continent-army-worth.
 <!-- 2. Abandon islands, i.e. `region size < 3`. Do not consider their nodes for all steps below. -->
 3. For each kept region, calculate the shape, i.e. radii-difference `max radius - min radius (error +- percent variation)`; identify the node-pair of min radius for future expansion.
 4. Call the sub-algorithm from stage 2 for computing AMs scalars – update pressure.
