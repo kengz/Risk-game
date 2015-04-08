@@ -15,14 +15,14 @@ function Player(name) {
 	// 40, 14 goes into rand assigned countries
 	this.armyreserve = 40-14;
 	// total number of armies
-	this.army;
+	// this.army;
 	// start game without cards.
 	this.cards = [40,41,39];
 	// (previous)countries owned (indices 0-42)
-	this.prevCountries;
+	this.prevCountries = [];
 	this.countries = [];
 	// continents owned entirely
-	this.continents = ["Asia"];
+	this.continents = [];
 	// compute the regions owned, i.e. connected subgraphs
 	this.regions = [];
 	this.shapes = [];

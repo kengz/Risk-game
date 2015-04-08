@@ -64,6 +64,8 @@ function AIupdate(AI) {
     AI.priorityList = priorityList;
 };
 
+console.log(p1.prevCountries);
+
 
 var AIlist = [AI, AI2, AI3];
 function initAIturn(ai) {
@@ -74,6 +76,7 @@ function initAIturn(ai) {
 _.each(AIlist, function(ai) {
     initAIturn(ai);
 });
+console.log(p1.prevCountries);
 
 
 // AIupdate(AI);
@@ -99,12 +102,14 @@ function aTurn(ai) {
 
 aTurn(AI);
 
-_.each(g.nodes, function(n) {
-    console.log(n.army);
-})
+// _.each(g.nodes, function(n) {
+//     console.log(n.army);
+// })
 // AI will call dealer method with its cards to trade in
 
 
+
+// do while att != undefined
 
 var att = AI.attack();
 var org = att.origin;
@@ -126,13 +131,19 @@ _.each(outcome, function(a) {
     else if (a < 0) {
         g.nodes[org].army += a;
     }
-    
-    
 })
 
 console.log("after transfer");
 console.log(g.nodes[org].army);
 console.log(g.nodes[tar].army);
+
+// handle if tar army = 0, move in
+// check n update continent, 
+// player country list
+
+// recurse from top
+
+
 
 // console.log(foo);
 // console.log(p1);
@@ -153,6 +164,7 @@ console.log(g.nodes[tar].army);
 // Timer
 var start = new Date().getTime();
 for (i = 0; i < 100; ++i) {
+    // aTurn(AI);
     // AIupdate(AI);
     // dealer.getArmies(AI.player, AI.tradeIn());
 }

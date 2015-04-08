@@ -104,6 +104,8 @@ function PA(dg, bench) {
     function updateForPriority(player, wf) {
         updateWorths(player);
         updatePressures(player, wf);
+        // countries at beginning of turn = prevCountries
+        player.prevCountries = player.countries;
     };
 
     ///////////////////////
