@@ -3,8 +3,13 @@
 // dependencies
 var _ = require('underscore');
 
+var Dice = require('./kit.js').Dice;
+
 // dealer = rule dealer
 function dealer(dg) {
+    this.transfer;
+    this.d = new Dice();
+    this.roll = roll;
     this.giveArmies = giveArmies;
     this.getCards = getCards;
     this.dealCard = dealCard;
@@ -19,6 +24,25 @@ function dealer(dg) {
     var deck = require('./srcdata/deck.json');
     var shuffle = _.shuffle(_.range(42 + 2));
 
+
+    ////////////////////////////////
+    // Battle roll: red and white //
+    ////////////////////////////////
+    function roll(r, w) {
+        // red = attacker; white = defender
+        var red = _.sortBy(this.d.rollk(r), this.d.bigFirst);
+        var white = _.sortBy(this.d.rollk(w), this.d.bigFirst);
+        // fill rest of white w/ 0 for ease
+        for (var i = 0; i < r - w; i++) {
+            white.push(0);
+        };
+        // the outcome binary vector, entry +ve = red win, 0 = tie, -ve = white win
+        var outcome = [];
+        for (var i = 0; i < red.length; i++) {
+            outcome.push(Math.sign(red[i] - white[i]));
+        };
+        return outcome;
+    }
 
     ////////////////
     // Deal cards //
@@ -93,7 +117,7 @@ function dealer(dg) {
         } else if (5 < i) {
             return (i - 3) * 5;
         } else
-            return 0;
+        return 0;
     };
 
 }

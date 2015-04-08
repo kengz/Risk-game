@@ -66,30 +66,30 @@ function Dice() {
 /////////////////////
 // one exists throughout the game
 // has a dice, and roll method that takes in number of red/white dice, then gives battle outcome: i.e. from highest pairs, red wins/loses
-function battle() {
-    this.d = new Dice();
-    this.roll = roll;
+// function battle() {
+//     this.d = new Dice();
+//     this.roll = roll;
 
-    function roll(r, w) {
-        // red = attacker; white = defender
-        var red = _.sortBy(this.d.rollk(r), this.d.bigFirst);
-        var white = _.sortBy(this.d.rollk(w), this.d.bigFirst);
-        // fill rest of white w/ 0 for ease
-        for (var i = 0; i < r - w; i++) {
-            white.push(0);
-        };
-        // the outcome vector, entry +ve = red win, 0 = tie, -ve = white win
-        var outcome = [];
-        for (var i = 0; i < red.length; i++) {
-            outcome.push(red[i] - white[i]);
-        };
-        return outcome;
-    }
+//     function roll(r, w) {
+//         // red = attacker; white = defender
+//         var red = _.sortBy(this.d.rollk(r), this.d.bigFirst);
+//         var white = _.sortBy(this.d.rollk(w), this.d.bigFirst);
+//         // fill rest of white w/ 0 for ease
+//         for (var i = 0; i < r - w; i++) {
+//             white.push(0);
+//         };
+//         // the outcome vector, entry +ve = red win, 0 = tie, -ve = white win
+//         var outcome = [];
+//         for (var i = 0; i < red.length; i++) {
+//             outcome.push(red[i] - white[i]);
+//         };
+//         return outcome;
+//     }
 
-}
+// }
 
 
-exports.battle = battle;
+exports.Dice = Dice;
 
-var bar = new battle();
-console.log(bar.roll(3, 2));
+// var bar = new battle();
+// console.log(bar.roll(3, 2));

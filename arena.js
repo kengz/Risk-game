@@ -44,6 +44,8 @@ var dealer = new dealerM(g);
 var AIM = require('./AI-modules.js').AI;
 var test = ['Constant', 'agressive', 'cautious', 'rusher'];
 var AI = new AIM(p1, test, g);
+var AI2 = new AIM(p2, test, g);
+var AI3 = new AIM(p3, test, g);
 
 // Global AI-updater for priority list
 var PrioAlg = require('./priority-alg.js');
@@ -61,19 +63,41 @@ function AIupdate(AI) {
     AI.attOrgMap = attOrgMap;
     AI.priorityList = priorityList;
 };
-AIupdate(AI);
-AI.placeArmies();
-AIupdate(AI);
-// AI getting armies: trade in and call dealer giveArmies
-console.log("before", p1.cards);
-console.log(AI.personality);
-console.log("arm b4", p1.armyreserve);
-AI.getArmies(
+
+
+var AIlist = [AI, AI2, AI3];
+function initAIturn(ai) {
+    AIupdate(ai);
+    ai.placeArmies();
+};
+
+_.each(AIlist, function(ai) {
+    initAIturn(ai);
+});
+
+
+// AIupdate(AI);
+// // AI getting armies: trade in and call dealer giveArmies
+// console.log("before", p1.cards);
+// console.log(AI.personality);
+// console.log("arm b4", p1.armyreserve);
+// AI.getArmies(
+//     dealer.giveArmies(AI.player, AI.tradeIn())
+//     );
+// console.log("arm after", p1.armyreserve);
+// console.log(p1.pressures);
+// AI.placeArmies();
+
+
+function aTurn(ai) {
+    AIupdate(ai);
+    AI.getArmies(
     dealer.giveArmies(AI.player, AI.tradeIn())
     );
-console.log("arm after", p1.armyreserve);
-console.log(p1.pressures);
-AI.placeArmies();
+    AI.placeArmies();
+}
+
+aTurn(AI);
 
 _.each(g.nodes, function(n) {
     console.log(n.army);
@@ -81,7 +105,40 @@ _.each(g.nodes, function(n) {
 // AI will call dealer method with its cards to trade in
 
 
+
+var att = AI.attack();
+var org = att.origin;
+var tar = att.target;
+var red = att.roll;
+var white = AI2.defend(att);
+console.log("r,w", red, white);
+var outcome = dealer.roll(red,white);
+console.log("outcome:", outcome);
+console.log("b4 transfer");
+console.log(g.nodes[org].army);
+console.log(g.nodes[tar].army);
+_.each(outcome, function(a) {
+    // target loses
+    if (a > 0) {
+        g.nodes[tar].army += -a;
+    }
+    // origin loses
+    else if (a < 0) {
+        g.nodes[org].army += a;
+    }
+    
+    
+})
+
+console.log("after transfer");
+console.log(g.nodes[org].army);
+console.log(g.nodes[tar].army);
+
+// console.log(foo);
 // console.log(p1);
+
+// console.log(dealer.roll(3,2));
+
 
 // console.log(AI);
 // console.log(AI.getArmies());

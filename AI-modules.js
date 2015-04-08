@@ -66,9 +66,62 @@ function AI(player, persona, dg) {
     // place armies, with threshold step t = 5
     this.placeArmies = placeArmies;
 
+    this.attack = attack;
+    this.defend = defend;
+    this.moveIn;
 
-    this.attack;
-    this.defend;
+    // defending when enemy rolls 'red' number of dice
+    function defend(att) {
+    	// object returned from attack()
+    	var org = att.origin;
+    	var tar = att.target;
+    	var red = att.roll;
+    	// to counter, always use max rolls possible
+    	var need = _.min([2, red]);
+    	var afford = _.min([need, g.nodes[tar].army]);
+    	// return white rolls
+    	return afford;
+    }
+
+    // attack based on priorityList and personality threshold. Called until return undefined.
+    // Return attack request {origin, tar, roll} to dealer
+    function attack() {
+        // extract personality
+        var att = this.personality['attack'];
+        var playername = this.player.name;
+
+        // for each target, attack if source.army - target.army > threshold
+        var prio = this.priorityList;
+        var attOrg = this.attOrgMap;
+
+        return strike(this.trait('attack'), playername);
+
+
+        function strike(threshold, playername) {
+            // target in prio list, loop
+            for (var i = 0; i < prio.length; i++) {
+                // att origin
+                var o = attOrg[i];
+                // verify is enemy and origin is self,
+                // origin must have at least 2 armies
+                if (g.nodes[i].owner != playername && g.nodes[o].owner == playername && g.nodes[o].army >= 2) {
+                    // check if army number >= threshold/2, so that can keep attacking after first time
+                    var diff = g.nodes[o].army - g.nodes[i].army;
+                    // loop until wanna attack, return
+                    if (diff >= threshold / 2) {
+                        // number of dice to roll
+                        var roll = _.min([3, diff]);
+                        return {
+                            origin: o,
+                            target: i,
+                            roll: roll
+                        }
+                    };
+                };
+            }
+        };
+
+    }
 
 
     // place armies based on personality, balance pressures
@@ -92,7 +145,7 @@ function AI(player, persona, dg) {
             distribute(0);
             // then topup priority by half threshold
             while (stock > 0) {
-                distribute(threshold/2);
+                distribute(threshold / 2);
             };
         }
         // priority pressure >4 +=4 repeatedly
@@ -102,11 +155,11 @@ function AI(player, persona, dg) {
             };
         }
         // helper: distribute 'num' army by priorityList
-        function distribute(num) {
-        	var num = Math.floor(num);
+        function distribute(t) {
+            var t = Math.floor(t);
             _.each(prio, function(i) {
                 // army needed
-                var need = _.max([num + Math.ceil(-press[i]), num]);
+                var need = _.max([t + Math.ceil(-press[i]), t]);
                 // affordable, either need or stock left
                 var afford = _.min([need, stock]);
                 // take out, give army to node
