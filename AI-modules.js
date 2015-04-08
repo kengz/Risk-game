@@ -59,11 +59,20 @@ function AI(player, persona) {
     this.priorityList = [];
 
     // methods
-    // this.update; // done externally in arena
     this.tradeIn = tradeIn;
-    this.getArmies;
+    this.getArmies = getArmies;
     this.placeArmies;
 
+    function placeArmies() {
+
+    };
+
+    // get armies from dealer(given). Update player reserve
+    function getArmies(given) {
+    	this.player.armyreserve += given;
+    };
+
+    // AI trade in cards based on personality, to call giveArmies from dealer
     function tradeIn() {
         // extract personality
         var att = this.personality['attack'];
@@ -137,7 +146,7 @@ function AI(player, persona) {
             // Finally, convert all tradeSets to cards
         var tradeSetsAsCards = _.map(tradeSets, toCards);
         return tradeSetsAsCards;
-    }
+    };
 
 };
 

@@ -63,12 +63,18 @@ function AIupdate(AI) {
 };
 AIupdate(AI);
 
-// AI getting armies
+
+// AI getting armies: trade in and call dealer giveArmies
 console.log("before", p1.cards);
 console.log(AI.personality);
-var arm = dealer.getArmies(AI.player, AI.tradeIn());
-console.log(arm);
+console.log("arm b4", p1.armyreserve);
+AI.getArmies(
+    dealer.giveArmies(AI.player, AI.tradeIn())
+    );
+console.log("arm after", p1.armyreserve);
+// console.log(arm);
 console.log("after", p1.cards);
+
 
 // AI will call dealer method with its cards to trade in
 
@@ -88,7 +94,7 @@ console.log("after", p1.cards);
 // Timer
 var start = new Date().getTime();
 for (i = 0; i < 100; ++i) {
-    AIupdate(AI);
+    // AIupdate(AI);
     // dealer.getArmies(AI.player, AI.tradeIn());
 }
 var end = new Date().getTime();

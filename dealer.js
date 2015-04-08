@@ -5,7 +5,7 @@ var _ = require('underscore');
 
 // dealer = rule dealer
 function dealer(dg) {
-    this.getArmies = getArmies;
+    this.giveArmies = giveArmies;
     this.getCards = getCards;
     this.dealCard = dealCard;
 
@@ -45,7 +45,7 @@ function dealer(dg) {
     /////////////////
     // AI calls to get armies:
     // param: player object; sets of cards to trade in
-    function getArmies(player, setsofCards) {
+    function giveArmies(player, setsofCards) {
         var army = 0;
         // 1. count territories / 3 (floor). max of this or 3
         // 2. count continents w/ values (see map)
