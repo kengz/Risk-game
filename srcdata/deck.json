@@ -169,10 +169,10 @@
     },
     "42": {
         "name": "wild1",
-        "picture": "wild"
+        "picture": -10
     },
     "43": {
         "name": "wild2",
-        "picture": "wild"
+        "picture": -10
     }
 }

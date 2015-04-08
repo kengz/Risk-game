@@ -16,8 +16,8 @@ function Player(name) {
 	this.armyreserve = 40-14;
 	// total number of armies
 	this.army;
-	// start game without cards
-	this.cards = [];
+	// start game without cards.
+	this.cards = [40,41,39];
 	// (previous)countries owned (indices 0-42)
 	this.prevCountries;
 	this.countries = [];

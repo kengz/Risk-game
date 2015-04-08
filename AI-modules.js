@@ -1,6 +1,12 @@
 // dependencies
 var _ = require('underscore');
 
+// Useful globals
+// deck for converting card indices to cards
+var deck = require('./srcdata/deck.json');
+// combinatorics library
+var cmb = require('js-combinatorics').Combinatorics;
+
 // AI = brain of player, will control the player object
 // contains the trait
 // will make moves and decisions
@@ -37,20 +43,21 @@ var traitsKey = _.initial(_.keys(traitsMap));
 
 // AI brain controls the player
 function AI(player, persona) {
-	// player which has all the fields
-	this.player = player;
-	// Personality map of AI, e.g. priority: 'agressive'
-	this.personality = _.object(traitsKey, persona);
-	// get this AI's trait, e.g. priority -> [0,1,2,3]
-	this.trait = trait;
-	function trait(key) {
-		return traitsMap[key][this.personality[key]];
-	};
+    // player which has all the fields
+    this.player = player;
+    // Personality map of AI, e.g. priority: 'agressive'
+    this.personality = _.object(traitsKey, persona);
+    // get this AI's trait, e.g. priority -> [0,1,2,3]
+    this.trait = trait;
 
-	// The attack-origin map and priority list
-	this.attOrgMap = {};
-	this.priorityList = [];
-    
+    function trait(key) {
+        return traitsMap[key][this.personality[key]];
+    };
+
+    // The attack-origin map and priority list
+    this.attOrgMap = {};
+    this.priorityList = [];
+
     // methods
     // this.update; // done externally in arena
     this.tradeIn = tradeIn;
@@ -58,9 +65,78 @@ function AI(player, persona) {
     this.placeArmies;
 
     function tradeIn() {
-    	// extract personality
-    	console.log("lorem", this.personality['attack']);
-    	
+        // extract personality
+        var att = this.personality['attack'];
+
+        // the sets of card(indices) to trade in
+        var tradeSets = [];
+
+        // Rule: if hand has 5 or more cards, must trade
+        if (this.player.cards.length > 4) {
+            tradeSets.push(findTradeable(this.player));
+        }
+        // Personality:
+        // if is rusher, always trade in all cards
+        if (att == 'rusher') {
+            var nextSet = findTradeable(this.player);
+            // trade till can't
+            while (nextSet != undefined) {
+                tradeSets.push(nextSet);
+                nextSet = findTradeable(this.player);
+            }
+        }
+        // if is carry, trade in all only if region big
+        else if (att == 'carry') {
+            // use big force when has big region
+            if (this.player.regions[0].length > 5) {
+                var nextSet = findTradeable(this.player);
+                // trade till can't
+                while (nextSet != undefined) {
+                    tradeSets.push(nextSet);
+                    nextSet = findTradeable(this.player);
+                }
+            }
+        }
+
+        // helper: find tradeable set in player's hand
+        function findTradeable(player) {
+            // hand = indices of cards
+            var hand = player.cards;
+            var setToTrade = undefined;
+            // if have 3 cards n more,
+            if (hand.length > 2) {
+                // enum subset
+                var subset = cmb.combination(hand, 3);
+                // loop till found tradeable set
+                while (s = subset.next()) {
+                    var sum = 0;
+                    _.each(s, function(c) {
+                        sum += deck[c].picture;
+                    });
+                    // 1. same pictures, sum%3 = 0
+                    // 2. diff pictures, sum%3 = 0
+                    // 3. any 2 pics w/ 1 wild, sum < 0
+                    if (sum < 0 || sum % 3 == 0) {
+                        // found, break and trade it
+                        setToTrade = s;
+                        break;
+                    }
+                }
+            }
+            // update hand
+            player.cards = _.difference(hand, setToTrade);
+            return setToTrade;
+        };
+
+        // convert one set (ind arr) to cards arr
+        function toCards(setToTrade) {
+                return _.map(setToTrade, function(i) {
+                    return deck[i];
+                });
+            }
+            // Finally, convert all tradeSets to cards
+        var tradeSetsAsCards = _.map(tradeSets, toCards);
+        return tradeSetsAsCards;
     }
 
 };
@@ -88,10 +164,10 @@ exports.AI = AI;
 
 var cmb = require('js-combinatorics').Combinatorics;
 
-var id = [0, 1, 2, 3];
-var foo = cmb.permutation(id);
+var id = [0, 1, 2, 3, 4, 5];
+// var foo = cmb.combination(id,3);
+// while(a = foo.next()) console.log(a);
 // console.log(foo.toArray());
 
 // var prod = cmb.cartesianProduct(_.keys(Pwf), _.keys(Ppriority), _.keys(Pplacement), _.keys(Pattack));
 // console.log(prod.toArray());
-

@@ -37,22 +37,15 @@ p3 = bench[2];
 // 3. Reinforce based on priority lists and origin-map
 // 4. attack by list
 
-
+// Global dealer: gives cards and armies 
 var dealerM = require('./dealer.js').dealer;
-var dealer = new dealerM();
-
+var dealer = new dealerM(g);
+// global AI mod
 var AIM = require('./AI-modules.js').AI;
-
 var test = ['Constant', 'agressive', 'tactical', 'rusher'];
 var AI = new AIM(p1, test);
-console.log(AI.trait('wf'));
 
-var setofCards = [];
-var arm = dealer.getArmies(AI.player, setofCards);
-console.log(arm);
-
-
-// Import from priority algorithm, construct PA
+// Global AI-updater for priority list
 var PrioAlg = require('./priority-alg.js');
 var PA = new PrioAlg.PA(g, bench);
 
@@ -70,7 +63,12 @@ function AIupdate(AI) {
 };
 AIupdate(AI);
 
-AI.tradeIn();
+// AI getting armies
+console.log("before", p1.cards);
+console.log(AI.personality);
+var arm = dealer.getArmies(AI.player, AI.tradeIn());
+console.log(arm);
+console.log("after", p1.cards);
 
 // AI will call dealer method with its cards to trade in
 
@@ -90,7 +88,8 @@ AI.tradeIn();
 // Timer
 var start = new Date().getTime();
 for (i = 0; i < 100; ++i) {
-    // AIupdate(AI);
+    AIupdate(AI);
+    // dealer.getArmies(AI.player, AI.tradeIn());
 }
 var end = new Date().getTime();
 var time = end - start;

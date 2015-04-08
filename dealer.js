@@ -4,10 +4,12 @@
 var _ = require('underscore');
 
 // dealer = rule dealer
-function dealer() {
+function dealer(dg) {
     this.getArmies = getArmies;
     this.getCards = getCards;
+    this.dealCard = dealCard;
 
+    var g = dg;
     // sets of cards traded in so far
     var setTraded = 0;
     // armies worth per continent
@@ -27,7 +29,7 @@ function dealer() {
             return dealCard();
         }
     };
-    // helper: deal the next card
+    // helper: deal the next card (return card index)
     function dealCard() {
         // if depleted cards, open new deck
         if (shuffle.length == 0) {
@@ -73,6 +75,8 @@ function dealer() {
     };
     // 3. return army by trade in one set of cards. (also set the extra 2 armies in territory owned = card name). Can be called many times.
     function tradeIn(player, cardset) {
+        // update total set traded
+        setTraded++;
         // 1. put into node +2 for each card name in player countries
         _.each(cardset, function(c) {
             if (_.contains(player.countries, c.name)) {
@@ -80,10 +84,7 @@ function dealer() {
             };
         });
         // 2. give the num of armies from cardset
-        var cardArmy = armyFromCardSet(setTraded);
-        // update total set traded
-        setTraded++;
-        return cardArmy;
+        return armyFromCardSet(setTraded);
     };
     // helper: Gives the army for i-th set traded in
     function armyFromCardSet(i) {
