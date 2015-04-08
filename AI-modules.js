@@ -46,6 +46,7 @@ function AI(player, persona, dg) {
     var g = dg;
     // player which has all the fields
     this.player = player;
+    this.name = player.name;
     // Personality map of AI, e.g. priority: 'agressive'
     this.personality = _.object(traitsKey, persona);
     // get this AI's trait, e.g. priority -> [0,1,2,3]
@@ -65,23 +66,83 @@ function AI(player, persona, dg) {
     this.getArmies = getArmies;
     // place armies, with threshold step t = 5
     this.placeArmies = placeArmies;
+    // count number of armies owned on map
+    this.countArmy = countArmy;
 
     this.attack = attack;
     this.defend = defend;
-    this.moveIn;
+    this.moveIn = moveIn;
+    this.fortify = fortify;
+
+    function fortify() {
+        // find border node with lowest pressure
+        // find none-border node with AM higher than it
+        // if is neigh of it, then move in all but 1
+        
+        // borders sorted by pressure from lowest
+        var coun = _.sortBy(this.player.countries, byPressure);
+        // call on coun till fortified one, or none
+        for (var i = 0; i < coun.length; i++) {
+            var found = hiPressNonBorderNeigh(coun[i], this.player);
+            // console.log("try fort", found);
+            if (found != undefined) {
+            	// console.log("fortifying", found, coun[i]);
+            	this.moveIn(found, coun[i]);
+            	// if move in once, done, break
+            	return 0;
+            };
+        };
+        // helper: return an ideal hi pressure non-border neighbor that can transfer troop to border node[i]
+        function hiPressNonBorderNeigh(i, plyr) {
+            var nonBorderNeigh = _.difference(g.nodes[i].adjList, plyr.borders);
+            // console.log("found neigh", nonBorderNeigh);
+            var neighPressDiff = _.map(nonBorderNeigh, function(k) {
+                return g.nodes[k].pressure - g.nodes[i].pressure;
+            });
+            var max = _.max(neighPressDiff);
+            if (max > 3) {
+            	// console.log("found big hike");
+                var mInd = _.findIndex(neighPressDiff, function(m) {
+                    return Math.floor(Math.abs(m-max))==0;
+                });
+                // console.log("to return", mInd, nonBorderNeigh[mInd]);
+                return nonBorderNeigh[mInd];
+            };
+            // else return undefine
+        }
+
+        function byPressure(i) {
+            return g.nodes[i].pressure;
+        }
+    }
+
+    // move in: always move all but one
+    function moveIn(org, tar) {
+        if (g.nodes[tar].owner != this.name && g.nodes[tar].army != 0) {
+            console.log("moveIn error!")
+        };
+        console.log("before moveIn", g.nodes[org].army, g.nodes[tar].army);
+        // extract
+        var num = g.nodes[org].army;
+        // transfer
+        g.nodes[tar].army = num - 1;
+        g.nodes[org].army = 1;
+        console.log("after moveIn", g.nodes[org].army, g.nodes[tar].army);
+        // console.log("transferred all but one", g.nodes[org].army, g.nodes[tar].army);
+    };
 
     // defending when enemy rolls 'red' number of dice
     function defend(att) {
-    	// object returned from attack()
-    	var org = att.origin;
-    	var tar = att.target;
-    	var red = att.roll;
-    	// to counter, always use max rolls possible
-    	var need = _.min([2, red]);
-    	var afford = _.min([need, g.nodes[tar].army]);
-    	// return white rolls
-    	return afford;
-    }
+        // object returned from attack()
+        var org = att.origin;
+        var tar = att.target;
+        var red = att.roll;
+        // to counter, always use max rolls possible
+        var need = _.min([2, red]);
+        var afford = _.min([need, g.nodes[tar].army]);
+        // return white rolls
+        return afford;
+    };
 
     // attack based on priorityList and personality threshold. Called until return undefined.
     // Return attack request {origin, tar, roll} to dealer
@@ -94,17 +155,24 @@ function AI(player, persona, dg) {
         var prio = this.priorityList;
         var attOrg = this.attOrgMap;
 
+        // return att request to dealer
         return strike(this.trait('attack'), playername);
 
-
+        // helper: based on personality threshold, initiate attack by sending request to dealer
         function strike(threshold, playername) {
             // target in prio list, loop
             for (var i = 0; i < prio.length; i++) {
                 // att origin
                 var o = attOrg[i];
+                console.log(attOrg);
+                console.log("orogin", o);
                 // verify is enemy and origin is self,
-                // origin must have at least 2 armies
-                if (g.nodes[i].owner != playername && g.nodes[o].owner == playername && g.nodes[o].army >= 2) {
+                // origin must have at least 2 armies,
+                // enemy is still attackable
+                if (g.nodes[i].owner != playername &&
+                    g.nodes[o].owner == playername &&
+                    g.nodes[o].army >= 2 &&
+                    g.nodes[i].army > 0) {
                     // check if army number >= threshold/2, so that can keep attacking after first time
                     var diff = g.nodes[o].army - g.nodes[i].army;
                     // loop until wanna attack, return
@@ -121,7 +189,18 @@ function AI(player, persona, dg) {
             }
         };
 
-    }
+    };
+
+
+
+    // Count its army currently deployed
+    function countArmy() {
+        var sum = 0;
+        _.each(this.player.countries, function(i) {
+            sum += g.nodes[i].army;
+        })
+        return sum;
+    };
 
 
     // place armies based on personality, balance pressures
@@ -136,7 +215,7 @@ function AI(player, persona, dg) {
         var prio = this.priorityList;
         var attOrg = this.attOrgMap;
 
-        // empty out armyreserve
+        // deplete armyreserve
         var stock = this.player.armyreserve;
         this.player.armyreserve = 0;
 
@@ -172,7 +251,8 @@ function AI(player, persona, dg) {
 
     };
 
-    // get armies from dealer(given). Update player reserve
+    // get armies from dealer(given). 
+    // Add to reserve for placement
     function getArmies(given) {
         this.player.armyreserve += given;
     };
@@ -276,9 +356,9 @@ exports.AI = AI;
 // Or use threshold: high = conservative, 0 = risky steamroller
 
 
-var cmb = require('js-combinatorics').Combinatorics;
+// var cmb = require('js-combinatorics').Combinatorics;
 
-var id = [0, 1, 2, 3, 4, 5];
+// var id = [0, 1, 2, 3, 4, 5];
 // var foo = cmb.combination(id,3);
 // while(a = foo.next()) console.log(a);
 // console.log(foo.toArray());

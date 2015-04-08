@@ -17,7 +17,7 @@ function Player(name) {
 	// total number of armies
 	// this.army;
 	// start game without cards.
-	this.cards = [40,41,39];
+	this.cards = [];
 	// (previous)countries owned (indices 0-42)
 	this.prevCountries = [];
 	this.countries = [];
@@ -42,20 +42,6 @@ function Player(name) {
 	// initialize countries at start of game
 	function initCountries(arr) {
 		this.countries = arr;
-	};
-
-	// check if player has a country
-	function hasCountry(index) {
-		return _.contains(countries, index);
-	};
-
-	// remove the country from the player
-	function removeCountry(index) {
-		this.countries = _.without(this.countries, index);
-	};
-	// add a country
-	function addCountry(index) {
-		this.countries.push(index);
 	};
 
 

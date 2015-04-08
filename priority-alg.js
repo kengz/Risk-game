@@ -77,14 +77,24 @@ function PA(dg, bench) {
         var attOrgMap = {};
         // find the best origin of attack for each attackable for reinforce
         _.each(you.attackable, function(i) {
-                var optOrigins = _.filter(g.nodes[i].adjList,
-                        function(j) {
-                            return g.nodes[j].owner == you.name;
-                        })
-                    // create map: target –> best origin of att
-                attOrgMap[i] = _.min(optOrigins, pressureSort);
-            })
-            // if is your border, simply map to self for reinforce
+            var optOrigins = _.filter(g.nodes[i].adjList,
+                function(j) {
+                    console.log("att neigh owner", g.nodes[j].owner);
+                    return g.nodes[j].owner == you.name;
+                });
+            // create map: target –> best origin of att
+            // var minFound = _.min(optOrigins, pressureSort);
+            // 
+            console.log("optOrigins", optOrigins);
+            var minFound = findMin(optOrigins, pressureSort);
+            console.log("min found", minFound);
+            attOrgMap[i] = minFound;
+            // attOrgMap[i] = findMin(optOrigins, pressureSort);
+            if (attOrgMap[i] == Infinity) {
+                console.log("inf error!");
+            };
+        });
+        // if is your border, simply map to self for reinforce
         _.each(you.borders, function(j) {
             attOrgMap[j] = j;
         })
@@ -92,7 +102,20 @@ function PA(dg, bench) {
     };
     // sort from higher to lower pressure
     function pressureSort(i) {
-        return -g.nodes[i].pressure;
+        console.log("calling pressure sort index", i);
+        console.log("presure sort", g.nodes[i].pressure);
+        return (- g.nodes[i].pressure);
+    };
+    function findMin(arr, f) {
+        var minKey = arr[0];
+        for (var i = 0; i < arr.length; i++) {
+            if(arr[i] < minKey) {
+                minKey = arr[i];
+            }
+        };
+        var minVal = f(minKey);
+        return minKey;
+
     };
 
 

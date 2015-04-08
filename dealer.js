@@ -7,11 +7,11 @@ var Dice = require('./kit.js').Dice;
 
 // dealer = rule dealer
 function dealer(dg) {
-    this.transfer;
+    this.updateContinents = updateContinents;
+    this.mediateAttacks = mediateAttacks;
     this.d = new Dice();
     this.roll = roll;
     this.giveArmies = giveArmies;
-    this.getCards = getCards;
     this.dealCard = dealCard;
 
     var g = dg;
@@ -19,10 +19,115 @@ function dealer(dg) {
     var setTraded = 0;
     // armies worth per continent
     var contWorth = require('./srcdata/continent-army-worth.json');
+    // the continents
+    var contis = require('./srcdata/continents.json');
 
     // the deck of cards & shuffle sequence
     var deck = require('./srcdata/deck.json');
     var shuffle = _.shuffle(_.range(42 + 2));
+
+
+    //////////////////////
+    // updateContinents //
+    //////////////////////
+
+    // update which player owns which continents (entirely)
+    function updateContinents(bench) {
+        // clear all players continents list
+        _.each(bench, function(player) {
+            player.continents = [];
+        });
+
+        // scan each continents' nodes
+        _.each(_.keys(contis), function(name) {
+            console.log("contien", name);
+            var first = _.first(contis[name]);
+            var owner1 = g.nodes[first].owner;
+            var same = true;
+            _.each(contis[name], function(c) {
+                if (g.nodes[c].owner != owner1) {
+                    same = false;
+                };
+            });
+            // if all countries in con owned by same player
+            if (same) {
+                // push name of continent to it
+                getPlayer(owner1).continents.push(name);
+            };
+        });
+    };
+
+
+    ////////////////////
+    // mediateAttacks //
+    ////////////////////
+
+    // mediates Attack from ai to anotherai
+    function mediateAttacks(ai, otherai) {
+        var conquered = 0;
+        // init ai attack
+        var att = ai.attack();
+        // while ai keeps attacking
+        while (att != undefined) {
+            // attack request object: triple
+            var org = att.origin;
+            var tar = att.target;
+            var red = att.roll;
+            var white = otherai.defend(att);
+            // outcome: binary vector, rep attacker's win
+            var outcome = this.roll(red, white);
+            var attacker = g.nodes[org];
+            var defender = g.nodes[tar];
+            console.log("org, tar", org, tar);
+            console.log("r,w", red, white);
+            console.log("outcome:", outcome);
+            console.log("b4 transfer");
+            console.log(attacker.army);
+            console.log(defender.army);
+            // update army numbers from outcome
+            _.each(outcome, function(a) {
+                if (a > 0) {
+                    defender.army += -a; // defender loses
+                } else if (a < 0) {
+                    attacker.army += a; // attacker loses
+                }
+            });
+
+            // if node conquered, transfer ownership n army
+            if (defender.army == 0) {
+                conquered++;
+                console.log("node conquered!");
+                // update node owner
+                defender.owner = ai.name;
+                // update players countries
+                ai.player.countries.push(tar);
+                remove(otherai.player.countries, tar);
+                // move in armies, from org to tar
+                ai.moveIn(org, tar);
+            };
+            // helper: remove item from array
+            function remove(array, item) {
+                var index = array.indexOf(item);
+                array.splice(index, 1);
+                return array;
+            }
+            console.log("after transfer");
+            console.log(attacker.army);
+            console.log(defender.army);
+
+            // refresh for next attack
+            att = ai.attack();
+        }
+        // attacks end
+
+        // deal a card to ai player if conquered something
+        if (conquered > 0) {
+            console.log("get a card! conquered:", conquered);
+            var c = this.dealCard();
+            ai.player.cards.push(c);
+        };
+
+    };
 
 
     ////////////////////////////////
@@ -41,18 +146,13 @@ function dealer(dg) {
         for (var i = 0; i < red.length; i++) {
             outcome.push(Math.sign(red[i] - white[i]));
         };
-        return outcome;
+        // outcome only up to what white puts in
+        return outcome.slice(0, w);
     }
 
     ////////////////
     // Deal cards //
     ////////////////
-    // player earns one card per turn if capture any terr
-    function getCards(player) {
-        if (player.countries.length - player.prevCountries.length > 0) {
-            return dealCard();
-        }
-    };
     // helper: deal the next card (return card index)
     function dealCard() {
         // if depleted cards, open new deck
@@ -117,7 +217,7 @@ function dealer(dg) {
         } else if (5 < i) {
             return (i - 3) * 5;
         } else
-        return 0;
+            return 0;
     };
 
 }
