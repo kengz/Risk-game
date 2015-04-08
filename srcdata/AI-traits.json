@@ -37,8 +37,8 @@
         "tactical": "priority pressure >0 +4 repeatedly"
     },
     "attack": {
-        "rusher": 0,
-        "carry": 4
+        "rusher": 2,
+        "carry": 5
     },
-    "help": "1. wf: weight function/metric. i.e. Threat-perception. Use only the last 2. \n2. Sequence of enumerating sublists of priority list. See priority-alg.js. Use only the last 2. \n3. placement in priority to balance press \ncautious: balance all your pressure > 0 first, then extra for priority \ntactical: place armies in priority first till +4 pressure; if leftover repeat in priority +=4 \n4. pressure threshold to init attack. Also used in keeping cards: rusher = always trade in when can. \ncarry: accumulate forces and attack when likely to win."
+    "help": "1. wf: weight function/metric. i.e. Threat-perception. Use only the last two. \n2. Sequence of enumerating sublists of priority list. See priority-alg.js. Use only the last two. \n3. Placement in priority lists to balance pressure with threshold t. \ncautious: balance all your priority pressure > 0 first, then extra +t for priority \ntactical: priority pressure >t +=t repeatedly. \n4. Pressure threshold at target to init attack. Also used in keeping cards: rusher: always trade in when can, threshold = 2. \ncarry: accumulate forces and attack when likely to win."
 }

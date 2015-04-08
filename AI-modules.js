@@ -43,7 +43,7 @@ var traitsKey = _.initial(_.keys(traitsMap));
 
 // AI brain controls the player
 function AI(player, persona, dg) {
-	var g = dg;
+    var g = dg;
     // player which has all the fields
     this.player = player;
     // Personality map of AI, e.g. priority: 'agressive'
@@ -52,60 +52,68 @@ function AI(player, persona, dg) {
     this.trait = trait;
 
     function trait(key) {
-    	return traitsMap[key][this.personality[key]];
+        return traitsMap[key][this.personality[key]];
     };
 
     // The attack-origin map and priority list
     // enumerate with sublists size = 3 x4 = 12
-    this.attOrgMap = {};
     this.priorityList = [];
+    this.attOrgMap = {};
 
     // methods
     this.tradeIn = tradeIn;
     this.getArmies = getArmies;
-    // place armies, with threshold step = 4
+    // place armies, with threshold step t = 5
     this.placeArmies = placeArmies;
+
+
+    this.attack;
+    this.defend;
+
 
     // place armies based on personality, balance pressures
     function placeArmies() {
-    	// the army counterpressure threshold
-    	var threshold = 4;
+        // the army counterpressure threshold
+        var threshold = 4;
         // extract personality
         var placem = this.personality['placement'];
 
         // the pressures and priority list copied for use
         var press = this.player.pressures;
         var prio = this.priorityList;
+        var attOrg = this.attOrgMap;
+
         // empty out armyreserve
         var stock = this.player.armyreserve;
         this.player.armyreserve = 0;
 
         if (placem == 'cautious') {
-        	// balance all pri pressure >0 first,
-        	distribute(0);
-        	// then topup priority while has stock left
-        	while (stock > 0) {
-        		distribute(threshold);
-        	};
+            // balance all pri pressure >0 first,
+            distribute(0);
+            // then topup priority by half threshold
+            while (stock > 0) {
+                distribute(threshold/2);
+            };
         }
         // priority pressure >4 +=4 repeatedly
         else if (placem == 'tactical') {
-        	console.log("shall enter");
-        	while (stock > 0) {
-        		distribute(threshold);
-        	};
+            while (stock > 0) {
+                distribute(threshold);
+            };
         }
         // helper: distribute 'num' army by priorityList
         function distribute(num) {
-        	_.each(prio, function(i) {
+        	var num = Math.floor(num);
+            _.each(prio, function(i) {
                 // army needed
-                var need = _.max([num+Math.ceil(-press[i]), num]);
+                var need = _.max([num + Math.ceil(-press[i]), num]);
                 // affordable, either need or stock left
                 var afford = _.min([need, stock]);
                 // take out, give army to node
                 stock -= afford;
-                console.log("stock", stock);
-                g.nodes[i].army += afford;
+                // add army to your attack origin of i
+                var org = attOrg[i];
+                g.nodes[org].army += afford;
             });
         };
 
@@ -113,7 +121,7 @@ function AI(player, persona, dg) {
 
     // get armies from dealer(given). Update player reserve
     function getArmies(given) {
-    	this.player.armyreserve += given;
+        this.player.armyreserve += given;
     };
 
     // AI trade in cards based on personality, to call giveArmies from dealer
@@ -126,27 +134,27 @@ function AI(player, persona, dg) {
 
         // Rule: if hand has 5 or more cards, must trade
         if (this.player.cards.length > 4) {
-        	tradeSets.push(findTradeable(this.player));
+            tradeSets.push(findTradeable(this.player));
         }
         // Personality:
         // if is rusher, always trade in all cards
         if (att == 'rusher') {
-        	var nextSet = findTradeable(this.player);
+            var nextSet = findTradeable(this.player);
             // trade till can't
             while (nextSet != undefined) {
-            	tradeSets.push(nextSet);
-            	nextSet = findTradeable(this.player);
+                tradeSets.push(nextSet);
+                nextSet = findTradeable(this.player);
             }
         }
         // if is carry, trade in all only if region big
         else if (att == 'carry') {
             // use big force when has big region
             if (this.player.regions[0].length > 5) {
-            	var nextSet = findTradeable(this.player);
+                var nextSet = findTradeable(this.player);
                 // trade till can't
                 while (nextSet != undefined) {
-                	tradeSets.push(nextSet);
-                	nextSet = findTradeable(this.player);
+                    tradeSets.push(nextSet);
+                    nextSet = findTradeable(this.player);
                 }
             }
         }
@@ -162,10 +170,10 @@ function AI(player, persona, dg) {
                 var subset = cmb.combination(hand, 3);
                 // loop till found tradeable set
                 while (s = subset.next()) {
-                	var sum = 0;
-                	_.each(s, function(c) {
-                		sum += deck[c].picture;
-                	});
+                    var sum = 0;
+                    _.each(s, function(c) {
+                        sum += deck[c].picture;
+                    });
                     // 1. same pictures, sum%3 = 0
                     // 2. diff pictures, sum%3 = 0
                     // 3. any 2 pics w/ 1 wild, sum < 0
@@ -183,18 +191,18 @@ function AI(player, persona, dg) {
 
         // convert one set (ind arr) to cards arr
         function toCards(setToTrade) {
-        	return _.map(setToTrade, function(i) {
-        		return deck[i];
-        	});
-        }
+                return _.map(setToTrade, function(i) {
+                    return deck[i];
+                });
+            }
             // Finally, convert all tradeSets to cards
-            var tradeSetsAsCards = _.map(tradeSets, toCards);
-            return tradeSetsAsCards;
-        };
-
+        var tradeSetsAsCards = _.map(tradeSets, toCards);
+        return tradeSetsAsCards;
     };
 
-    exports.AI = AI;
+};
+
+exports.AI = AI;
 
 
 // console.log(Ppriority);

@@ -63,7 +63,7 @@ function AIupdate(AI) {
 };
 AIupdate(AI);
 AI.placeArmies();
-
+AIupdate(AI);
 // AI getting armies: trade in and call dealer giveArmies
 console.log("before", p1.cards);
 console.log(AI.personality);
@@ -72,9 +72,12 @@ AI.getArmies(
     dealer.giveArmies(AI.player, AI.tradeIn())
     );
 console.log("arm after", p1.armyreserve);
-// console.log(p1);
+console.log(p1.pressures);
 AI.placeArmies();
 
+_.each(g.nodes, function(n) {
+    console.log(n.army);
+})
 // AI will call dealer method with its cards to trade in
 
 
