@@ -33,8 +33,8 @@
         ]
     },
     "placement": {
-        "cautious": "cautious",
-        "tactical": "tactical"
+        "cautious": "balance all pressure >0 first, then priority",
+        "tactical": "priority pressure >0 +4 repeatedly"
     },
     "attack": {
         "rusher": 0,

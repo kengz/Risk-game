@@ -42,8 +42,8 @@ var dealerM = require('./dealer.js').dealer;
 var dealer = new dealerM(g);
 // global AI mod
 var AIM = require('./AI-modules.js').AI;
-var test = ['Constant', 'agressive', 'tactical', 'rusher'];
-var AI = new AIM(p1, test);
+var test = ['Constant', 'agressive', 'cautious', 'rusher'];
+var AI = new AIM(p1, test, g);
 
 // Global AI-updater for priority list
 var PrioAlg = require('./priority-alg.js');
@@ -55,14 +55,14 @@ function AIupdate(AI) {
     PA.updateForPriority(AI.player, AI.trait('wf'));
     // return map of all best origins of attack
     var attOrgMap = PA.mapAttOrigins(AI.player);
-    // enumerate the priority target list
+    // enumerate the priority target list, step = 3
     var priorityList = PA.enumPriority(AI.player, AI.trait('priority'), 3);
     // set orgMap and plist for AI
     AI.attOrgMap = attOrgMap;
     AI.priorityList = priorityList;
 };
 AIupdate(AI);
-
+AI.placeArmies();
 
 // AI getting armies: trade in and call dealer giveArmies
 console.log("before", p1.cards);
@@ -72,9 +72,8 @@ AI.getArmies(
     dealer.giveArmies(AI.player, AI.tradeIn())
     );
 console.log("arm after", p1.armyreserve);
-// console.log(arm);
-console.log("after", p1.cards);
-
+// console.log(p1);
+AI.placeArmies();
 
 // AI will call dealer method with its cards to trade in
 
