@@ -26,6 +26,7 @@ function PA(dg, bench) {
 
     // Primary: priority list by rolling forward
     function enumPriority(you, permutation, k) {
+        console.log(enumPriority);
         // identity perm = [0,1,2,3]
         var id = [enumAttack, enumWeaken, enumThreat, enumLost];
         // the priority list
@@ -73,26 +74,20 @@ function PA(dg, bench) {
     // Primary: Attack-origin map: gives the best origin of attack for the priority lists: 
     // for attackable, choose highest pressure of adj that's yours; for borders(own), choose self, so the point itself is reinforced
     function mapAttOrigins(you) {
+        console.log();
         // attack-origin map
         var attOrgMap = {};
         // find the best origin of attack for each attackable for reinforce
         _.each(you.attackable, function(i) {
             var optOrigins = _.filter(g.nodes[i].adjList,
                 function(j) {
-                    console.log("att neigh owner", g.nodes[j].owner);
                     return g.nodes[j].owner == you.name;
                 });
             // create map: target –> best origin of att
-            // var minFound = _.min(optOrigins, pressureSort);
-            // 
-            console.log("optOrigins", optOrigins);
-            var minFound = findMin(optOrigins, pressureSort);
-            console.log("min found", minFound);
-            attOrgMap[i] = minFound;
-            // attOrgMap[i] = findMin(optOrigins, pressureSort);
-            if (attOrgMap[i] == Infinity) {
-                console.log("inf error!");
-            };
+            attOrgMap[i] = _.min(optOrigins, pressureSort);
+            // if (attOrgMap[i] == Infinity) {
+            //     console.log("inf error!");
+            // };
         });
         // if is your border, simply map to self for reinforce
         _.each(you.borders, function(j) {
@@ -102,20 +97,7 @@ function PA(dg, bench) {
     };
     // sort from higher to lower pressure
     function pressureSort(i) {
-        console.log("calling pressure sort index", i);
-        console.log("presure sort", g.nodes[i].pressure);
-        return (- g.nodes[i].pressure);
-    };
-    function findMin(arr, f) {
-        var minKey = arr[0];
-        for (var i = 0; i < arr.length; i++) {
-            if(arr[i] < minKey) {
-                minKey = arr[i];
-            }
-        };
-        var minVal = f(minKey);
-        return minKey;
-
+        return (-g.nodes[i].pressure);
     };
 
 
@@ -125,6 +107,13 @@ function PA(dg, bench) {
     // Primary: update for priority algorithm,
     // call pressure and worth computers
     function updateForPriority(player, wf) {
+        console.log("updateForPriority");
+        // failsafe
+        _.each(player.countries, function(i) {
+            if (g.nodes[i].owner != player.name) {
+                console.log("wrong Name!", i);
+            };
+        })
         updateWorths(player);
         updatePressures(player, wf);
         // countries at beginning of turn = prevCountries
@@ -145,6 +134,7 @@ function PA(dg, bench) {
 
     // helper-Primary: per-turn, update pressure
     function updatePressures(player, wf) {
+        console.log("updatePressures");
         // update AMs
         var AMs = NMstoAMs(player, NMs);
         // update prevPressures
@@ -170,6 +160,7 @@ function PA(dg, bench) {
 
     // primary: calc and update the worth of every node, from your player perspective. return sorted node lists
     function updateWorths(you) {
+        console.log("updateWorths");
         // update worth from your perspective
         updateCriterion();
         evalWorthByPlayers(you);
@@ -200,6 +191,7 @@ function PA(dg, bench) {
 
     // update priority for all players
     function updateCriterion() {
+        console.log("updateCriterion");
         // var gh = new ghelper(g);
         // need for each player in bench
         _.each(bench, function(p) {

@@ -27,12 +27,6 @@ p1 = bench[0];
 p2 = bench[1];
 p3 = bench[2];
 
-// return player object from bench by name
-function getPlayer(name) {
-    return _.find(bench, function(p) {
-        return p.name == name;
-    });
-}
 
 /////////////////////////////////////
 // Reinforce-attack call sequence: //
@@ -82,7 +76,7 @@ var AIs = [AI1, AI2];
 // return the other AI different from ai, in AIs
 function other(ai) {
     for (var i = 0; i < AIs.length; i++) {
-        if (AIs[i].name == ai.name) {
+        if (AIs[i].name != ai.name) {
             return AIs[i];
         }
     };
@@ -114,10 +108,13 @@ function turn(ai) {
     // then attack: Attack alg. include owner/army transfer
     dealer.mediateAttacks(ai, other(ai));
 
-    // fortify
+    // attacks end; fortify
     ai.fortify();
     // after all attacks ended, update continents
     dealer.updateContinents(bench);
+
+
+    console.log("ending turn, ai stat:", ai.name, ai.listCountries(), ai.countArmy());
 
     var end = false;
     // check winner
@@ -129,9 +126,11 @@ function turn(ai) {
 
 
 function run() {
-    var time = 100;
+    // var time = 100;
+    var time = 30;
     while (time>0) {
         time--;
+        console.log("TURN", time);
         var end = false;
         if (time%2 != 0) {
             end = turn(AI1);
@@ -146,20 +145,6 @@ function run() {
     }
 }
 
-run();
-
-// console.log("army num", AI1.priorityList);
-console.log("army num", AI1.player.prevCountries);
-console.log("army num", AI1.player.countries);
-console.log("army num", AI1.countArmy());
-turn(AI1);
-console.log("army num", AI1.player.prevCountries);
-console.log("army num", AI1.player.countries);
-// console.log("army num", AI1.priorityList);
-console.log("army num", AI1.countArmy());
-
-
-// AI1.fortify();
 
 
 
@@ -172,17 +157,6 @@ console.log("army num", AI1.countArmy());
 // player country list
 
 // recurse from top
-
-var ar = _.range(5);
-console.log("test", ar);
-// ar.remove(3);
-function remove(array, item) {
-    var index = array.indexOf(item);
-    array.splice(index, 1);
-    return array;
-}
-remove(ar, 3);
-console.log("test", ar);
 // console.log(foo);
 // console.log(p1);
 
@@ -201,6 +175,7 @@ console.log("test", ar);
 
 // Timer
 var start = new Date().getTime();
+run();
 for (i = 0; i < 100; ++i) {
     // turn(AI1);
     // AIupdate(AI);

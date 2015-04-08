@@ -68,13 +68,20 @@ function AI(player, persona, dg) {
     this.placeArmies = placeArmies;
     // count number of armies owned on map
     this.countArmy = countArmy;
+    this.listCountries = listCountries;
 
     this.attack = attack;
     this.defend = defend;
     this.moveIn = moveIn;
     this.fortify = fortify;
 
+    function listCountries() {
+    	// console.log(this.player.countries);
+    	return this.player.countries.length;
+    };
+
     function fortify() {
+    	console.log("fortify");
         // find border node with lowest pressure
         // find none-border node with AM higher than it
         // if is neigh of it, then move in all but 1
@@ -84,14 +91,13 @@ function AI(player, persona, dg) {
         // call on coun till fortified one, or none
         for (var i = 0; i < coun.length; i++) {
             var found = hiPressNonBorderNeigh(coun[i], this.player);
-            // console.log("try fort", found);
             if (found != undefined) {
-            	// console.log("fortifying", found, coun[i]);
             	this.moveIn(found, coun[i]);
             	// if move in once, done, break
             	return 0;
             };
         };
+
         // helper: return an ideal hi pressure non-border neighbor that can transfer troop to border node[i]
         function hiPressNonBorderNeigh(i, plyr) {
             var nonBorderNeigh = _.difference(g.nodes[i].adjList, plyr.borders);
@@ -99,6 +105,7 @@ function AI(player, persona, dg) {
             var neighPressDiff = _.map(nonBorderNeigh, function(k) {
                 return g.nodes[k].pressure - g.nodes[i].pressure;
             });
+            // the max pressure difference
             var max = _.max(neighPressDiff);
             if (max > 3) {
             	// console.log("found big hike");
@@ -110,7 +117,7 @@ function AI(player, persona, dg) {
             };
             // else return undefine
         }
-
+        // sort helper
         function byPressure(i) {
             return g.nodes[i].pressure;
         }
@@ -118,6 +125,8 @@ function AI(player, persona, dg) {
 
     // move in: always move all but one
     function moveIn(org, tar) {
+    	console.log("moveIn");
+    	// failsafe
         if (g.nodes[tar].owner != this.name && g.nodes[tar].army != 0) {
             console.log("moveIn error!")
         };
@@ -133,6 +142,7 @@ function AI(player, persona, dg) {
 
     // defending when enemy rolls 'red' number of dice
     function defend(att) {
+    	console.log("defend");
         // object returned from attack()
         var org = att.origin;
         var tar = att.target;
@@ -147,6 +157,7 @@ function AI(player, persona, dg) {
     // attack based on priorityList and personality threshold. Called until return undefined.
     // Return attack request {origin, tar, roll} to dealer
     function attack() {
+    	console.log("attack");
         // extract personality
         var att = this.personality['attack'];
         var playername = this.player.name;
@@ -161,11 +172,11 @@ function AI(player, persona, dg) {
         // helper: based on personality threshold, initiate attack by sending request to dealer
         function strike(threshold, playername) {
             // target in prio list, loop
-            for (var i = 0; i < prio.length; i++) {
+            for (var j = 0; j < prio.length; j++) {
                 // att origin
+                // i = node index at prio[j]
+                var i = prio[j];
                 var o = attOrg[i];
-                console.log(attOrg);
-                console.log("orogin", o);
                 // verify is enemy and origin is self,
                 // origin must have at least 2 armies,
                 // enemy is still attackable
@@ -191,8 +202,6 @@ function AI(player, persona, dg) {
 
     };
 
-
-
     // Count its army currently deployed
     function countArmy() {
         var sum = 0;
@@ -205,6 +214,7 @@ function AI(player, persona, dg) {
 
     // place armies based on personality, balance pressures
     function placeArmies() {
+    	console.log("placeArmies");
         // the army counterpressure threshold
         var threshold = 4;
         // extract personality
@@ -259,6 +269,7 @@ function AI(player, persona, dg) {
 
     // AI trade in cards based on personality, to call giveArmies from dealer
     function tradeIn() {
+    	console.log("tradeIn");
         // extract personality
         var att = this.personality['attack'];
 
@@ -294,6 +305,7 @@ function AI(player, persona, dg) {
 
         // helper: find tradeable set in player's hand
         function findTradeable(player) {
+        	console.log("findTradeable");
             // hand = indices of cards
             var hand = player.cards;
             var setToTrade = undefined;

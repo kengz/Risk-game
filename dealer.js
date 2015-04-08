@@ -33,6 +33,7 @@ function dealer(dg) {
 
     // update which player owns which continents (entirely)
     function updateContinents(bench) {
+        console.log("updateContinents");
         // clear all players continents list
         _.each(bench, function(player) {
             player.continents = [];
@@ -40,7 +41,7 @@ function dealer(dg) {
 
         // scan each continents' nodes
         _.each(_.keys(contis), function(name) {
-            console.log("contien", name);
+            // console.log("contien", name);
             var first = _.first(contis[name]);
             var owner1 = g.nodes[first].owner;
             var same = true;
@@ -55,6 +56,12 @@ function dealer(dg) {
                 getPlayer(owner1).continents.push(name);
             };
         });
+        // return player object from bench by name
+        function getPlayer(name) {
+            return _.find(bench, function(p) {
+                return p.name == name;
+            });
+        };
     };
 
 
@@ -64,6 +71,8 @@ function dealer(dg) {
 
     // mediates Attack from ai to anotherai
     function mediateAttacks(ai, otherai) {
+        console.log("mediateAttacks");
+        var ai = ai;
         var conquered = 0;
         // init ai attack
         var att = ai.attack();
@@ -78,12 +87,12 @@ function dealer(dg) {
             var outcome = this.roll(red, white);
             var attacker = g.nodes[org];
             var defender = g.nodes[tar];
-            console.log("org, tar", org, tar);
-            console.log("r,w", red, white);
-            console.log("outcome:", outcome);
-            console.log("b4 transfer");
-            console.log(attacker.army);
-            console.log(defender.army);
+            // console.log("org, tar", org, tar);
+            // console.log("r,w", red, white);
+            // console.log("outcome:", outcome);
+            // console.log("b4 transfer");
+            // console.log(attacker.army);
+            // console.log(defender.army);
             // update army numbers from outcome
             _.each(outcome, function(a) {
                 if (a > 0) {
@@ -96,10 +105,10 @@ function dealer(dg) {
             // if node conquered, transfer ownership n army
             if (defender.army == 0) {
                 conquered++;
-                console.log("node conquered!");
+                console.log("node conquered!", org, tar);
                 // update node owner
                 defender.owner = ai.name;
-                // update players countries
+                // update players countries   
                 ai.player.countries.push(tar);
                 remove(otherai.player.countries, tar);
                 // move in armies, from org to tar
@@ -110,10 +119,10 @@ function dealer(dg) {
                 var index = array.indexOf(item);
                 array.splice(index, 1);
                 return array;
-            }
-            console.log("after transfer");
-            console.log(attacker.army);
-            console.log(defender.army);
+            };
+            // console.log("after transfer");
+            // console.log(attacker.army);
+            // console.log(defender.army);
 
             // refresh for next attack
             att = ai.attack();
