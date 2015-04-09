@@ -365,3 +365,36 @@ function AI(player, persona, dg) {
 
 exports.AI = AI;
 
+
+
+
+
+// // Export traits as personalities to json
+// var fs = require('fs');
+// var traitsMap = require('./srcdata/AI-traits.json');
+
+// // export the vectors of AI personalities
+// function exportPers() {
+//     // delete unwanted
+//     delete traitsMap.help;
+//     delete traitsMap.wf["Linear"];
+//     delete traitsMap.wf["Gauss"];
+//     delete traitsMap.wf["ExpDecay"];
+//     delete traitsMap.priority["opportunist-attack-then-defend"];
+//     delete traitsMap.priority["conservative-defend-then-attack"];
+
+//     // get vector of sets of trait values
+//     var tKeys = _.keys(traitsMap);
+//     var a = _.map(tKeys, function(k) {
+//         return _.keys(traitsMap[k]);
+//     })
+
+//     // take the cartesianProduct for personalities
+//     cp = cmb.cartesianProduct(a[0], a[1], a[2], a[3]);
+//     var pers = cp.toArray();
+//     console.log(pers);
+
+//     fs.writeFileSync('./srcdata/AI-personalities.json', JSON.stringify(pers, null, 4));
+// }
+
+// exportPers();

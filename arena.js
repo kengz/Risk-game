@@ -55,7 +55,7 @@ var priorityStep = 4;
 /////////////////////
 
 // Construct AI's with players controlled
-var test = ['Constant', 'agressive', 'cautious', 'rusher'];
+var test = ['Survival', 'agressive', 'cautious', 'rusher'];
 var AI1 = new AIM(p1, test, g);
 var AI2 = new AIM(p2, test, g);
 var AI3 = new AIM(p3, test, g);
@@ -65,6 +65,11 @@ var AIlist = [AI1, AI2, AI3];
 // the active AIs (without AI3)
 var AIs = [AI1, AI2];
 
+
+// constructor from initMap to play all
+function constructAIs(a1, a2) {
+
+}
 
 
 ////////////////////////////
