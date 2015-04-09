@@ -196,7 +196,21 @@ function PA(dg, bench) {
         console.log("updateCriterion");
         // var gh = new ghelper(g);
         // need for each player in bench
+        
+        /////////////////////////////////////
+        // TEMPORARILY PLUGGED THE PROBLEM //
+        /////////////////////////////////////
+        // I.E. COUNTRY OWNERSHIP AND PLAYER COUNTRIES NOT UPDATED PROPERLY
         _.each(bench, function(p) {
+        //     if (p.name != 'p3') {
+        //     p.countries = [];
+        //     // _.each(g.nodes, function(n) {
+        //     _.each(_.range(42), function(i) {
+        //         if (g.nodes[i].owner == p.name) {
+        //             p.countries.push(i);
+        //         };
+        //     });
+        // }
             p.regions = gh.regions(p);
             p.borders = gh.borders(p);
             p.attackable = gh.attackable(p, p.borders);
@@ -213,8 +227,13 @@ function PA(dg, bench) {
                 };
             })
             };
-            console.log("regions owned", p.name, p.regions);
             console.log("countries owned", p.name, p.countries);
+            var narr = [];
+            _.each(g.nodes[p.countries[0]].adjList, function(i) {
+                narr.push(g.nodes[i].owner);
+            });
+            console.log("neighs owners", narr);
+            console.log("regions owned", p.name, p.regions);
             console.log("borders owned", p.name, p.borders);
             console.log("attackable", p.name, p.attackable);
         });

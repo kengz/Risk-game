@@ -74,8 +74,10 @@ function dealer(dg) {
         console.log("mediateAttacks");
         var ai = ai;
         var conquered = 0;
+        var conqArr = [];
         // init ai attack
         var att = ai.attack();
+        checkOwner();
         // while ai keeps attacking
         while (att != undefined) {
             // attack request object: triple
@@ -87,6 +89,7 @@ function dealer(dg) {
             var outcome = this.roll(red, white);
             var attacker = g.nodes[org];
             var defender = g.nodes[tar];
+            checkOwner();
             // console.log("org, tar", org, tar);
             // console.log("r,w", red, white);
             // console.log("outcome:", outcome);
@@ -105,20 +108,19 @@ function dealer(dg) {
             // if node conquered, transfer ownership n army
             if (defender.army == 0) {
                 conquered++;
+                conqArr.push(tar);
                 console.log("node conquered!", org, tar);
                 // update node owner
-                defender.owner = ai.name;
+                console.log("transfer node", tar, "from", defender.owner, "to", ai.name);
+                defender['owner'] = ai.name;
+                console.log("done transfer, new owner", defender.owner);
                 // update players countries   
                 ai.player.countries.push(tar);
-                remove(otherai.player.countries, tar);
+                otherai.player.countries = _.without(otherai.player.countries, tar);
+                console.log("new owner has it?", _.contains(ai.player.countries, tar));
+                console.log("other still has it?", _.contains(otherai.player.countries, tar));
                 // move in armies, from org to tar
                 ai.moveIn(org, tar);
-            };
-            // helper: remove item from array
-            function remove(array, item) {
-                var index = array.indexOf(item);
-                array.splice(index, 1);
-                return array;
             };
             // console.log("after transfer");
             // console.log(attacker.army);
@@ -128,10 +130,47 @@ function dealer(dg) {
             att = ai.attack();
         }
         // attacks end
+        console.log("check ownership from dealer AI");
+        console.log(ai.name, "owns", _.sortBy(ai.player.countries));
+        console.log(otherai.name, "owns", _.sortBy(otherai.player.countries));
+        checkOwner();
+
+
+        function checkOwner() {
+            var co = [];
+            _.each(_.range(42), function(i) {
+                co.push(g.nodes[i].owner);
+            });
+            var map = _.object(_.range(42), co);
+    // console.log(map);
+    var c1 = [], c2 = [], c3 = [];
+    _.each(_.keys(map), function(k) {
+        var val = map[k];
+        if (val == 'p1') { c1.push(parseInt(k)); }
+        else if (val == 'p2') { c2.push(parseInt(k)); }
+        else if (val == 'p3') { c3.push(parseInt(k)); }
+    })
+    // console.log("owners", co);
+    console.log("checking owners FROM DEALER");
+    console.log("p1 from g\t\t", _.sortBy(c1));
+    // console.log("p1 from player", p1.countries);
+    console.log("p2 from g\t\t", _.sortBy(c2));
+    // console.log("p2 from player", p2.countries);
+    console.log("p3 from g\t\t", _.sortBy(c3));
+    console.log("p1 from player\t", _.sortBy(ai.player.countries))
+    console.log("p2 from player\t", _.sortBy(otherai.player.countries))
+    // console.log("p3 from player", p3.countries);
+    // var d1 = _.difference(c1, p1.countries);
+    // if (d1.length != 0) {console.log("error p1!", d1)};
+    // var d2 = _.difference(c2, p2.countries);
+    // if (d2.length != 0) {console.log("error p2!", d2)};
+    // var d3 = _.difference(c3, p3.countries);
+    // if (d3.length != 0) {console.log("error p3!", d3)};
+}
 
         // deal a card to ai player if conquered something
         if (conquered > 0) {
-            console.log("get a card! conquered:", conquered);
+            console.log("get a card! conquered:", conquered, _.sortBy(conqArr));
             var c = this.dealCard();
             ai.player.cards.push(c);
         };
@@ -226,7 +265,7 @@ function dealer(dg) {
         } else if (5 < i) {
             return (i - 3) * 5;
         } else
-            return 0;
+        return 0;
     };
 
 }

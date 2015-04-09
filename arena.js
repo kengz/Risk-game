@@ -93,23 +93,53 @@ function initAIsetup() {
     })
 };
 
-initAIsetup();
+// initAIsetup();
 
+checkOwner();
 
-// a turn
-function turn(ai) {
+function checkOwner() {
     var co = [];
     _.each(_.range(42), function(i) {
         co.push(g.nodes[i].owner);
     });
-    console.log("owners", co);
-    
+    var map = _.object(_.range(42), co);
+    // console.log(map);
+    var c1 = [], c2 = [], c3 = [];
+    _.each(_.keys(map), function(k) {
+        var val = map[k];
+        if (val == 'p1') { c1.push(parseInt(k)); }
+        else if (val == 'p2') { c2.push(parseInt(k)); }
+        else if (val == 'p3') { c3.push(parseInt(k)); }
+    })
+    // console.log("owners", co);
+    console.log("checking owners from ARENA");
+    console.log("p1 from g\t\t", _.sortBy(c1));
+    console.log("p2 from g\t\t", _.sortBy(c2));
+    console.log("p3 from g\t\t", _.sortBy(c3));
+    console.log("p1 from player\t", _.sortBy(p1.countries));
+    console.log("p2 from player\t", _.sortBy(p2.countries));
+    console.log("p3 from player\t", _.sortBy(p3.countries));
+    var d1 = _.difference(c1, p1.countries);
+    if (d1.length != 0) {console.log("error p1!", d1)};
+    var d2 = _.difference(c2, p2.countries);
+    if (d2.length != 0) {console.log("error p2!", d2)};
+    var d3 = _.difference(c3, p3.countries);
+    if (d3.length != 0) {console.log("error p3!", d3)};
+}
+
+
+turn(AI1);
+checkOwner();
+
+// a turn
+function turn(ai) {
+
     // first update info: Priority Algorithm
     AIupdate(ai);
     // then get armies and place them: Placement alg
     ai.getArmies(
         dealer.giveArmies(ai.player, ai.tradeIn())
-    );
+        );
     ai.placeArmies();
     // then attack: Attack alg. include owner/army transfer
     dealer.mediateAttacks(ai, other(ai));
@@ -134,7 +164,7 @@ function turn(ai) {
 
 function run() {
     // var time = 100;
-    var time = 100;
+    var time = 0;
     while (time > 0) {
         time--;
         console.log("TURN", time);
