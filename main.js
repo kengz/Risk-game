@@ -6,6 +6,7 @@ var _ = require('underscore');
 var fs = require('fs');
 
 var ps = require('./srcdata/AI-personalities.json');
+var pls = ['p1','p2'];
 
 // The game constructor from arena
 var game = require('./arena.js').Game;
@@ -14,14 +15,14 @@ var game = require('./arena.js').Game;
 var conf1 = {
 	p1: ps[1],
 	p2: ps[1],
-	first: 'p1'
+	first: pls[0]
 };
 
 // a config
 var conf2 = {
 	p1: ps[1],
 	p2: ps[1],
-	first: 'p2'
+	first: pls[1]
 };
 
 // repeat games for a fixed config: personalities, player order.
@@ -30,18 +31,29 @@ function repeat(n, c) {
 	var GS = {};
 	for (var i = 1; i < n+1; i++) {
 		// save an instance of a game's time-series TS
-		GS[i] = game(c['p1'], c['p2'], c['first']);
+		// GS[i] = game(c['p1'], c['p2'], c['first']);
+		GS[i] = game(ps[c[0]], ps[c[1]], pls[c[2]]);
 	};
 	fs.writeFileSync('./data/GS.json', JSON.stringify(GS, null, 0));
 	return GS;
 }
 
-repeat(3, conf1);
+
+// array: pers1, pers2, firstplayer
+repeat(3, [1,1,1]);
 
 
-console.log(ps[1]);
+// notable: index
+// 1, 2, 10, 13
+// [1,2]
+// [1,10]
+// [1,13]
+// [2,10]
+// [2,13]
+// [10,10]
 
-
+// var TS = game(conf1['p1'], conf1['p2'], conf1['first']);
+// fs.writeFileSync('./data/TS.json', JSON.stringify(TS, null, 0));
 
 
 ////////////////////////////
