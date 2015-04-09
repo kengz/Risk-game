@@ -98,6 +98,12 @@ initAIsetup();
 
 // a turn
 function turn(ai) {
+    var co = [];
+    _.each(_.range(42), function(i) {
+        co.push(g.nodes[i].owner);
+    });
+    console.log("owners", co);
+    
     // first update info: Priority Algorithm
     AIupdate(ai);
     // then get armies and place them: Placement alg
@@ -115,10 +121,11 @@ function turn(ai) {
 
 
     console.log("ending turn, ai stat:", ai.name, ai.listCountries(), ai.countArmy());
+    console.log("ending turn, otherai stat:", other(ai).name, other(ai).listCountries(), other(ai).countArmy());
 
     var end = false;
     // check winner
-    if (other(ai).player.countries.length==0) {
+    if (other(ai).player.countries.length == 0) {
         end = true;
     };
     return end;
@@ -127,15 +134,14 @@ function turn(ai) {
 
 function run() {
     // var time = 100;
-    var time = 30;
-    while (time>0) {
+    var time = 100;
+    while (time > 0) {
         time--;
         console.log("TURN", time);
         var end = false;
-        if (time%2 != 0) {
+        if (time % 2 != 0) {
             end = turn(AI1);
-        }
-        else {
+        } else {
             end = turn(AI2);
         }
         if (end) {
@@ -172,6 +178,7 @@ function run() {
 // console.log(deck);
 // console.log(p1);
 
+// console.log(_.flatten([[1]]));
 
 // Timer
 var start = new Date().getTime();

@@ -227,6 +227,9 @@ function AI(player, persona, dg) {
 
         // deplete armyreserve
         var stock = this.player.armyreserve;
+        console.log("army reserve", stock, prio);
+        console.log("countries owned", this.player.countries);
+        console.log("attackable", this.player.attackable);
         this.player.armyreserve = 0;
 
         if (placem == 'cautious') {

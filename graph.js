@@ -118,13 +118,16 @@ function helper(dg) {
     // Ordered by the regions
     function borders(player) {
         var bnodes = [];
+        // console.log("player flatten region", player.name, _.flatten(player.regions));
         // start from player regions for ordering
         _.each(_.flatten(player.regions), function(n) {
+            // console.log("neigh", g.nodes[n].adjList);
             // find the first neigh that
             var enemy = _.find(g.nodes[n].adjList, function(i) {
+                // console.log("neigh owner", g.nodes[i].owner, "vs", player.name);
                 // belongs to a different owner
                 return g.nodes[i].owner != player.name;
-            })
+            });
             // if found enemy in adj
             if (enemy != undefined) {
                 bnodes.push(n);

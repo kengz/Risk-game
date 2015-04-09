@@ -26,7 +26,8 @@ function PA(dg, bench) {
 
     // Primary: priority list by rolling forward
     function enumPriority(you, permutation, k) {
-        console.log(enumPriority);
+        console.log("enumPriority");
+        console.log("stuck at name", you.name);
         // identity perm = [0,1,2,3]
         var id = [enumAttack, enumWeaken, enumThreat, enumLost];
         // the priority list
@@ -35,6 +36,7 @@ function PA(dg, bench) {
         _.each(permutation, function(i) {
             plist = rollk(plist, id[i](you), k);
         });
+        plist = _.union(plist, you.attackable);
         // the list calls att-origin to reinforce
         return plist;
     };
@@ -45,7 +47,7 @@ function PA(dg, bench) {
             _.first(
                 // nodes in back but not in front
                 _.difference(back, front), k)
-        )
+            )
     };
     // list of attackable, ordered by worth
     var enumAttack = function(you) {
@@ -201,7 +203,22 @@ function PA(dg, bench) {
             p.shapes = _.map(p.regions, function(r) {
                 return gh.shape(p, r);
             })
-        })
+            if (p.name != 'p3') {
+            _.each(p.countries, function(i) {
+                if (g.nodes[i].owner != p.name) {
+                    console.log("wrong Name!", i, p.name, p.countries);
+                    console.log("wrong Name!", i, p.name, p.countries);
+                    console.log("wrong Name!", i, p.name, p.countries);
+                    console.log("wrong Name!", i, p.name, p.countries);
+                };
+            })
+            };
+            console.log("regions owned", p.name, p.regions);
+            console.log("countries owned", p.name, p.countries);
+            console.log("borders owned", p.name, p.borders);
+            console.log("attackable", p.name, p.attackable);
+        });
+        
     };
 
     // Eval all nodes thru all regions of all players, from the perspective of player 'you'
