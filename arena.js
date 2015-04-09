@@ -10,9 +10,9 @@
 // 4. attack by list
 
 
-// Master wrapper: init and run everything in this file = an instance of game, with AI personalities, and player order: 
+// Master Game wrapper: init and run everything in this file = an instance of game, with AI personalities, and player order: 
 // if 1, AI1 first; if 0, AI2 first
-function masterInit(pers1, pers2, firstplayer) {
+function Game(pers1, pers2, firstplayer) {
 // player order variable in gameturn
 var first;
 if (firstplayer == 'p1') { first = 1; }
@@ -23,8 +23,8 @@ else if (firstplayer == 'p2') { first = 0; }
 ////////////////////////////////
 var TS = {};
 TS['first_player'] = firstplayer;
-TS['AI1_personality'] = pers1;
-TS['AI2_personality'] = pers2;
+TS['AI1'] = pers1;
+TS['AI2'] = pers2;
 // set winner to tie first, if exist, reset below
 TS['winner'] = 'tie';
 // sample time series: TS[time] = t_data;
@@ -151,10 +151,10 @@ function gameturn(ai) {
     t_data[other(ai).name]['n_countries'] = other(ai).countCountries();
     t_data[ai.name]['n_continents'] = ai.countContinents();
     t_data[other(ai).name]['n_continents'] = other(ai).countContinents();
-    setd1(ai, 'countries'); setd1(other(ai), 'countries');
-    setd1(ai, 'continents'); setd1(other(ai), 'continents');
-    setd1(ai, 'regions'); setd1(other(ai), 'regions');
-    setd1(ai, 'pressures'); setd1(other(ai), 'pressures');
+    // setd1(ai, 'countries'); setd1(other(ai), 'countries');
+    // setd1(ai, 'continents'); setd1(other(ai), 'continents');
+    // setd1(ai, 'regions'); setd1(other(ai), 'regions');
+    // setd1(ai, 'pressures'); setd1(other(ai), 'pressures');
 
 
     // 2. then get armies and place them: Placement alg
@@ -172,7 +172,7 @@ function gameturn(ai) {
     var attres = dealer.mediateAttacks(ai, other(ai));
     // update for t_data
     t_data['n_attacks'] = attres['n_attacks'];
-    t_data['all_outcomes'] = attres['all_outcomes'];
+    // t_data['all_outcomes'] = attres['all_outcomes'];
     t_data['n_conquered'] = attres['n_conquered'];
 
 
@@ -231,6 +231,7 @@ function runGame(max) {
             TS['winner'] = winner;
             console.log("\n=====================");
             console.log("Game ends with winner", winner);
+            console.log("at turn", time);
             console.log("Printing stats:");
             printStats(AI1);
             printStats(AI2);
@@ -240,6 +241,7 @@ function runGame(max) {
         if (time==max) {
             console.log("\n=====================");
             console.log("Game ends without winner");
+            console.log("at turn", time);
             console.log("Printing stats:");
             printStats(AI1);
             printStats(AI2);
@@ -248,7 +250,7 @@ function runGame(max) {
 }
 
 // Call and time the runGame
-var max = 300;
+var max = 200;
 // Timer
 var start = new Date().getTime();
 runGame(max);
@@ -324,4 +326,4 @@ function checkOwner() {
 }
 
 
-exports.masterInit = masterInit;
+exports.Game = Game;

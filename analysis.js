@@ -1,11 +1,12 @@
 var _ = require('underscore');
-var TS = require('./srcdata/TS.json');
+var TS = require('./data/TS.json');
 var fs = require('fs');
 
 console.log(TS['winner']);
 console.log(TS['AI2_personality']);
 
-var t = _.range(1,166);
+var maxturn = _.keys(TS).length - 4;
+var t = _.range(1, maxturn+1);
 // var p1Series = []
 
 var p1TS = _.map(t, bar1);
