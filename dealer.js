@@ -182,6 +182,7 @@ function dealer(dg) {
     // Battle roll: red and white //
     ////////////////////////////////
     function roll(r, w) {
+        console.log("roll");
         // red = attacker; white = defender
         var red = _.sortBy(this.d.rollk(r), this.d.bigFirst);
         var white = _.sortBy(this.d.rollk(w), this.d.bigFirst);

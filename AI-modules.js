@@ -95,6 +95,7 @@ function AI(player, persona, dg) {
         // call on coun till fortified one, or none
         for (var i = 0; i < coun.length; i++) {
             var found = hiPressNonBorderNeigh(coun[i], this.player);
+            console.log("to fortify node", found);
             if (found != undefined) {
             	this.moveIn(found, coun[i]);
             	// if move in once, done, break
@@ -161,7 +162,7 @@ function AI(player, persona, dg) {
     // attack based on priorityList and personality threshold. Called until return undefined.
     // Return attack request {origin, tar, roll} to dealer
     function attack() {
-    	console.log("attack");
+    	// console.log("attack");
         // extract personality
         var att = this.personality['attack'];
         var playername = this.player.name;
@@ -175,6 +176,9 @@ function AI(player, persona, dg) {
 
         // helper: based on personality threshold, initiate attack by sending request to dealer
         function strike(threshold, playername) {
+            if (prio.length == 0) {
+                console.log("priority list empty!");
+            };
             // target in prio list, loop
             for (var j = 0; j < prio.length; j++) {
                 // att origin
@@ -188,6 +192,7 @@ function AI(player, persona, dg) {
                     g.nodes[o].owner == playername &&
                     g.nodes[o].army >= 2 &&
                     g.nodes[i].army > 0) {
+                    console.log("attempt attack");
                     // check if army number >= threshold/2, so that can keep attacking after first time
                     var diff = g.nodes[o].army - g.nodes[i].army;
                     // loop until wanna attack, return

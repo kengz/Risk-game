@@ -9,6 +9,12 @@
 // 3. Reinforce based on priority lists and origin-map
 // 4. attack by list
 
+
+// Master wrapper: init and run everything in this file = an instance of game, with AI personalities, and player order: 
+// if 1, AI1 first; if 0, AI2 first
+function masterInit(pers1, pers2, first) {
+
+
 ///////////////////////////////
 // dependencies, enumeration //
 ///////////////////////////////
@@ -55,21 +61,18 @@ var priorityStep = 4;
 /////////////////////
 
 // Construct AI's with players controlled
-var test = ['Survival', 'agressive', 'cautious', 'rusher'];
-var AI1 = new AIM(p1, test, g);
-var AI2 = new AIM(p2, test, g);
-var AI3 = new AIM(p3, test, g);
+var AI1 = new AIM(p1, pers1, g);
+var AI2 = new AIM(p2, pers2, g);
+// third neutral AI runs with control
+var control = ['Survival', 'agressive', 'cautious', 'rusher'];
+var AI3 = new AIM(p3, control, g);
 
 // The list of 3 AIs; third is neutral, doesn't do much
-var AIlist = [AI1, AI2, AI3];
+var AIlist = [AI3, AI1, AI2];
 // the active AIs (without AI3)
 var AIs = [AI1, AI2];
 
 
-// constructor from initMap to play all
-function constructAIs(a1, a2) {
-
-}
 
 
 ////////////////////////////
@@ -93,12 +96,17 @@ function AIupdate(ai) {
 // Finish the initialization: AI updates and places remaining armies.
 // Is primitive, kinda random
 function initAIsetup() {
+    // note: for fairness place AI3 first
     // wait all 3 AI has updated
     _.map(AIlist, AIupdate);
     // then all 3 place armies
     _.each(AIlist, function(ai) {
         ai.placeArmies();
     })
+    
+    ////////////////////////////////////////////
+    // change by restricting the stock slowly //
+    ////////////////////////////////////////////
 };
 
 
@@ -146,8 +154,9 @@ function runGame(max) {
         // check end of game
         var end = false;
         var winner = "No One";
-        // take turn
-        if (time % 2 != 0) {
+        // take turn. player order [0,1]
+        // if 1, AI1 first; if 0, AI2 first
+        if (time % 2 == first) {
             end = gameturn(AI1);
             winner = AI1.name;
         } else {
@@ -182,7 +191,6 @@ runGame(max);
 var end = new Date().getTime();
 var time = end - start;
 console.log('Execution time: ' + time);
-
 
 
 
@@ -239,3 +247,11 @@ function checkOwner() {
     var d3 = _.difference(c3, p3.countries);
     if (d3.length != 0) {console.log("error p3!", d3)};
 }
+
+
+
+
+}
+
+
+exports.masterInit = masterInit;
