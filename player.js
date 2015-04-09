@@ -13,7 +13,7 @@ for (var i = 0; i < 42; i++) {
 function Player(name) {
 	this.name = name;
 	// 40, 14 goes into rand assigned countries
-	this.armyreserve = 40-14;
+	this.armyreserve = 0;
 	// total number of armies
 	// this.army;
 	// start game without cards.

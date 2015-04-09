@@ -286,6 +286,7 @@ function AI(player, persona, dg) {
     // Add to reserve for placement
     function getArmies(given) {
         this.player.armyreserve += given;
+        return given;
     };
 
     // AI trade in cards based on personality, to call giveArmies from dealer

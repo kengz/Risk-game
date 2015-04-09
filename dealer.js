@@ -73,8 +73,11 @@ function dealer(dg) {
     function mediateAttacks(ai, otherai) {
         console.log("mediateAttacks");
         var ai = ai;
-        var conquered = 0;
         var conqArr = [];
+        // fields for t_data
+        var n_attacks = 0;
+        var all_outcomes = [];
+        var conquered = 0;
         // init ai attack
         var att = ai.attack();
         // checkOwner();
@@ -89,6 +92,10 @@ function dealer(dg) {
             var outcome = this.roll(red, white);
             var attacker = g.nodes[org];
             var defender = g.nodes[tar];
+            // update for t_data
+            n_attacks++;
+            all_outcomes.push(outcome);
+
             // checkOwner();
             // console.log("org, tar", org, tar);
             // console.log("r,w", red, white);
@@ -173,6 +180,14 @@ function dealer(dg) {
             console.log("get a card! conquered:", conquered, _.sortBy(conqArr));
             var c = this.dealCard();
             ai.player.cards.push(c);
+        };
+
+
+
+        return {
+            n_attacks: n_attacks,
+            all_outcomes: all_outcomes,
+            n_conquered: conquered
         };
 
     };
