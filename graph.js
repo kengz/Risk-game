@@ -125,20 +125,17 @@ function helper(dg) {
         var bnodes = [];
         // console.log("player flatten region", player.name, _.flatten(player.regions));
         // start from player regions for ordering
+        // for all my owned nodes n
         _.each(_.flatten(player.regions), function(n) {
+            // all its neigh is assumed mine
             var neighsmine = true;
+            // until check, see n's neighs
             _.each(g.nodes[n].adjList, function(i) {
-                if (g.nodes[i].owner != player.name) {neighsmine = false};
+                // if found neigh not mine, make false
+                if (g.nodes[i].owner != player.name) {neighsmine = false;
+                };
             });
-            // // console.log("neigh", g.nodes[n].adjList);
-            // // find the first neigh that
-            // var enemy = _.find(g.nodes[n].adjList, function(i) {
-            //     // console.log("neigh owner", g.nodes[i].owner, "vs", player.name);
-            //     // belongs to a different owner
-            //     return g.nodes[i].owner != player.name;
-            // });
-            // if found enemy in adj
-            // if (enemy != undefined) {
+            // but I want n with neigh = not mine
                 if (!neighsmine) {
                     bnodes.push(n);
                 }

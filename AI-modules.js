@@ -43,7 +43,12 @@ var traitsKey = _.initial(_.keys(traitsMap));
 
 // AI brain controls the player
 function AI(player, persona, dg) {
+	// global graph object
     var g = dg;
+
+    ////////////
+    // Fields //
+    ////////////
     // player which has all the fields
     this.player = player;
     this.name = player.name;
@@ -51,7 +56,6 @@ function AI(player, persona, dg) {
     this.personality = _.object(traitsKey, persona);
     // get this AI's trait, e.g. priority -> [0,1,2,3]
     this.trait = trait;
-
     function trait(key) {
         return traitsMap[key][this.personality[key]];
     };
@@ -61,24 +65,24 @@ function AI(player, persona, dg) {
     this.priorityList = [];
     this.attOrgMap = {};
 
-    // methods
+    /////////////
+    // Methods //
+    /////////////
     this.tradeIn = tradeIn;
     this.getArmies = getArmies;
     // place armies, with threshold step t = 5
     this.placeArmies = placeArmies;
     // count number of armies owned on map
     this.countArmy = countArmy;
-    this.listCountries = listCountries;
+    // count number of countries owned
+    this.countCountries = countCountries;
+    this.countContinents = countContinents;
 
+    // The attack moves
     this.attack = attack;
     this.defend = defend;
     this.moveIn = moveIn;
     this.fortify = fortify;
-
-    function listCountries() {
-    	// console.log(this.player.countries);
-    	return this.player.countries.length;
-    };
 
     function fortify() {
     	console.log("fortify");
@@ -121,7 +125,7 @@ function AI(player, persona, dg) {
         function byPressure(i) {
             return g.nodes[i].pressure;
         }
-    }
+    };
 
     // move in: always move all but one
     function moveIn(org, tar) {
@@ -130,13 +134,13 @@ function AI(player, persona, dg) {
         if (g.nodes[tar].owner != this.name && g.nodes[tar].army != 0) {
             console.log("moveIn error!")
         };
-        console.log("before moveIn", g.nodes[org].army, g.nodes[tar].army);
+        // console.log("before moveIn", g.nodes[org].army, g.nodes[tar].army);
         // extract
         var num = g.nodes[org].army;
         // transfer
         g.nodes[tar].army = num - 1;
         g.nodes[org].army = 1;
-        console.log("after moveIn", g.nodes[org].army, g.nodes[tar].army);
+        // console.log("after moveIn", g.nodes[org].army, g.nodes[tar].army);
         // console.log("transferred all but one", g.nodes[org].army, g.nodes[tar].army);
     };
 
@@ -202,6 +206,15 @@ function AI(player, persona, dg) {
 
     };
 
+    // count number of continents owned
+    function countContinents() {
+    	return this.player.continents.length;
+    }
+    // count number of countries owned
+    function countCountries() {
+    	return this.player.countries.length;
+    };
+
     // Count its army currently deployed
     function countArmy() {
         var sum = 0;
@@ -227,9 +240,9 @@ function AI(player, persona, dg) {
 
         // deplete armyreserve
         var stock = this.player.armyreserve;
-        console.log("army reserve", stock, prio);
-        console.log("countries owned", this.player.countries);
-        console.log("attackable", this.player.attackable);
+        // console.log("army reserve", stock, prio);
+        // console.log("countries owned", this.player.countries);
+        // console.log("attackable", this.player.attackable);
         this.player.armyreserve = 0;
 
         if (placem == 'cautious') {
@@ -352,31 +365,3 @@ function AI(player, persona, dg) {
 
 exports.AI = AI;
 
-
-// console.log(Ppriority);
-
-// 2. Placement Algorithm
-// 2.1 balance out most pressures
-// 2.2 time-sensitive personalities:
-// Keeping cards, delaying trade in:
-// steamroller: attack continously. always expend all forces
-// late-gamer: accumulate forces for late-game 
-
-// May not be relevant now, is actually done via holding back cards
-// do by wave, or use sin, or const
-
-
-// 3. Attack Algorithm
-// See number of forces can use now, attack while can
-// Or use threshold: high = conservative, 0 = risky steamroller
-
-
-// var cmb = require('js-combinatorics').Combinatorics;
-
-// var id = [0, 1, 2, 3, 4, 5];
-// var foo = cmb.combination(id,3);
-// while(a = foo.next()) console.log(a);
-// console.log(foo.toArray());
-
-// var prod = cmb.cartesianProduct(_.keys(Pwf), _.keys(Ppriority), _.keys(Pplacement), _.keys(Pattack));
-// console.log(prod.toArray());

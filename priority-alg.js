@@ -27,7 +27,6 @@ function PA(dg, bench) {
     // Primary: priority list by rolling forward
     function enumPriority(you, permutation, k) {
         console.log("enumPriority");
-        console.log("stuck at name", you.name);
         // identity perm = [0,1,2,3]
         var id = [enumAttack, enumWeaken, enumThreat, enumLost];
         // the priority list
@@ -36,6 +35,7 @@ function PA(dg, bench) {
         _.each(permutation, function(i) {
             plist = rollk(plist, id[i](you), k);
         });
+        // add the rest of attackable to list back
         plist = _.union(plist, you.attackable);
         // the list calls att-origin to reinforce
         return plist;
@@ -76,7 +76,6 @@ function PA(dg, bench) {
     // Primary: Attack-origin map: gives the best origin of attack for the priority lists: 
     // for attackable, choose highest pressure of adj that's yours; for borders(own), choose self, so the point itself is reinforced
     function mapAttOrigins(you) {
-        console.log();
         // attack-origin map
         var attOrgMap = {};
         // find the best origin of attack for each attackable for reinforce
@@ -194,13 +193,7 @@ function PA(dg, bench) {
     // update priority for all players
     function updateCriterion() {
         console.log("updateCriterion");
-        // var gh = new ghelper(g);
         // need for each player in bench
-        
-        /////////////////////////////////////
-        // TEMPORARILY PLUGGED THE PROBLEM //
-        /////////////////////////////////////
-        // I.E. COUNTRY OWNERSHIP AND PLAYER COUNTRIES NOT UPDATED PROPERLY
         _.each(bench, function(p) {
         //     if (p.name != 'p3') {
         //     p.countries = [];
@@ -217,25 +210,28 @@ function PA(dg, bench) {
             p.shapes = _.map(p.regions, function(r) {
                 return gh.shape(p, r);
             })
-            if (p.name != 'p3') {
-            _.each(p.countries, function(i) {
-                if (g.nodes[i].owner != p.name) {
-                    console.log("wrong Name!", i, p.name, p.countries);
-                    console.log("wrong Name!", i, p.name, p.countries);
-                    console.log("wrong Name!", i, p.name, p.countries);
-                    console.log("wrong Name!", i, p.name, p.countries);
-                };
-            })
-            };
-            console.log("countries owned", p.name, p.countries);
-            var narr = [];
-            _.each(g.nodes[p.countries[0]].adjList, function(i) {
-                narr.push(g.nodes[i].owner);
-            });
-            console.log("neighs owners", narr);
-            console.log("regions owned", p.name, p.regions);
-            console.log("borders owned", p.name, p.borders);
-            console.log("attackable", p.name, p.attackable);
+
+            // Debugger
+        //     if (p.name != 'p3') {
+        //     _.each(p.countries, function(i) {
+        //         if (g.nodes[i].owner != p.name) {
+        //             console.log("wrong Name!", i, p.name, p.countries);
+        //             console.log("wrong Name!", i, p.name, p.countries);
+        //             console.log("wrong Name!", i, p.name, p.countries);
+        //             console.log("wrong Name!", i, p.name, p.countries);
+        //         };
+        //     })
+        //     };
+        //     console.log("countries owned", p.name, p.countries);
+        //     var narr = [];
+        //     _.each(g.nodes[p.countries[0]].adjList, function(i) {
+        //         narr.push(g.nodes[i].owner);
+        //     });
+        //     console.log("neighs owners", narr);
+        //     console.log("regions owned", p.name, p.regions);
+        //     console.log("borders owned", p.name, p.borders);
+        //     console.log("attackable", p.name, p.attackable);
+            
         });
         
     };
