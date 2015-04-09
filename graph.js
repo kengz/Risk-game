@@ -62,16 +62,17 @@ function helper(dg) {
         // list of my regions
         var myregions = [];
         // my countries
+        var minestatic = _.sortBy(player.countries);
         var mine = _.sortBy(player.countries);
 
         // function to find next of your connected region
-        function enumNextRegion(srcnode) {
+        function enumNextRegion() {
             // add first base to new region
-            var newreg = [srcnode];
+            var newreg = [mine[0]];
             // then remove first from nodes
             mine = _.rest(mine);
             // new region found, add
-            newreg = _.union(newreg, myconnected(newreg[0]));
+            newreg = _.union(newreg, myconnected(newreg));
             myregions.push(newreg);
             // update mine
             mine = _.difference(mine, newreg);
@@ -79,31 +80,35 @@ function helper(dg) {
 
         // my nodes that are already checked
         var checked = [];
-        // get my nodes that are connected
-        function myconnected(i) {
-            // get neigh of i
-            var adj = g.nodes[i].adjList;
-            // adjacent of i that are mine:
-            // move out: exclude checked nodes
-            var neighmine = _.difference(_.intersection(adj, mine), checked);
-            // then update, mark neigh as checked
-            checked = _.union(checked, neighmine);
-            // if found any adj nodes that're mine
-            if (neighmine.length != 0) {
-                // call for each of neighmine, then join
+        // get my nodes that are connected, input radius arr
+        function myconnected(radarr) {
+            // next radius adj nodes from radarr
+            var nextRad = [];
+            // from next radius arr, expand radius further
+            _.each(radarr, function(i) {
+                // adj to radarr element that's mine
+                var adjMine = _.difference(_.intersection(g.nodes[i].adjList, minestatic), checked);
+                nextRad.push(adjMine);
+            });
+            // the next radius from radarr
+            nextRad = _.uniq(_.flatten(nextRad));
+            // update checked
+            checked = _.union(checked, nextRad);
+            // recurse while still has more
+            if (nextRad.length != 0) {
                 return _.uniq(
                     _.flatten(
-                        neighmine,
-                        _.map(neighmine, myconnected)
-                        )
-                    );
-            } else
-            return [];
+                        nextRad,
+                        _.map(nextRad, myconnected)
+                        ))
+            } else {
+                return [];
+            }
         }
 
         // call enum
         while (mine.length != 0) {
-            enumNextRegion(mine[0]);
+            enumNextRegion();
         }
 
         // sort regions by size
@@ -134,10 +139,10 @@ function helper(dg) {
             // });
             // if found enemy in adj
             // if (enemy != undefined) {
-            if (!neighsmine) {
-                bnodes.push(n);
-            }
-        })
+                if (!neighsmine) {
+                    bnodes.push(n);
+                }
+            })
         return bnodes;
     };
 

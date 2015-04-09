@@ -93,9 +93,9 @@ function initAIsetup() {
     })
 };
 
-// initAIsetup();
+initAIsetup();
 
-checkOwner();
+// checkOwner();
 
 function checkOwner() {
     var co = [];
@@ -128,8 +128,8 @@ function checkOwner() {
 }
 
 
-turn(AI1);
-checkOwner();
+// turn(AI1);
+// checkOwner();
 
 // a turn
 function turn(ai) {
@@ -164,16 +164,17 @@ function turn(ai) {
 
 function run() {
     // var time = 100;
-    var time = 0;
+    var time = 150;
     while (time > 0) {
         time--;
-        console.log("TURN", time);
         var end = false;
         if (time % 2 != 0) {
             end = turn(AI1);
         } else {
             end = turn(AI2);
         }
+
+        console.log("TURN", time);
         if (end) {
             console.log("game ending at time", time);
             break;
@@ -210,9 +211,15 @@ function run() {
 
 // console.log(_.flatten([[1]]));
 
+// var arr = [1,2,3,4,5,6,7];
+// var ind = arr.indexOf(8);
+// arr.splice(ind, 1);
+// console.log("arr", ind, arr);
+
 // Timer
 var start = new Date().getTime();
 run();
+// checkOwner();
 for (i = 0; i < 100; ++i) {
     // turn(AI1);
     // AIupdate(AI);
