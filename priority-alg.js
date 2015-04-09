@@ -228,7 +228,7 @@ function PA(dg, bench) {
         //         narr.push(g.nodes[i].owner);
         //     });
         //     console.log("neighs owners", narr);
-        //     console.log("regions owned", p.name, p.regions);
+            // console.log("regions owned", p.name, p.regions);
         //     console.log("borders owned", p.name, p.borders);
         //     console.log("attackable", p.name, p.attackable);
             

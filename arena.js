@@ -1,4 +1,4 @@
-// Arena: The place for all gamesteps and computations.
+// Arena: Hosts an instance of the game. The place for all gamesteps and computations.
 // All dynamic objects exist in here, and interact here, to maximize speed. All other classes need to exchange dynamic object through here.
 
 /////////////////////////////////////
@@ -67,8 +67,6 @@ var AIs = [AI1, AI2];
 
 
 
-
-
 ////////////////////////////
 // Primary-helper methods //
 ////////////////////////////
@@ -127,11 +125,12 @@ function gameturn(ai) {
 }
 
 
-///////////////////////
-// The main method.  //
-///////////////////////
+//////////////////////////////
+// The main runGame method. //
+//////////////////////////////
+// Runs an instance of the game
 // Init and run till end of a game, or max-time
-function main(max) {
+function runGame(max) {
     // init
     initAIsetup();
     // timer for game, ++ per turn
@@ -170,11 +169,11 @@ function main(max) {
     }
 }
 
-// Call and time the main
+// Call and time the runGame
 var max = 300;
 // Timer
 var start = new Date().getTime();
-main(max);
+runGame(max);
 var end = new Date().getTime();
 var time = end - start;
 console.log('Execution time: ' + time);

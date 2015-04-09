@@ -96,10 +96,10 @@ function helper(dg) {
             checked = _.union(checked, nextRad);
             // recurse while still has more
             if (nextRad.length != 0) {
-                return _.uniq(
-                    _.flatten(
+                return _.flatten(
+                    _.union(
                         nextRad,
-                        _.map(nextRad, myconnected)
+                        myconnected(nextRad)
                         ))
             } else {
                 return [];
