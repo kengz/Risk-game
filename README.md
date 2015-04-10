@@ -62,7 +62,7 @@ We now interpret the data object `GS` from the outermost layer:
 
 ```
 
-So you can get the data by specifying the address, say at ['1', '1', 'p1', 'n_countries'] would be the value 14.
+So you can get the data by specifying the address, say at `['1', '1', 'p1', 'n_countries']` would be the value `14`.
 
 If Mathematica's JSON parsing/data transformation is too hard, you may try out a simply data extractor `analysis.js` in the data file. The code runs on node JS, which you'd have to install (it's easy). If so you have to download this entire project. Instruction below.
 
