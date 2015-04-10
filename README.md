@@ -78,15 +78,15 @@ node -v
 
 #### This Code
 1. Have a desired project directory. e.g. mine is `/Users/kengz/Work`. Open your terminal; to navigate to that directory, type `cd ~/Work`.
+
 **Tip:** You can auto-complete directory in terminal by typing `~/`, the first letter, then pressing the `tab` key.
 
-2. At this Github page, copy the link at the `HTTPS clone URL`.
+2. At this Github page, copy the link at the `HTTPS clone URL`. (If you don't have `git`, simply download the zip file.)
 
 3. Go back to your terminal, type `git clone` then paste the url, like:
 ```bash
-git clone https://github.com/kengz/Eastland-email-automation.git
+    git clone https://github.com/kengz/Risk-game.git
 ```
-(If you don't have `git`, simply download the zip file.)
 
 4. Hit enter and let it install.
 
