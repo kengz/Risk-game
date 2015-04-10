@@ -78,41 +78,31 @@ node -v
 
 #### This Code
 1. Have a desired project directory. e.g. mine is `/Users/kengz/Work`. Open your terminal; to navigate to that directory, type `cd ~/Work`.
-
 **Tip:** You can auto-complete directory in terminal by typing `~/`, the first letter, then pressing the `tab` key.
 
 2. At this Github page, copy the link at the `HTTPS clone URL`.
 
 3. Go back to your terminal, type `git clone` then paste the url, like:
-
 ```bash
 git clone https://github.com/kengz/Eastland-email-automation.git
 ```
-
 (If you don't have `git`, simply download the zip file.)
 
 4. Hit enter and let it install.
 
 5. Go into the builder directory by typing 
-
 ```bash
 cd ~/Work/Risk-game
 ```
 
 6. Install the dependencies by typing 
-
 ```bash
 npm install
 ```
 
-7. Go into the data folder
-
+7. Go into the data folder and try running it by typing and hitting enter
 ```bash
 cd data
-```
-
-and try running it by typing and hitting enter
-```
 node analysis.js
 ```
 
