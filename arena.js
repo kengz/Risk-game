@@ -252,11 +252,11 @@ function runGame(max) {
 // Call and time the runGame
 var max = 300;
 // Timer
-var start = new Date().getTime();
+// var start = new Date().getTime();
 runGame(max);
-var end = new Date().getTime();
-var time = end - start;
-console.log('Execution time: ' + time);
+// var end = new Date().getTime();
+// var time = end - start;
+// console.log('Execution time: ' + time);
 
 
 

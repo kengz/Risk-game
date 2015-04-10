@@ -6,7 +6,7 @@ var _ = require('underscore');
 var fs = require('fs');
 
 var ps = require('./srcdata/AI-personalities.json');
-var pls = ['p1','p2'];
+var pls = ['p0','p1','p2'];
 
 // The game constructor from arena
 var game = require('./arena.js').Game;
@@ -26,7 +26,7 @@ var conf2 = {
 };
 
 // repeat games for a fixed config: personalities, player order.
-function repeat(n, c) {
+function repeat(n, c, o) {
 	// the game-series
 	var GS = {};
 	for (var i = 1; i < n+1; i++) {
@@ -34,14 +34,33 @@ function repeat(n, c) {
 		// GS[i] = game(c['p1'], c['p2'], c['first']);
 		GS[i] = game(ps[c[0]], ps[c[1]], pls[c[2]]);
 	};
-	fs.writeFileSync('./data/GS.json', JSON.stringify(GS, null, 0));
+	// fs.writeFileSync('./data/GS.json', JSON.stringify(GS, null, 0));
+	fs.writeFileSync(o, JSON.stringify(GS, null, 0));
 	return GS;
 }
 
 
-// array: pers1, pers2, firstplayer
-repeat(3, [1,1,1]);
+var start = new Date().getTime();
 
+// array: pers1, pers2, firstplayer
+// note: 1,2 are indices for p1, p2 resp
+repeat(3, [1,1,1], './data/GS_test_1_1_1.json');
+// repeat(100, [1,2,1], './data/GS_1_2_1.json');
+// repeat(100, [1,2,2], './data/GS_1_2_2.json');
+// repeat(100, [1,10,1], './data/GS_1_10_1.json');
+// repeat(100, [1,10,2], './data/GS_1_10_2.json');
+// repeat(100, [1,13,1], './data/GS_1_13_1.json');
+// repeat(100, [1,13,2], './data/GS_1_13_2.json');
+// repeat(100, [2,10,1], './data/GS_2_10_1.json');
+// repeat(100, [2,10,2], './data/GS_2_10_2.json');
+// repeat(100, [2,13,1], './data/GS_2_13_1.json');
+// repeat(100, [2,13,2], './data/GS_2_13_2.json');
+// repeat(100, [10,13,1], './data/GS_10_13_1.json');
+// repeat(100, [10,13,2], './data/GS_10_13_2.json');
+
+var end = new Date().getTime();
+var time = end - start;
+console.log('Execution time: ' + time);
 
 // notable: index
 // 1, 2, 10, 13
@@ -50,7 +69,7 @@ repeat(3, [1,1,1]);
 // [1,13]
 // [2,10]
 // [2,13]
-// [10,10]
+// [10,13]
 
 // var TS = game(conf1['p1'], conf1['p2'], conf1['first']);
 // fs.writeFileSync('./data/TS.json', JSON.stringify(TS, null, 0));
