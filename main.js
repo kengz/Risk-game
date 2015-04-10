@@ -44,7 +44,7 @@ var start = new Date().getTime();
 
 // array: pers1, pers2, firstplayer
 // note: 1,2 are indices for p1, p2 resp
-repeat(3, [1,1,1], './data/GS_test_1_1_1.json');
+// repeat(3, [1,1,1], './data/GS_test_1_1_1.json');
 // repeat(100, [1,2,1], './data/GS_1_2_1.json');
 // repeat(100, [1,2,2], './data/GS_1_2_2.json');
 // repeat(100, [1,10,1], './data/GS_1_10_1.json');
@@ -55,7 +55,7 @@ repeat(3, [1,1,1], './data/GS_test_1_1_1.json');
 // repeat(100, [2,10,2], './data/GS_2_10_2.json');
 // repeat(100, [2,13,1], './data/GS_2_13_1.json');
 // repeat(100, [2,13,2], './data/GS_2_13_2.json');
-// repeat(100, [10,13,1], './data/GS_10_13_1.json');
+repeat(100, [10,13,1], './data/GS_10_13_1.json');
 // repeat(100, [10,13,2], './data/GS_10_13_2.json');
 
 var end = new Date().getTime();
