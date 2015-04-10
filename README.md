@@ -21,7 +21,7 @@ Each `GS` is an object, i.e. data wrapped within a pair of braces `{}`, within i
 We now interpret the data object `GS` from the outermost layer:
 
 
-```json
+```js
 {
     "1": { 	// game #1
         "1": { 	// game turn #1
