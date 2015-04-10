@@ -33,7 +33,7 @@ function dealer(dg) {
 
     // update which player owns which continents (entirely)
     function updateContinents(bench) {
-        console.log("updateContinents");
+        // console.log("updateContinents");
         // clear all players continents list
         _.each(bench, function(player) {
             player.continents = [];
@@ -71,7 +71,7 @@ function dealer(dg) {
 
     // mediates Attack from ai to anotherai
     function mediateAttacks(ai, otherai) {
-        console.log("mediateAttacks");
+        // console.log("mediateAttacks");
         var ai = ai;
         var conqArr = [];
         // fields for t_data
@@ -116,7 +116,7 @@ function dealer(dg) {
             if (defender.army == 0) {
                 conquered++;
                 conqArr.push(tar);
-                console.log("node conquered!", org, tar);
+                // console.log("node conquered!", org, tar);
                 // update node owner
                 // console.log("transfer node", tar, "from", defender.owner, "to", ai.name);
                 defender['owner'] = ai.name;
@@ -177,7 +177,7 @@ function dealer(dg) {
 
         // deal a card to ai player if conquered something
         if (conquered > 0) {
-            console.log("get a card! conquered:", conquered, _.sortBy(conqArr));
+            // console.log("get a card! conquered:", conquered, _.sortBy(conqArr));
             var c = this.dealCard();
             ai.player.cards.push(c);
         };
@@ -197,7 +197,7 @@ function dealer(dg) {
     // Battle roll: red and white //
     ////////////////////////////////
     function roll(r, w) {
-        console.log("roll");
+        // console.log("roll");
         // red = attacker; white = defender
         var red = _.sortBy(this.d.rollk(r), this.d.bigFirst);
         var white = _.sortBy(this.d.rollk(w), this.d.bigFirst);
@@ -221,7 +221,7 @@ function dealer(dg) {
     function dealCard() {
         // if depleted cards, open new deck
         if (shuffle.length == 0) {
-            console.log("shuffle new deck!");
+            // console.log("shuffle new deck!");
             shuffle = _.shuffle(_.range(42 + 2));
         };
         return shuffle.pop();

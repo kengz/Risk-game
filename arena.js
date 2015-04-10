@@ -211,7 +211,7 @@ function runGame(max) {
     var time = 0;
     while (time < max) {
         time++;
-        console.log("\nTURN", time);
+        // console.log("\nTURN", time);
         // check end of game
         var end = false;
         var winner = "No One";
@@ -228,22 +228,22 @@ function runGame(max) {
         if (end) {
             // set winner in TS
             TS['winner'] = winner;
-            console.log("\n=====================");
-            console.log("Game ends with winner", winner);
-            console.log("at turn", time);
-            console.log("Printing stats:");
-            printStats(AI1);
-            printStats(AI2);
+            // console.log("\n=====================");
+            // console.log("Game ends with winner", winner);
+            // console.log("at turn", time);
+            // console.log("Printing stats:");
+            // printStats(AI1);
+            // printStats(AI2);
             break;
         };
         // or doesn't end
         if (time==max) {
-            console.log("\n=====================");
-            console.log("Game ends without winner");
-            console.log("at turn", time);
-            console.log("Printing stats:");
-            printStats(AI1);
-            printStats(AI2);
+            // console.log("\n=====================");
+            // console.log("Game ends without winner");
+            // console.log("at turn", time);
+            // console.log("Printing stats:");
+            // printStats(AI1);
+            // printStats(AI2);
         };
     }
 }

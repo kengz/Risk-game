@@ -26,7 +26,7 @@ function PA(dg, bench) {
 
     // Primary: priority list by rolling forward
     function enumPriority(you, permutation, k) {
-        console.log("enumPriority");
+        // console.log("enumPriority");
         // identity perm = [0,1,2,3]
         var id = [enumAttack, enumWeaken, enumThreat, enumLost];
         // the priority list
@@ -108,7 +108,7 @@ function PA(dg, bench) {
     // Primary: update for priority algorithm,
     // call pressure and worth computers
     function updateForPriority(player, wf) {
-        console.log("updateForPriority");
+        // console.log("updateForPriority");
         // failsafe
         _.each(player.countries, function(i) {
             if (g.nodes[i].owner != player.name) {
@@ -135,7 +135,7 @@ function PA(dg, bench) {
 
     // helper-Primary: per-turn, update pressure
     function updatePressures(player, wf) {
-        console.log("updatePressures");
+        // console.log("updatePressures");
         // update AMs
         var AMs = NMstoAMs(player, NMs);
         // update prevPressures
@@ -161,7 +161,7 @@ function PA(dg, bench) {
 
     // primary: calc and update the worth of every node, from your player perspective. return sorted node lists
     function updateWorths(you) {
-        console.log("updateWorths");
+        // console.log("updateWorths");
         // update worth from your perspective
         updateCriterion();
         evalWorthByPlayers(you);
@@ -192,7 +192,7 @@ function PA(dg, bench) {
 
     // update priority for all players
     function updateCriterion() {
-        console.log("updateCriterion");
+        // console.log("updateCriterion");
         // need for each player in bench
         _.each(bench, function(p) {
         //     if (p.name != 'p3') {

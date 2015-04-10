@@ -85,7 +85,7 @@ function AI(player, persona, dg) {
     this.fortify = fortify;
 
     function fortify() {
-    	console.log("fortify");
+    	// console.log("fortify");
         // find border node with lowest pressure
         // find none-border node with AM higher than it
         // if is neigh of it, then move in all but 1
@@ -108,7 +108,7 @@ function AI(player, persona, dg) {
         // after trying all, if none, then move anything to a highest pressure border node
         if (!fortified) {
             for (var i = 0; i < coun.length; i++) {
-                console.log("fortifying by accumulation");
+                // console.log("fortifying by accumulation");
                 var neighs = _.intersection(coun, g.nodes[coun[i]].adjList);
                 var maxNeigh = _.last(neighs);
                 if (maxNeigh != undefined) {
@@ -146,10 +146,10 @@ function AI(player, persona, dg) {
 
     // move in: always move all but one
     function moveIn(org, tar) {
-    	console.log("moveIn");
+    	// console.log("moveIn");
     	// failsafe
         if (g.nodes[tar].owner != this.name && g.nodes[tar].army != 0) {
-            console.log("moveIn error!")
+            // console.log("moveIn error!")
         };
         // console.log("before moveIn", g.nodes[org].army, g.nodes[tar].army);
         // extract
@@ -163,7 +163,7 @@ function AI(player, persona, dg) {
 
     // defending when enemy rolls 'red' number of dice
     function defend(att) {
-    	console.log("defend");
+    	// console.log("defend");
         // object returned from attack()
         var org = att.origin;
         var tar = att.target;
@@ -193,7 +193,7 @@ function AI(player, persona, dg) {
         // helper: based on personality threshold, initiate attack by sending request to dealer
         function strike(threshold, playername) {
             if (prio.length == 0) {
-                console.log("priority list empty!");
+                // console.log("priority list empty!");
             };
             // target in prio list, loop
             for (var j = 0; j < prio.length; j++) {
@@ -208,7 +208,7 @@ function AI(player, persona, dg) {
                     g.nodes[o].owner == playername &&
                     g.nodes[o].army >= 2 &&
                     g.nodes[i].army > 0) {
-                    console.log("attempt attack");
+                    // console.log("attempt attack");
                     // check if army number >= threshold/2, so that can keep attacking after first time
                     var diff = g.nodes[o].army - g.nodes[i].army;
                     // loop until wanna attack, return
@@ -248,7 +248,7 @@ function AI(player, persona, dg) {
 
     // place armies based on personality, balance pressures
     function placeArmies() {
-    	console.log("placeArmies");
+    	// console.log("placeArmies");
         // the army counterpressure threshold
         var threshold = 4;
         // extract personality
@@ -307,7 +307,7 @@ function AI(player, persona, dg) {
 
     // AI trade in cards based on personality, to call giveArmies from dealer
     function tradeIn() {
-    	console.log("tradeIn");
+    	// console.log("tradeIn");
         // extract personality
         var att = this.personality['attack'];
 
@@ -343,7 +343,7 @@ function AI(player, persona, dg) {
 
         // helper: find tradeable set in player's hand
         function findTradeable(player) {
-        	console.log("findTradeable");
+        	// console.log("findTradeable");
             // hand = indices of cards
             var hand = player.cards;
             var setToTrade = undefined;

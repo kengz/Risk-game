@@ -23,8 +23,9 @@ function repeat(n, c, o) {
 	};
 	// fs.writeFileSync('./data/GS.json', JSON.stringify(GS, null, 0));
 	fs.writeFileSync(o, JSON.stringify(GS, null, 0));
+	console.log("file written to ", o);
 	// delete object from memory to free up space
-	delete GS;
+	GS = null;
 	// return GS;
 }
 
@@ -33,13 +34,15 @@ var start = new Date().getTime();
 
 // array: pers1, pers2, firstplayer
 // note: 1,2 are indices for p1, p2 resp
-// repeat(3, [1,1,1], './data/GS_test_1_1_1.json');
+repeat(3, [1,1,1], './data/GS_test_1_1_1.json');
+// repeat(500, [1,1,1], './data/GS_1_1_1_longcontrol.json');
+// repeat(500, [1,1,2], './data/GS_1_1_2_longcontrol.json');
 // repeat(100, [1,1,1], './data/GS_1_1_1.json');
 // repeat(100, [1,1,2], './data/GS_1_1_2.json');
 // repeat(100, [1,2,1], './data/GS_1_2_1.json');
 // repeat(100, [1,2,2], './data/GS_1_2_2.json');
-repeat(100, [1,10,1], './data/GS_1_10_1.json');
-repeat(100, [1,10,2], './data/GS_1_10_2.json');
+// repeat(100, [1,10,1], './data/GS_1_10_1.json');
+// repeat(100, [1,10,2], './data/GS_1_10_2.json');
 // repeat(100, [1,13,1], './data/GS_1_13_1.json');
 // repeat(100, [1,13,2], './data/GS_1_13_2.json');
 // repeat(100, [2,10,1], './data/GS_2_10_1.json');
