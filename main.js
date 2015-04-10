@@ -5,25 +5,12 @@ var cmb = require('js-combinatorics').Combinatorics;
 var _ = require('underscore');
 var fs = require('fs');
 
+// For configs
 var ps = require('./srcdata/AI-personalities.json');
 var pls = ['p0','p1','p2'];
 
 // The game constructor from arena
 var game = require('./arena.js').Game;
-
-// a config
-var conf1 = {
-	p1: ps[1],
-	p2: ps[1],
-	first: pls[0]
-};
-
-// a config
-var conf2 = {
-	p1: ps[1],
-	p2: ps[1],
-	first: pls[1]
-};
 
 // repeat games for a fixed config: personalities, player order.
 function repeat(n, c, o) {
@@ -32,11 +19,13 @@ function repeat(n, c, o) {
 	for (var i = 1; i < n+1; i++) {
 		// save an instance of a game's time-series TS
 		// GS[i] = game(c['p1'], c['p2'], c['first']);
-		GS[i] = game(ps[c[0]], ps[c[1]], pls[c[2]]);
+		GS[i] = new game(ps[c[0]], ps[c[1]], pls[c[2]]);
 	};
 	// fs.writeFileSync('./data/GS.json', JSON.stringify(GS, null, 0));
 	fs.writeFileSync(o, JSON.stringify(GS, null, 0));
-	return GS;
+	// delete object from memory to free up space
+	delete GS;
+	// return GS;
 }
 
 
@@ -44,10 +33,10 @@ var start = new Date().getTime();
 
 // array: pers1, pers2, firstplayer
 // note: 1,2 are indices for p1, p2 resp
-repeat(1, [1,1,1], './data/GS_test_1_1_1.json');
-// repeat(100, [1,1,1], './data/GS_1_1_1.json');
-// repeat(100, [1,1,2], './data/GS_1_1_2.json');
-// repeat(100, [1,2,1], './data/GS_1_2_1.json');
+// repeat(3, [1,1,1], './data/GS_test_1_1_1.json');
+repeat(100, [1,1,1], './data/GS_1_1_1.json');
+repeat(100, [1,1,2], './data/GS_1_1_2.json');
+repeat(100, [1,2,1], './data/GS_1_2_1.json');
 // repeat(100, [1,2,2], './data/GS_1_2_2.json');
 // repeat(100, [1,10,1], './data/GS_1_10_1.json');
 // repeat(100, [1,10,2], './data/GS_1_10_2.json');

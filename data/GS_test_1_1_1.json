@@ -1,1 +1,50 @@
-{"1":{"first_player":"p1","winner":"tie","AI1":["Survival","agressive","cautious","rusher"],"AI2":["Survival","agressive","cautious","rusher"],"p1_countries":[14,16,14],"p1_continents":[0,0,0],"p1_army_given":[4,0,4],"p1_total_army":[44,40,42],"p2_countries":[14,12,15],"p2_continents":[0,0,0],"p2_army_given":[0,4,0],"p2_total_army":[40,41,40],"n_attacks":[2,5,14],"n_conquered":[2,3,4]}}
+{
+    "1": {
+        "first_player": "p1",
+        "winner": "tie",
+        "AI1": ["Survival", "agressive", "cautious", "rusher"],
+        "AI2": ["Survival", "agressive", "cautious", "rusher"],
+        "p1_countries": [14, 16, 12],
+        "p1_continents": [0, 0, 0],
+        "p1_army_given": [4, 0, 4],
+        "p1_total_army": [44, 41, 17],
+        "p2_countries": [14, 12, 16],
+        "p2_continents": [0, 0, 0],
+        "p2_army_given": [0, 4, 0],
+        "p2_total_army": [40, 41, 62],
+        "n_attacks": [3, 6, 2],
+        "n_conquered": [2, 4, 2]
+    },
+    "2": {
+        "first_player": "p1",
+        "winner": "tie",
+        "AI1": ["Survival", "agressive", "cautious", "rusher"],
+        "AI2": ["Survival", "agressive", "cautious", "rusher"],
+        "p1_countries": [14, 17, 16],
+        "p1_continents": [0, 0, 0],
+        "p1_army_given": [4, 0, 5],
+        "p1_total_army": [85, 107, 79],
+        "p2_countries": [14, 14, 16],
+        "p2_continents": [0, 0, 0],
+        "p2_army_given": [0, 4, 0],
+        "p2_total_army": [54, 58, 84],
+        "n_attacks": [8, 6, 8],
+        "n_conquered": [3, 2, 4]
+    },
+    "3": {
+        "first_player": "p1",
+        "winner": "tie",
+        "AI1": ["Survival", "agressive", "cautious", "rusher"],
+        "AI2": ["Survival", "agressive", "cautious", "rusher"],
+        "p1_countries": [14, 17, 13],
+        "p1_continents": [1, 0, 0],
+        "p1_army_given": [11, 0, 4],
+        "p1_total_army": [144, 121, 77],
+        "p2_countries": [14, 12, 16],
+        "p2_continents": [0, 0, 0],
+        "p2_army_given": [0, 4, 0],
+        "p2_total_army": [113, 73, 110],
+        "n_attacks": [8, 7, 7],
+        "n_conquered": [3, 4, 3]
+    }
+}
