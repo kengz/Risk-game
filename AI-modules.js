@@ -92,14 +92,30 @@ function AI(player, persona, dg) {
         
         // borders sorted by pressure from lowest
         var coun = _.sortBy(this.player.countries, byPressure);
+        var fortified = false;
         // call on coun till fortified one, or none
         for (var i = 0; i < coun.length; i++) {
+            // fortify by moving troops from internal node with high pressure
             var found = hiPressNonBorderNeigh(coun[i], this.player);
-            console.log("to fortify node", found);
+            // console.log("to fortify node", found);
             if (found != undefined) {
             	this.moveIn(found, coun[i]);
             	// if move in once, done, break
-            	return 0;
+                fortified = true;
+                return 0;
+            }
+        };
+        // after trying all, if none, then move anything to a highest pressure border node
+        if (!fortified) {
+            for (var i = 0; i < coun.length; i++) {
+                console.log("fortifying by accumulation");
+                var neighs = _.intersection(g.nodes[coun[i]].adjList, this.player.countries);
+                var maxNeigh = _.max(neighs, byPressure);
+                if (maxNeigh != undefined) {
+                    this.moveIn(maxNeigh, coun[i]);
+                    fortified = true;
+                    return 0;
+                };
             };
         };
 
@@ -358,18 +374,18 @@ function AI(player, persona, dg) {
 
         // convert one set (ind arr) to cards arr
         function toCards(setToTrade) {
-                return _.map(setToTrade, function(i) {
-                    return deck[i];
-                });
-            }
+            return _.map(setToTrade, function(i) {
+                return deck[i];
+            });
+        }
             // Finally, convert all tradeSets to cards
-        var tradeSetsAsCards = _.map(tradeSets, toCards);
-        return tradeSetsAsCards;
+            var tradeSetsAsCards = _.map(tradeSets, toCards);
+            return tradeSetsAsCards;
+        };
+
     };
 
-};
-
-exports.AI = AI;
+    exports.AI = AI;
 
 
 

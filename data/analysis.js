@@ -6,6 +6,7 @@ var fs = require('fs');
 var GS = require('./GS_1_1_1.json');
 // var GS = require('./GS_1_1_2.json');
 // var GS = require('./GS_1_2_1.json');
+// var GS = require('./GS_1_2_2.json');
 // var GS = require('./GS_2_10_1.json');
 // var GS = require('./GS_2_10_2.json');
 // var GS = require('./GS_10_13_1.json');
@@ -33,8 +34,8 @@ var game_n;
 // MODIFY: the returned array as needed
 function address(i) {
 	// the address to specift the target data
-	return [game_n ,i , 'p2', 'n_countries'];
-	// return [game_n ,"winner"];
+	// return [game_n ,i , 'p2', 'n_countries'];
+	return [game_n ,"winner"];
 } 
 // DONT MODIFY: the result returned from extracting at address
 function result(i) {
@@ -48,8 +49,8 @@ function pull(j) {
 	game_n = j;
 	// the number of turns in a game = game.length - 4
 	var n_turn = _.keys(GS[game_n]).length - 4;
-	return _.map(_.range(1, n_turn+1), result);
-	// return result(j);
+	// return _.map(_.range(1, n_turn+1), result);
+	return result(j);
 }
 
 
@@ -66,10 +67,10 @@ function pullAll() {
 }
 
 // call and print the output to terminal
-console.log(pullAll());
+// console.log(pullAll());
 // or write the file to output
 // MODIFY the file name 'extracted.json'
-fs.writeFileSync('./extracted.json', JSON.stringify(pullAll(), null, 4));
+// fs.writeFileSync('./extracted.json', JSON.stringify(pullAll(), null, 4));
 
 
 function counter(p) {
@@ -80,5 +81,8 @@ function counter(p) {
 }
 
 
-// console.log(counter('p1'));
-// console.log(counter('p2'));
+console.log(counter('p1').win);
+console.log(counter('p2').win);
+
+console.log(counter('p1').lose);
+console.log(counter('p2').lose);

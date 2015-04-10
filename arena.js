@@ -17,13 +17,25 @@ function Game(pers1, pers2, firstplayer) {
 ////////////////////////////////
 // the time-series for a game //
 ////////////////////////////////
+// Enumeration
 var TS = {};
 TS['first_player'] = firstplayer;
-TS['AI1'] = pers1;
-TS['AI2'] = pers2;
 // set winner to tie first, if exist, reset below
 TS['winner'] = 'tie';
-// sample time series: TS[time] = t_data;
+TS['AI1'] = pers1;
+TS['AI2'] = pers2;
+
+
+TS['p1_countries'] = [];
+TS['p1_continents'] = [];
+TS['p1_army_given'] = [];
+TS['p1_total_army'] = [];
+TS['p2_countries'] = [];
+TS['p2_continents'] = [];
+TS['p2_army_given'] = [];
+TS['p2_total_army'] = [];
+TS['n_attacks'] = [];
+TS['n_conquered'] = [];
 
 
 ///////////////////////////////
@@ -134,35 +146,23 @@ function initAIsetup() {
 
 
 
-
 // One game turn of ai
 function gameturn(ai) {
-    // sample time series: TS[time] = t_data;
-    // the time series data at this turn
-    var t_data = {
-        'turn': ai.name,
-        'p1': {},
-        'p2': {}
-    };
-    function setd1(ai, field) {
-        t_data[ai.name][field] = ai.player[field];
-    };
-    function setd2(field, val) {
-        t_data[field] = val;
+
+    // push data to its time series array
+    function pushTS(ai, key, value) {
+        var idkey = ai.name+'_'+key;
+        TS[idkey].push(value);
     };
 
     // 1. first update info: Priority Algorithm
     AIupdate(ai);
-    // update for t_data
+    // update for TS
     // count: var starts with 'n_var'
-    t_data[ai.name]['n_countries'] = ai.countCountries();
-    t_data[other(ai).name]['n_countries'] = other(ai).countCountries();
-    t_data[ai.name]['n_continents'] = ai.countContinents();
-    t_data[other(ai).name]['n_continents'] = other(ai).countContinents();
-    // setd1(ai, 'countries'); setd1(other(ai), 'countries');
-    // setd1(ai, 'continents'); setd1(other(ai), 'continents');
-    // setd1(ai, 'regions'); setd1(other(ai), 'regions');
-    // setd1(ai, 'pressures'); setd1(other(ai), 'pressures');
+    pushTS(ai, 'countries', ai.countCountries())
+    pushTS(other(ai), 'countries', other(ai).countCountries())
+    pushTS(ai, 'continents', ai.countContinents())
+    pushTS(other(ai), 'continents', other(ai).countContinents())
 
 
     // 2. then get armies and place them: Placement alg
@@ -170,18 +170,18 @@ function gameturn(ai) {
         dealer.giveArmies(ai.player, ai.tradeIn())
         );
     ai.placeArmies();
-    // update for t_data
-    t_data[ai.name]['n_army_given'] = army_given;
-    t_data[other(ai).name]['n_army_given'] = 0;
-    t_data[ai.name]['n_total_army'] = ai.countArmy();
-    t_data[other(ai).name]['n_total_army'] = other(ai).countArmy();
+    // update for TS
+    pushTS(ai, 'army_given', army_given);
+    pushTS(other(ai), 'army_given', 0);
+    pushTS(ai, 'total_army', ai.countArmy());
+    pushTS(other(ai), 'total_army', other(ai).countArmy());
 
     // 3. then attack: Attack alg. include owner/army transfer
     var attres = dealer.mediateAttacks(ai, other(ai));
-    // update for t_data
-    t_data['n_attacks'] = attres['n_attacks'];
+    // update for TS
+    TS['n_attacks'].push(attres['n_attacks']);
+    TS['n_conquered'].push(attres['n_conquered']);
     // t_data['all_outcomes'] = attres['all_outcomes'];
-    t_data['n_conquered'] = attres['n_conquered'];
 
 
     // 4. attacks end; fortify
@@ -195,9 +195,7 @@ function gameturn(ai) {
     if (other(ai).player.countries.length == 0) {
         end = true;
     };
-    t_data['end'] = end;
-    return t_data;
-    // return end;
+    return end;
 }
 
 
@@ -217,20 +215,14 @@ function runGame(max) {
         // check end of game
         var end = false;
         var winner = "No One";
-        // t_data at time
-        var td;
         // take turn. player order, if odd, first player
         if (time % 2 == 1) {
-            td = gameturn(AIs[0]);
-            end = td.end;
+            end = gameturn(AIs[0]);
             winner = AIs[0].name;
         } else {
-            td = gameturn(AIs[1]);
-            end = td.end;
+            end = gameturn(AIs[1]);
             winner = AIs[1].name;
         };
-        // set series t_data for time
-        TS[time] = td;
 
         // end game if winner arises
         if (end) {
@@ -257,7 +249,7 @@ function runGame(max) {
 }
 
 // Call and time the runGame
-var max = 300;
+var max = 3;
 // Timer
 // var start = new Date().getTime();
 runGame(max);
