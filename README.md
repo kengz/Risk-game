@@ -113,7 +113,7 @@ cd data
 
 and try running it by typing and hitting enter
 ```
-node main.js
+node analysis.js
 ```
 
 You should see the output messages and built file.
