@@ -13,10 +13,6 @@
 // Master Game wrapper: init and run everything in this file = an instance of game, with AI personalities, and player order: 
 // if 1, AI1 first; if 0, AI2 first
 function Game(pers1, pers2, firstplayer) {
-// player order variable in gameturn
-var first;
-if (firstplayer == 'p1') { first = 1; }
-else if (firstplayer == 'p2') { first = 0; }
 
 ////////////////////////////////
 // the time-series for a game //
@@ -50,7 +46,7 @@ var PrioAlg = require('./priority-alg.js');
 // Imports, Initialization, Constructors //
 ///////////////////////////////////////////
 
-var control = true; //control test: don't randomize
+var control = false; //control test: don't randomize
 var init = require('./initmap.js').initMap(control);
 // create graph g.
 g = init.g;
@@ -83,11 +79,23 @@ var control = ['Survival', 'agressive', 'cautious', 'rusher'];
 var AI3 = new AIM(p3, control, g);
 
 // The list of 3 AIs; third is neutral, doesn't do much
-var AIlist = [AI3, AI1, AI2];
+var AIlist = [AI3];
 // the active AIs (without AI3)
-var AIs = [AI1, AI2];
+var AIs = [];
 
-
+// Player order, add differently to lists
+if (firstplayer == 'p1') {
+    AIlist.push(AI1);
+    AIlist.push(AI2);
+    AIs.push(AI1);
+    AIs.push(AI2);
+}
+else if (firstplayer == 'p2') {
+    AIlist.push(AI2);
+    AIlist.push(AI1);
+    AIs.push(AI2);
+    AIs.push(AI1);
+}
 
 
 ////////////////////////////
@@ -211,16 +219,15 @@ function runGame(max) {
         var winner = "No One";
         // t_data at time
         var td;
-        // take turn. player order [0,1]
-        // if 1, AI1 first; if 0, AI2 first
-        if (time % 2 == first) {
-            td = gameturn(AI1);
+        // take turn. player order, if odd, first player
+        if (time % 2 == 1) {
+            td = gameturn(AIs[0]);
             end = td.end;
-            winner = AI1.name;
+            winner = AIs[0].name;
         } else {
-            td = gameturn(AI2);
+            td = gameturn(AIs[1]);
             end = td.end;
-            winner = AI2.name;
+            winner = AIs[1].name;
         };
         // set series t_data for time
         TS[time] = td;

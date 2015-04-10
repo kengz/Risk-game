@@ -2,7 +2,14 @@
 var _ = require('underscore');
 var fs = require('fs');
 
-var GS = require('./GS_test_1_1_1.json');
+// var GS = require('./GS_test_1_1_1.json');
+var GS = require('./GS_1_1_1.json');
+// var GS = require('./GS_1_1_2.json');
+// var GS = require('./GS_1_2_1.json');
+// var GS = require('./GS_2_10_1.json');
+// var GS = require('./GS_2_10_2.json');
+// var GS = require('./GS_10_13_1.json');
+// var GS = require('./GS_10_13_2.json');
 
 
 // DONT MODIFY: extract value from its address, which is an array specifying how deep in GS it is
@@ -26,7 +33,8 @@ var game_n;
 // MODIFY: the returned array as needed
 function address(i) {
 	// the address to specift the target data
-	return [game_n ,i , 'p1', 'n_countries'];
+	return [game_n ,i , 'p2', 'n_countries'];
+	// return [game_n ,"winner"];
 } 
 // DONT MODIFY: the result returned from extracting at address
 function result(i) {
@@ -41,6 +49,7 @@ function pull(j) {
 	// the number of turns in a game = game.length - 4
 	var n_turn = _.keys(GS[game_n]).length - 4;
 	return _.map(_.range(1, n_turn+1), result);
+	// return result(j);
 }
 
 
@@ -63,5 +72,13 @@ console.log(pullAll());
 fs.writeFileSync('./extracted.json', JSON.stringify(pullAll(), null, 4));
 
 
+function counter(p) {
+	var output = pullAll();
+	return _.countBy(output, function(res) {
+		return res  == p ? 'win': 'lose';
+	});
+}
 
 
+// console.log(counter('p1'));
+// console.log(counter('p2'));
