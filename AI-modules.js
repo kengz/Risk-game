@@ -109,8 +109,8 @@ function AI(player, persona, dg) {
         if (!fortified) {
             for (var i = 0; i < coun.length; i++) {
                 console.log("fortifying by accumulation");
-                var neighs = _.intersection(g.nodes[coun[i]].adjList, this.player.countries);
-                var maxNeigh = _.max(neighs, byPressure);
+                var neighs = _.intersection(coun, g.nodes[coun[i]].adjList);
+                var maxNeigh = _.last(neighs);
                 if (maxNeigh != undefined) {
                     this.moveIn(maxNeigh, coun[i]);
                     fortified = true;
