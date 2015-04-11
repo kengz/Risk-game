@@ -48,11 +48,14 @@ var start = new Date().getTime();
 // 
 // repeat(100, [1,10,1], './data/GS_1_10_1.json');
 // repeat(100, [1,10,2], './data/GS_1_10_2.json');
-// repeat(100, [1,10,1], './data/GS_1_10_1_500.json');
-// repeat(100, [1,10,2], './data/GS_1_10_2_500.json');
+// repeat(500, [1,10,1], './data/GS_1_10_1_500.json');
+// repeat(500, [1,10,2], './data/GS_1_10_2_500.json');
 // 
 // repeat(100, [1,13,1], './data/GS_1_13_1.json');
 // repeat(100, [1,13,2], './data/GS_1_13_2.json');
+// repeat(500, [1,13,1], './data/GS_1_13_1_500.json');
+// repeat(500, [1,13,2], './data/GS_1_13_2_500.json');
+// 
 // repeat(100, [2,10,1], './data/GS_2_10_1.json');
 // repeat(100, [2,10,2], './data/GS_2_10_2.json');
 // repeat(100, [2,13,1], './data/GS_2_13_1.json');
@@ -62,7 +65,7 @@ var start = new Date().getTime();
 
 var end = new Date().getTime();
 var time = end - start;
-console.log('Execution time: ' + time);
+console.log('Execution time: ' + time/1000/60, 'minutes');
 
 // notable: index
 // 1, 2, 10, 13

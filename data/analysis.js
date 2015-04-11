@@ -11,8 +11,12 @@ var fs = require('fs');
 // var GS = require('./GS_1_2_2.json');
 // var GS = require('./GS_1_2_1_500.json');
 // var GS = require('./GS_1_2_2_500.json');
+// var GS = require('./GS_1_10_1_500.json');
+// var GS = require('./GS_1_10_2_500.json');
 // var GS = require('./GS_2_10_1.json');
 // var GS = require('./GS_2_10_2.json');
+// var GS = require('./GS_2_10_1_500.json');
+// var GS = require('./GS_2_10_2_500.json');
 // var GS = require('./GS_10_13_1.json');
 // var GS = require('./GS_10_13_2.json');
 
