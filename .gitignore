@@ -3,10 +3,19 @@ bin/
 bin-debug/
 bin-release/
 node_modules/
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.log
+*.out
+*.synctex.gz
+*.cls
 
 # Other files and folders
 .settings/
 README.html
+
 
 # Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
 # should NOT be excluded as they contain compiler settings and other important

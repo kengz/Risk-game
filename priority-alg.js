@@ -146,7 +146,11 @@ function PA(dg, bench) {
         // update pressures on player; on nodes for worth-calc
         for (var i = 0; i < player.pressures.length; i++) {
             // final pressure = origin's army vs avg army surrounding it
-            player.pressures[i] = g.nodes[i].army + pressNoOrigin[i];
+            var orgArmy = g.nodes[i].army;
+            if (g.nodes[i].owner!=player.name) {
+                orgArmy *= -1;
+            };
+            player.pressures[i] = orgArmy + pressNoOrigin[i];
             // update on nodes for easy calc
             g.nodes[i].prevPressure = g.nodes[i].pressure;
             g.nodes[i].pressure = player.pressures[i];
