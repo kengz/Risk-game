@@ -1,6 +1,8 @@
 # Risk-game
 Implementation of the 2-player Risk game and the AI to play it, for Math 335 Probability project.
 
+## Paper
+More to come soon.
 
 ## Strategies
 See strategies.md for more. Some rewrite required; coming soon.
