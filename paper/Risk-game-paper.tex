@@ -120,11 +120,11 @@ $\textbf{Radius}$ is the measure of shortest distance from an origin node. We id
 
 Furthermore, we define the fields that will be useful in our algorithms:
 
-\begin{definition}
+\begin{definition} \label{worth}
 The $\textbf{worth}$ of a node is the measure of its importance to an AI, as calculated by its internal metric algorithm, and is used by the AI to prioritize its decisions: which node should it defend/attack first.
 \end{definition}
 
-\begin{definition}
+\begin{definition} \label{pressure}
 The $\textbf{pressure}$ of a node as perceived by an AI is the measure of the average army distribution around the node, up to 5 unit radii away. It is calculated by the AI's internal metric and used to prioritize decisions.
 \end{definition}
 
@@ -132,7 +132,7 @@ Note that the worth and pressure of a node are not the same when calculated by o
 
 Finally, we introduce a data structure as the raw representation of overall army distribution on the map for various calculations:
 
-\begin{definition}
+\begin{definition} {RMAM}
 The $\textbf{Radius Matrix (RM)}$ from an origin node $\mathcal{O}$ is the matrix that better represents the connectivity of neighbor nodes of the origin within some radius. It is enumerated by the Radius Matrix Algorithm below, and each entry is the name of some node.
 
 Its corresponding $\textbf{Army Matrix (AM)}$ is a different representation of the RM, with each entry now being $z \in \mathbb{Z}$, where $|z|$ is the number of armies at the node, and $z$ is positive if the node is owned by the calculating AI, and negative otherwise.
@@ -146,27 +146,33 @@ Its corresponding $\textbf{Army Matrix (AM)}$ is a different representation of t
 
 \section{Algorithms}
 
+We now enumerate the algorithms for each step of the game, which will collectively form the final algorithm used by the AI to play the game.
 
 
+\subsection{The Radius Matrix Algorithm}
 
-\subsection{Algorithm}
-
-We now have the tools necessary to enumerate an algorithm:
-
-\algtitle{Nearest-Neighbor(for undirected graph with two vertex-types)}
-Given a graph,
+\algtitle{Radius Matrix (RM) for an origin node $\mathcal{O}$}
+Starting from an origin node $\mathcal{O}$, initialize an empty matrix for its RM,
 \begin{enumerate}
-	\item For each station, do a shortest-path search to a closest depot,
-	\item Mark all stations traversed by the path as checked.
-	\item Repeat 2-3 for any unchecked stations.
-	\item From all the searched paths, select all that ends at a same depot, and 
-	\item For the largest path (most vertices), scan the others(smaller, with less vertices), and eliminate any subpaths (all vertices are found in the largest path);
-	\item Repeat for the next largest path down to the smallest, then add all remaining paths ending as the same depot to the NN Graph.
-	\item Repeat 4-6 for any searched paths are not yet added to NN Graph.
+	\item Add the index of each adjacent node (at radius 1) of $\mathcal{O}$ to a new row in RM.
+	\item Repeat for $i \in \{2,3,...,n\}$, where $n$ is the maximum radius covered:
+	
+	For each entry $p$ at column $i$, get all $n_p$ of its adjacent nodes at radius $i+1$ from $\mathcal{O}$. 
+
+	\item Duplicate the row of entry $p$ while appending to it each of the $n_p$ adjacent nodes at column $i+1$. If $n_p=0$, append $``empty"$ instead. The process is akin to a Cartesian product.
+\end{enumerate}
+
+Note that the column number will coincide with the radius from $\mathcal{O}$. The RM with $n$ columns is a representation of the connectivity from the origin up to radius $n$, where each row is the shortest path from the origin to a point at radius $n$, and there may exist many such paths.
+
+\algtitle{Army Matrix (AM) for an origin node $\mathcal{O}$}
+We can convert an RM into AM, a representation using the number of armies,
+\begin{enumerate}
+	\item Find the RM for node $\mathcal{O}$ using the RM algorithm.
+	\item For each entry $p$ in RM, if node $p$ has the same owner as $\mathcal{O}$, replace the entry with the number of army at $p$; else, replace with the negative of the number of army at $p$. If an entry $p$ is $``empty"$, append 0 instead.
 \end{enumerate}
 
 
-
+We have then transformed an RM into an alternate form AM, which gives a representation of the army distribution and connectivity around the origin node $\mathcal{O}$. This matrix can be used for calculating the $\textbf{pressure}$ from definition \ref{pressure}.
 
 Draft:
 
