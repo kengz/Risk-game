@@ -7,6 +7,7 @@
 %Packages to load which give you useful commands
 \usepackage{subfig}
 \usepackage{graphicx}
+\usepackage{hyperref}
 \usepackage{amssymb, amsmath, amsthm}
 
 %Sets the margins
@@ -75,7 +76,7 @@ dravesb{\tt @}lafayette.edu.}
 \maketitle
 
 \begin{abstract}
-We introduce algorithms to play the board game $\emph{Risk}$. The game is analyzed as an optimization problem in graph theory, where countries are represented as nodes in an undirected graph, and decisions are considered based on the graph properties. We then implement the algorithms as A.I.s in {\tt JavaScript}, with different parameters forming different A.I. personalities. We observe as the A.I.s play against each other, and discovered interesting strategies and new results.
+We implement an A.I. to play the board game $\emph{Risk}$. The game is formalized as an optimization problem in graph theory, where countries are represented as nodes in an undirected graph, and decisions are considered based on the graph properties. We introduce solution algorithms, with variable parametrizations, which are then implement as A.I.s with different personalities in {\tt JavaScript}. We set up games among A.I.s to measure their performances, and discover unusual game strategies.
 \end{abstract}
 
 
@@ -89,7 +90,48 @@ We introduce algorithms to play the board game $\emph{Risk}$. The game is analyz
 
 \section{Introduction} \label{intro}
 
-The classic board game $\emph{World Domination RISK \circledR}$ is a game of military strategy, where players of different factions try to conquer all 42 countries on the map, by attacking and defending with his/her armies.
+The board game $\emph{World Domination RISK \circledR}$ is a game of military strategy, where players of different factions try to conquer all 42 countries on the map, by deploying armies to attack and defend. We use the classic $\emph{Hasbro}$ version of the game; the rules are well known and can easily be found online, but they will be included as we walk through our algorithms.
+
+In this paper, we first set up our formalization of the game as a graph optimization problem. Next we introduce graph algorithms to carry out each of the game moves, and explain our reasoning behind them. Then, we combine these to implement an A.I., with variable personalities based on the parametrization of its internal algorithms. The different A.I.s then play multiple games against one another, with their results recorded. Finally, we analyze their performances, and find several unusual, interesting strategies discovered by the A.I.s that are never observed from human players.
+
+This entire project is public on GitHub: \url{https://github.com/kengz/Risk-game}.
+
+
+
+\section{Formalization} \label{formalization}
+
+The game is inherently dependent on the board, which is a world map of 42 countries, interconnected in specific ways. Decisions to attack or defend are based on the distribution of the armies, the surroundings of a location, and connectivity of countries. These motivate our formalizing the game board and algorithms based on an undirected graph. From now we shall refer to the graph representation as $\emph{map}$:
+
+\begin{definition} A map is a connected, undirected planar graph, with 42 nodes, each representing a country. The nodes are connected the same way as are countries on the game board, by undirected edge of weight 1.
+\end{definition}
+
+We assign data fields to each node, namely its country name, the continent it is in, its player owner, the number of armies of the owner in it, its worth and pressure as determined by some metric described below.
+
+
+\begin{definition}
+A region is a connected subgraph consisting of nodes all owned by the same player. Each player can own many regions, which together partition the map.
+\end{definition}
+
+\begin{definition}
+Radius is the measure of shortest distance from an origin node. We identify the neighbors of node $\mathcal{O}$ at radius k to be the nodes whose shortest distance from $\mathcal{O}$ is k.
+\end{definition}
+
+
+
+
+Draft:
+
+1. Formalization of problem
+
+2. Algorithms and decisions
+
+3. AI Implementation and variations
+
+4. results, performance, analysis
+
+5. AI behaviors, surprises
+
+
 
 \begin{definition}
 A block code is a rectangular array of $n$-nary letters (entries), with non-repeating columns and rows. Notate any block code of $n$-nary, $p$-columns and $k$-rows as 
