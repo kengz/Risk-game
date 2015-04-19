@@ -2,10 +2,11 @@
 Implementation of the 2-player Risk game and the AI to play it, for Math 335 Probability project.
 
 ## Paper
-More to come soon.
+Look inside the folder [paper](https://github.com/kengz/Risk-game/tree/master/paper).
+
 
 ## Strategies
-See strategies.md for more. Some rewrite required; coming soon.
+Deprecated. See Paper.
 
 
 ## Data Output (Ben, read this)
@@ -125,7 +126,6 @@ We now interpret the data object `GS`; most of it should be self-explanatory. No
 
 
 #### Node.js
-
 If you don't have `Node.js`, go to their website [Nodejs](https://nodejs.org) and install it (You may need to restart). To check your Node version, type into terminal
 
 ```bash
