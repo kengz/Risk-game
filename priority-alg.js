@@ -115,8 +115,8 @@ function PA(dg, bench) {
                 console.log("wrong Name!", i);
             };
         })
-        updateWorths(player);
         updatePressures(player, wf);
+        updateWorths(player);
         // countries at beginning of turn = prevCountries
         player.prevCountries = player.countries;
     };
