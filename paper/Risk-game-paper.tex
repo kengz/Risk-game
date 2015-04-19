@@ -216,7 +216,7 @@ $$\emph{PP}(\mathbf{r}) = \mathbf{w} \cdot \mathbf{r}$$
 
 
 \algtitle{The Pressure Algorithm}
-The AI calculates the pressure for each node using its personality trait $\textbf{weight-function}$, or the metric vector $\mathbf{w}$:
+The AI calculates the pressure for each node using its personality trait $\textbf{threat-perception}$, or the metric vector $\mathbf{w}$:
 \begin{enumerate}
 	\item Update the data fields of the map and call the AM algorithm to compute the AMs for all 42 nodes.
 	\item For each node $\mathcal{O}$, compute the dot product between $\mathbf{w}$ and each row of the node's AM; the result is a column vector $\mathbf{c}$.
@@ -321,20 +321,47 @@ All AIs use the same fortifying algorithm.
 
 
 
+\section{AI Algorithms and Personalities}
+
+We now put everything together to form the AI, which has four personality traits parametrized in its algorithms: 
+
+\begin{enumerate}
+	\item The $\textbf{threat perception}$ trait /metric in the Pressure Algorithm; function variations: \{Constant, Survival\}.
+	\item The $\textbf{priority}$ trait in the Priority Algorithm; variations: \{agressive, defensive\}.
+	\item The $\textbf{placement}$ trait in the Placement Algorithm; variations: \{cautious, tactical\}.
+	\item The $\textbf{attack}$ trait in the Attack Algorithm; variations: \{rusher, carry\}.
+\end{enumerate}
+
+Thus there are $2^4 = 16$ AI personalities, and more if we allow richer variations.
 
 
-We are now ready to enumerate the algorithms for the game steps. Each turn of the game consists of three stages:
-
+Corresponding to the game moves per turn:
 \begin{enumerate}
 \item Getting and placing new armies;
 \item Attacking, if you choose to, by rolling the dice; 
-\item Fortifying your position (moving troops between an adjacent pair of your nodes).
+\item Fortifying your position (moving troops between an adjacent pair of your nodes),
 \end{enumerate}
 
-Before carrying out any of these steps, the AI first has to $\textit{judge}$ the worth of the nodes. This is done by the Priority Algorithm:
+the AI has these primary methods:
+\begin{enumerate}
+\item Update: Call the Priority and Worth algorithms.
+\item Get-and-Place-Armies: Call the Placement Algorithm.
+\item Attack: Call the Attack Algorithm as many times as wanted.
+\item Fortify: Call the Fortify Algorithm.
+\end{enumerate}
 
 
 
+A game can have as many participating AIs as permitted by the rules. During the initial game setup, countries are randomly assigned to the AIs. Then, the AIs take turn to call their Update and Get-and-Place-Armies methods to complete the setup. Then the game begins and the AIs take turn to call all their primary methods in sequence, until the game terminates, or ties at the maximum number of rounds.
+
+As opposed to physical game, the virtual game has no limit on the number of army pieces $-$ it just keeps creating more as needed; nor it has the limit on the cards $-$ it keeps reshuffling a new deck once an old one runs out.
+
+
+
+
+\section{Our Experiments}
+
+We begin our study from the simplest case: games with 2 players. Note that according to the rules, there is an inactive neutral player, and we mimic that by adding a third AI that is muted.
 
 
 
@@ -354,387 +381,6 @@ Draft:
 
 5. AI behaviors, surprises
 
-
-
-\begin{definition}
-A block code is a rectangular array of $n$-nary letters (entries), with non-repeating columns and rows. Notate any block code of $n$-nary, $p$-columns and $k$-rows as 
-$$BC(n,p,k)$$
-where the letters are elements of the set $\mathcal{M}=\{1,2,\dots,n\}$. 
-It is easy to see that $1\leq k \leq n^p$ due to the non-repeating columns and rows.
-\end{definition}
-
-Equivalently, a block code is a collection of $n$-nary codewords (the rows) of length $p$ (number of columns). Below is an example of block code with $n=2,p=3$, with the maximum number of $2^3=8$ rows. It is a listing of $\{0,1,2,\dots,7\}$ in binary.\footnote{For readability, block codes come with brackets in this paper; we do not consider matrix operations.}
-$$BC(2,3,2^3)=
-\left[\begin{array}{ccc}
-0 & 0 & 0 \\
-0 & 0 & 1 \\
-0 & 1 & 0 \\
-0 & 1 & 1 \\
-1 & 0 & 0 \\
-1 & 0 & 1 \\
-1 & 1 & 0 \\
-1 & 1 & 1 \\
-\end{array}\right]
-$$
-
-Block codes are equipped with the following set of three operations, under which a block code is still considered to be equivalent to the original:
-\begin{flalign}
-\emph{Column-swapping}\\
-\emph{Row-swapping}\\
-\emph{Column-wise letter-permutation}\footnote{equivalent to row-swapping when applied to a transposed block code.}
-\end{flalign}
-
-To illustrate the operations, take a ternary block code with the operations:
-$$BC(3,2,3) = \left[\begin{array}{cc}1 & 2\\ 1 & 3\\ 2 & 2\end{array}\right]$$
-$$\text{permutation to column 1: \ } 1 \mapsto 3, \ 2 \mapsto 2,\ 3 \mapsto 1$$
-$$\text{permutation to column 2: \ } 1 \mapsto 2, \ 2 \mapsto 3,\ 3 \mapsto 1$$
-$$\text{swap the columns}$$
-
-The resultant block code is then 
-$$\left[\begin{array}{cc}1 & 2\\ 1 & 3\\ 2 & 2\end{array}\right]
-\mapsto
-\left[\begin{array}{cc}3 & 2\\ 3 & 3\\ 2 & 2\end{array}\right]
-\mapsto
-\left[\begin{array}{cc}3 & 3\\ 3 & 1\\ 2 & 3\end{array}\right]
-\mapsto
-\left[\begin{array}{cc}3 & 3\\ 1 & 3\\ 3 & 2\end{array}\right]$$
-
-Any block code generated by these operations is considered equivalent to the original. Thus, the operations allow us to define class on the block codes.
-
-
-\begin{definition}
-A class is a collection of a block code and all the possible block codes obtained by applying these operations to it. Thus, any block codes are said to be equivalent(in the same class) if and only if they can be made identical using these operations.
-\end{definition}
-
-
-\noindent{\bf Comment.} This problem is originally motivated by a research in Quantum Foundations: the classification of Hardy-type paradoxes. Consider an experiment setup of $p$-parties, $n$-nary party-outcome, with $k$ possible outcomes. The setup is still physically equivalent under the relabeling of parties (column swapping), reordering of the occurence of outcomes (row-swapping), and relabeling of party-outcome (column-wise letter-permutation). Thus it is sufficient to study only a representative of these equivalent setups.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\section{Problem Statement}
-
-The problem is to identify the class of a block code, or to determine whether two block codes are equivalent (whether they belong to the same class). This is equivalent to the generalization of the problem of canonicalizing matrices:
-
-\noindent{\bf Special case.} Given two matrices of the same size, determine whether or not they can be identical under row and column swapping.
-
-\noindent{\bf General case.} The same as above, but with an additional operation of column-wise letter-permutation (or row-wise letter-permutation when a matrix is transposed).
-
-
-\textit{Fripertinger `98} computed the number of classes for block codes $BC(n,p,k)$ for up to $n=7$, and later produced the representatives of these classes by rewriting them using vectors of $n$-adic numbers. However, the number of block codes, and the number of distinct classes, increases quickly due to combinatorial explosion even when the parameters $n,p,k$ are small. 
-
-This makes it unfeasible to identify the classes or determine the equivalence between block codes by exhaustive generation and comparison of all the class members.
-
-
-
-
-
-
-
-
-
-
-
-
-
-\section{The Bundled Form and Algorithm}
-We now present a non-exhaustive algorithm that solves the problem. The main idea is to transform a given block code using the allowed operations into a unique, canonical form of the class, called the \textit{Bundled Form}. The problem is solved by directly comparing the \textit{Bundled Forms} of the block codes.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\subsection{Notations and Definitions}
-$BC(n,p,k)$: \emph{The generic block code} specified by three parameters: $n$-nary entries, $p$-columns, $k$-rows, where $k \leq n^p$. Block codes obey the three operations of column-swapping, row-swapping, and column-wise letter-permutation. To distinguish a specific instance of the generic block code, index it with subscript $b$, like $BC(n,p,k)_b$.
-
-
-$\mathcal{S}^c_{i\dots j}$: \emph{Bundle}. It is a sub-column containing only identical letters. Obviously, one can swap the rows of a block code to result in a column having nicely bundled entries, i.e. identical letters are grouped together in the column, and the bundles form the column.
-
-
-The superscript $c$ specifies the column of the block code the \emph{bundle} resides. The subscript $i\dots j$ is a number sequence of length $c$, $j$ indexes the bundles down the $c$-column of the block code.
-
-
-
-$||\mathcal{S}^c_{i\dots j}||$: \emph{The length} of \emph{bundle}: the number of identical letters in it.
-
-
-$\mathcal{B}(\mathcal{S}^c_{i\dots j})$: \emph{The sub-block code} $BC(n, p-c, ||\mathcal{S}^c_{i\dots j}||)$ on the right of the \emph{bundle} $\mathcal{S}^c_{i\dots j}$, spanning the columns $c+1,\dots,p$ and the same rows as the bundle. For generality, call the original block code a sub-block code of its super-bundle $\mathcal{S}^0$, so $BC(n,p,k) = \mathcal{B}(\mathcal{S}^0)$.
-
-
-$\mathcal{S}^{c+1}_{i\dots j h}$: \emph{Sub-bundle} of the bundle $\mathcal{S}^c_{i\dots j}$ immediately right to the bundle, i.e. it is a bundle of the sub-block code $\mathcal{B}(\mathcal{S}^c_{i\dots j})$.
-
-Now we can write the sub-block code as:
-$$\mathcal{B}(\mathcal{S}^c_{i\dots j}) = \{
-\mathcal{S}^{c+1}_{i\dots j h}, 
-\mathcal{S}^{c+2}_{i\dots j h g}, 
-\mathcal{S}^{c+3}_{i\dots j h g f}, 
-\dots, 
-\mathcal{S}^{p}_{i\dots j h g f \dots e}
-\}$$
-where the subscript variables range on separate valid index sets.
-
-For a fixed bundle $\mathcal{S}^c_{i\dots j}$ with a fixed $j$-value, we have a fixed sub-block code $\mathcal{B}(\mathcal{S}^c_{i\dots j})$ on its right. Since we can perform swapping on the rows spanned by the sub-block code, we can get nicely-bundled entries on the $(c+1)$-column. $h$ indexes the sub-bundles $\{\mathcal{S}^{c+1}_{i\dots j h} : 1 \leq h \leq n \}$ that form the column. Since we require that the same entries be bundled together, and there can be at most $n$-different $n$-nary letters, we get $j \leq n$.
-
-
-Note that the definitions of sub-block code and sub-bundles are recursive. Symmetrically we can define super-bundles of the sub-bundles. The recursive process of partitioning the block code into smaller bundles ``refines'' it as we proceed from column $1$ to $p$. Also note that no sub-bundle can belong to different super-bundles. 
-
-Furthermore, since there can be no repeating rows in a block code, the ``finest refinement'' must be reached at column $p$, i.e. $||\mathcal{S}^p_{i\dots q}|| = 1$, or else there will be more than one rows that share the same super-bundles all the way from column $p$ to $1\ $-  a contradiction.
-
-
-We give an example to illustrate the concept of sub-bundles and sub-block codes.
-
-$$\newcommand*{\temp}{\multicolumn{1}{c|}{0}}
-BC(3,3,6)_1=
-\left[\begin{array}{ccc}
-1 & 1 & 1\\ 
-1 & 2 & 2\\ 
-3 & 2 & 1\\ 
-2 & 3 & 2\\ 
-1 & 2 & 1\\ 
-2 & 3 & 1\\ 
-\end{array}\right] 
-\mapsto
-\left[\begin{array}{ccc}
-1 & 2 & 1\\ \cline{3-3} 
-1 & 2 & 2\\ \cline{2-3} 
-1 & 1 & 1\\ \cline{1-3} 
-2 & 3 & 1\\ \cline{3-3} 
-2 & 3 & 2\\ \cline{1-3} 
-3 & 2 & 1\\ \cline{1-3} 
-\end{array}\right]
-=
-\left[\begin{array}{ccc}
-\mathcal{S}^1_{1} 	& \mathcal{S}^2_{1,1} & \mathcal{S}^3_{1,1,1}\\ \cline{3-3} 
-\vdots	 			& \vdots & \mathcal{S}^3_{1,1,2}\\ \cline{2-3} 
-\vdots 				& \mathcal{S}^2_{1,2} & \mathcal{S}^3_{1,2,1}\\ \cline{1-3} 
-\mathcal{S}^1_{2} 	& \mathcal{S}^2_{2,1} & \mathcal{S}^3_{2,1,1}\\ \cline{3-3} 
-\vdots				& \vdots & \mathcal{S}^3_{2,1,2}\\ \cline{1-3} 
-\mathcal{S}^1_{3} 	& \mathcal{S}^2_{3,1} & \mathcal{S}^3_{3,1,1}\\ \cline{1-3} 
-\end{array}\right]
-$$
-
-
-Above, we pick a member of the generic block code $BC(3,3,6)$. No column-swapping is performed. We swap the rows to result in bundles $\mathcal{S}^1_{1}, \mathcal{S}^1_{2}, \mathcal{S}^1_{3}$ on the first column. These bundles and their sub-block codes are partitioned from each other by horizontal lines. Then, for each bundle $\mathcal{S}^1_{i}$, we swap the rows to obtain sub-bundles in the sub-block codes, and repeat the process recursively, refining the original block code down to the last column. 
-
-
-For example, look at the first bundle $\mathcal{S}^1_{1}$. Because the letter `1' occurs three times, $||\mathcal{S}^1_{1}||=3$. Recursive bundle-refinement on the sub-block codes (and sub-sub-block codes) give finer sub-bundles $\mathcal{S}^2_{1,1},\mathcal{S}^2_{1,2}$, and $\mathcal{S}^3_{1,1,1},\mathcal{S}^3_{1,1,2},\mathcal{S}^3_{1,2,1}$. In terms of sub-block codes,
-$$\mathcal{B}(\mathcal{S}^1_{1}) =
-\{\mathcal{S}^2_{1,1},\mathcal{S}^2_{1,2}, \mathcal{S}^3_{1,1,1},\mathcal{S}^3_{1,1,2},\mathcal{S}^3_{1,2,1}\}=
-\{\mathcal{S}^2_{1,1},\mathcal{S}^2_{1,2}, \mathcal{B}(\mathcal{S}^2_{1,1}),\mathcal{B}(\mathcal{S}^2_{1,2}) \}$$
-$$\mathcal{B}(\mathcal{S}^2_{1,1}) = \{ \mathcal{S}^3_{1,1,1},\mathcal{S}^3_{1,1,2}\},\ \ \ \ \ \ \ \mathcal{B}(\mathcal{S}^2_{1,2}) = \{ \mathcal{S}^3_{1,2,1}\}$$
-
-
-
-Now that we have the notation of bundles and sub-block codes, we can proceed to define the unique, canonical \textit{Bundled Form}. This is done by using the \textit{Bundled Form Algorithm}, which transforms a block code using the allowable operations.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\subsection{Characteristics of The Bundled Form}
-
-With the notations and concepts, we can characterize the \emph{Bundled Form}. It is basically a reordering of the sub-bundles and sub-block codes via row and column swapping such that for all $c \in \{1,2,\dots,p\}$ and for all $ i,j,h,e \in \{\emph{some valid index set}\}$:
-\begin{align}
-||\mathcal{S}^{c}_{i \dots j}|| \geq
-||\mathcal{S}^{c}_{i \dots j+1}||\\
-||\mathcal{S}^{c+1}_{i \dots j,h}|| \geq
-||\mathcal{S}^{c}_{i \dots j}||\\
-||\mathcal{S}^{c+1}_{i \dots j,h}|| \geq
-||\mathcal{S}^{c+1}_{i \dots j+1,h}||\\
-||\mathcal{S}^{p}_{i \dots j,h,\dots,e}||=1
-\end{align}
-
-In addition to these, there's a final characteristic which gives uniqueness to the Bundled Form. The description is part of the algorithm (refer to Lemma \ref{lem:uniq}).
-
-
-
-
-
-
-
-
-
-
-
-\subsection{The Bundled Form Algorithm}
-
-The algorithm essentially ranks all the possible bundling of a block code and pick one with the higest rank (see Lemma \ref{lem:uniq}). Starting from a given block code $BC(n,p,k)_b=\mathcal{B}(\mathcal{S}^0)$, apply the algorithm recursively to it and the sub-block codes $\mathcal{B}(\mathcal{S}^c_{i\dots j})$ starting from $c=0$ until it terminates at column $c=p$.
-
-Note that whenever columns and rows are swapped, and letters are permuted on columns, even when mentioned in the context of sub-block codes, it is understood that they are always performed on the entire block code $\mathcal{B}(\mathcal{S}^0)$, so that it obeys the operations and stay in the same class.
-
-
-\begin{enumerate}
-\item Focus on the block code $\mathcal{B}(\mathcal{S}^c_{i \dots j})$. Scan each of its columns, and look for the highest number of letter-repetition. Note that there may be more than one such column. Call this \emph{multiplicity}. For later comparison, index them with $t \in \mathcal{T}$, where $\mathcal{T}$ is some valid index set. For each of these columns:
-
-\begin{enumerate}
-\item Move this $t$-column to position $c+1$, i.e. the first column of $\mathcal{B}(\mathcal{S}^c_{i \dots j})$.
-\item Swap the rows such that all identical letters are bundled together, and the bundles are arranged down the column with decreasing sizes, i.e.
-\begin{align}\label{eq:col}
-\left[\begin{array}{c}
-\mathcal{S}^{c+1}_{i \dots j,1}\\
-\mathcal{S}^{c+1}_{i \dots j,2}\\
-\vdots \\
-\mathcal{S}^{c+1}_{i \dots j,H}\\
-\end{array}\right]_t
-\textit{ such that \ }
-||\mathcal{S}^{c+1}_{i \dots j,1}||_t \geq
-||\mathcal{S}^{c+1}_{i \dots j,2}||_t \geq
-\dots \geq
-||\mathcal{S}^{c+1}_{i \dots j,H}||_t
-\end{align}
-
-\end{enumerate}
-
-
-\item Since the Bundled Form is unique, we need to select some of the many $t$-columns before proceeding. We do so by fixing $h \in \{1,2,\dots,H\} = \mathcal{H}$ and checking all $t \in \mathcal{T}$:
-
-\begin{enumerate}
-\item Starting from $h=1$, find $Max \{||\mathcal{S}^{c+1}_{i \dots j,h}||_t\}_{t\in\mathcal{T}}$, and keep only the indices $t \in \mathcal{T}$ that yield $||\mathcal{S}^{c+1}_{i \dots j,h}||_t = Max \{||\mathcal{S}^{c+1}_{i \dots j,h}||_t\}_{t\in\mathcal{T}}$.
-
-\item If the index set $\mathcal{T}$ still contains more than one element, i.e. $||\mathcal{T}||>1$, repeat 2.1 for $h=h+1$ with $Max \{||\mathcal{S}^{c+1}_{i \dots j,h+1}||_t\}_{t\in\mathcal{T}}$.
-
-
-
-
-
-\item If the process terminates when:
-
-\begin{enumerate}
-\item $||\mathcal{T}||=1$.
-
-Then there is a unique column $c+1$ with the bundles 
-$\{
-\mathcal{S}^{c+1}_{i \dots j,1},
-\mathcal{S}^{c+1}_{i \dots j,2},
-\dots,
-\mathcal{S}^{c+1}_{i \dots j,H}
-\}$. Repeat the algorithm from step 1 for each of the sub-block codes 
-$$
-\mathcal{B}(\mathcal{S}^{c+1}_{i \dots j,1}),
-\mathcal{B}(\mathcal{S}^{c+1}_{i \dots j,2}),
-\dots,
-\mathcal{B}(\mathcal{S}^{c+1}_{i \dots j,H})
-$$
-
-\item $||\mathcal{T}||>1$ at $h=H$.
-
-Then there are several $t$-columns like e.q.(\ref{eq:col}). For each $t \in \mathcal{T}$, repeat the algorithm from step 1 for each of the sub-block codes
-$$
-\mathcal{B}(\mathcal{S}^{c+1}_{i \dots j,1})_t,
-\mathcal{B}(\mathcal{S}^{c+1}_{i \dots j,2})_t,
-\dots,
-\mathcal{B}(\mathcal{S}^{c+1}_{i \dots j,H})_t
-$$
-
-
-
-Note that the index set $\mathcal{T}$ can expand due to \emph{multiplicity} when step 1 is repeated. For example, $t=1$ under multiplicity is expanded from an element to a set of sub-indices $t=1 \mapsto \{11,12,13,\dots,1u\}$ for some $u$. Update the index set $\mathcal{T}$ so that it is a set of sets: 
-$$\mathcal{T} = \{ 
-\{11,12,13,\dots,1u\},
-\{21,22,23,\dots,2u_2\},
-\dots,
-\{T1,T2,T3,\dots,Tu_T\}
- \}$$
-
-Now, the recursive version of e.q. (\ref{eq:col}) is
-
-\begin{align}\label{eq:col2}
-\left[\begin{array}{c}
-\mathcal{S}^{c+2}_{i \dots j,h,1}\\
-\mathcal{S}^{c+2}_{i \dots j,h,2}\\
-\vdots \\
-\mathcal{S}^{c+2}_{i \dots j,h,G}\\
-\end{array}\right]_t
-\textit{ such that \ }
-||\mathcal{S}^{c+2}_{i \dots j,h,1}||_t \geq
-||\mathcal{S}^{c+2}_{i \dots j,h,2}||_t \geq
-\dots \geq
-||\mathcal{S}^{c+2}_{i \dots j,h,G}||_t
-\end{align}
-
-
-Step 2 is repeated with a modification for recursion: fix $h \in \mathcal{H}$, fix $g \in \{1,2,\dots,G\}=\mathcal{G}$, and check all $t \in \mathcal{T}$.
-
-
-For each value for $h\in \mathcal{H}$, run through index $g \in \mathcal{G}$. Whenever a sub-index $tv \in \mathcal{T}$ is deleted, delete also from $\mathcal{T}$ the entire set containing the sub-index
-$$\{t1, t2, \dots, tv, \dots, tu_t \}$$
-
-
-\end{enumerate}
-
-
-\end{enumerate}
-
-
-
-
-
-\item The algorithm will eventually terminate and produce a unique Bundled Form. This gives the solution to the \textbf{special case} of the problem, i.e. without letter-permutation.
-
-Alternatively, we can apply letter-permutation so that the sub-bundles belonging to the same super-bundle have increasing letter-value down the column. This gives the unique \emph{Bundled Form Class Representation of a block code}.
-
-
-\end{enumerate}
-
-
-
-
-
-
-
-\begin{lemma}\label{lem:uniq}
-The termination of the algorithm and the uniqueness of the Bundled Form are guaranteed.
-\end{lemma}
-\begin{proof}
-This is because the algorithm ranks the potential Bundled Forms by comparing the sizes of the bundles down each column. When the ranking is indeterminate, it then repeats the comparison on the next column. The process ends at column $p$ when the ``finest refinement'' is obtained and $||\mathcal{S}^{p}_{i \dots,e}||=1$, due to the non-repeating rows. 
-
-
-Alternatively, one can imagine rewriting each column of the potential Bundled Forms with a vertical string of number representing the bundle sizes.The algorithm essentially ranks all potential bundled forms by comparing the digits down the string, and then the digits down the substrings.
-
-Due to the \emph{Well-Ordering Principle}, there must be a potential Bundled Form with the highest rank, or several Bundled Forms with the same highest rank. For the latter, simply perform letter-permutation to yield the unique \emph{Bundled Form Class Representation of a block code}, and we are done.
-\end{proof}
-
-
-
-
-\begin{theorem}\label{thm:same}
-Block codes of the same class have the same Bundled Form.
-\end{theorem}
-\begin{proof}
-This is straighforward. Since the algorithm obeys all the operations that define the block code classes, it does not change the class of a block code. Therefore, all the block codes in a class can be transformed into the same unique \emph{Bundled Form Class Representation}.
-\end{proof}
-
-Also, block codes of different classes have different Bundled Forms, or else this would contradict Theorem \ref{thm:same}.
 
 
 
