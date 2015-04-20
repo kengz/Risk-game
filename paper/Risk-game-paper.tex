@@ -251,6 +251,11 @@ After obtaining an ordered list of worth nodes, we can partition it while preser
 
 
 
+To justify our factors above, conquering a whole continent gives a player extra armies per turn while strengthening the region. Furthermore, a larger region is harder to attack than a smaller region, thus we place more importance on the nodes there. 
+
+The shape of a region is vital for defense and army mobility during fortification. This is the classic problem of minimizing the surface/volume ratio, or in this lower dimensional case, the perimeter/surface ratio. Intuitively, a thin region is vulnerable, and has bad army mobility. A thick, concentric shape is stronger. The average distance between nodes is also shorter and thus aids mobility. Moreover, a node with higher degree improves mobility since it can reach many other nodes.
+
+The pressure measures the ease of attacking or defending a node; the less negative a node is, the less enemy presence it has. It is wise to not attack the enemy's stronghold, but to seek its weak point of entry, which can be detected from a less-negative pressure.
 
 
 \subsection{The Priority Algorithm}
@@ -313,7 +318,7 @@ All AIs use the same fortifying algorithm.
 \end{enumerate}
 
 
-
+This algorithm aims to create a center-weak border-strong army distribution within a region with, that is to utilize the maximum number of armies by putting them to the border nodes. Such distribution is efficient for both offense and defense. The second part of the algorithm kicks in when there is less border nodes during the late game, when one player controls a larger region. This will accumulate all armies toward a border node to overwhelm the enemy, hopefully ending the game quicker.
 
 
 
