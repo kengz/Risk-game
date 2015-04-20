@@ -5,8 +5,8 @@ Implementation of the 2-player Risk game and the AI to play it, for Math 335 Pro
 Look inside the folder [paper](https://github.com/kengz/Risk-game/tree/master/paper).
 
 
-## Strategies
-Deprecated. See Paper.
+## Implemented Code Documentation
+Look at the `html` files inside the [docs](https://github.com/kengz/Risk-game/tree/master/docs) folder, compiled with `Docco`.
 
 
 ## Data Output (Ben, read this)
