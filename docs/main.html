@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>main.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="AI-modules.html">
+                  AI-modules.js
+                </a>
+              
+                
+                <a class="source" href="arena.html">
+                  arena.js
+                </a>
+              
+                
+                <a class="source" href="dealer.html">
+                  dealer.js
+                </a>
+              
+                
+                <a class="source" href="functions.html">
+                  functions.js
+                </a>
+              
+                
+                <a class="source" href="graph.html">
+                  graph.js
+                </a>
+              
+                
+                <a class="source" href="initmap.html">
+                  initmap.js
+                </a>
+              
+                
+                <a class="source" href="kit.html">
+                  kit.js
+                </a>
+              
+                
+                <a class="source" href="main.html">
+                  main.js
+                </a>
+              
+                
+                <a class="source" href="matrix-computer.html">
+                  matrix-computer.js
+                </a>
+              
+                
+                <a class="source" href="player.html">
+                  player.js
+                </a>
+              
+                
+                <a class="source" href="priority-alg.html">
+                  priority-alg.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>main.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>The main class that runs arena multiple times and export for analysis</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>dependencies</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> cmb = <span class="hljs-built_in">require</span>(<span class="hljs-string">'js-combinatorics'</span>).Combinatorics;
+<span class="hljs-keyword">var</span> _ = <span class="hljs-built_in">require</span>(<span class="hljs-string">'underscore'</span>);
+<span class="hljs-keyword">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>For configs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> ps = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./srcdata/AI-personalities.json'</span>);
+<span class="hljs-keyword">var</span> pls = [<span class="hljs-string">'p0'</span>,<span class="hljs-string">'p1'</span>,<span class="hljs-string">'p2'</span>];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>The game constructor from arena</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> game = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./arena.js'</span>).Game;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>repeat games for a fixed config: personalities, player order.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">repeat</span><span class="hljs-params">(n, c, o)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>the game-series</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> GS = {};
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">1</span>; i &lt; n+<span class="hljs-number">1</span>; i++) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>save an instance of a game’s time-series TS
+GS[i] = game(c[‘p1’], c[‘p2’], c[‘first’]);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		GS[i] = <span class="hljs-keyword">new</span> game(ps[c[<span class="hljs-number">0</span>]], ps[c[<span class="hljs-number">1</span>]], pls[c[<span class="hljs-number">2</span>]]);
+	};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>fs.writeFileSync(‘./data/GS.json’, JSON.stringify(GS, null, 0));</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	fs.writeFileSync(o, <span class="hljs-built_in">JSON</span>.stringify(GS, <span class="hljs-literal">null</span>, <span class="hljs-number">0</span>));
+	<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"file written to "</span>, o);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>delete object from memory to free up space</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	GS = <span class="hljs-literal">null</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>return GS;</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>}
+
+
+<span class="hljs-keyword">var</span> start = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>().getTime();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>array: pers1, pers2, firstplayer
+note: 1,2 are indices for p1, p2 resp
+repeat(3, [1,1,1], ‘./data/GS_test_1_1_1.json’);</p>
+<p>repeat(100, [1,1,1], ‘./data/GS_1_1_1.json’);
+repeat(100, [1,1,2], ‘./data/GS_1_1_2.json’);
+repeat(500, [1,1,1], ‘./data/GS_1_1_1_500.json’);
+repeat(500, [1,1,2], ‘./data/GS_1_1_2_500.json’);</p>
+<p>repeat(100, [1,2,1], ‘./data/GS_1_2_1.json’);
+repeat(100, [1,2,2], ‘./data/GS_1_2_2.json’);
+repeat(500, [1,2,1], ‘./data/GS_1_2_1_500.json’);
+repeat(500, [1,2,2], ‘./data/GS_1_2_2_500.json’);</p>
+<p>repeat(100, [1,10,1], ‘./data/GS_1_10_1.json’);
+repeat(100, [1,10,2], ‘./data/GS_1_10_2.json’);
+repeat(500, [1,10,1], ‘./data/GS_1_10_1_500.json’);
+repeat(500, [1,10,2], ‘./data/GS_1_10_2_500.json’);</p>
+<p>repeat(100, [1,13,1], ‘./data/GS_1_13_1.json’);
+repeat(100, [1,13,2], ‘./data/GS_1_13_2.json’);
+repeat(500, [1,13,1], ‘./data/GS_1_13_1_500.json’);
+repeat(500, [1,13,2], ‘./data/GS_1_13_2_500.json’);</p>
+<p>repeat(100, [2,10,1], ‘./data/GS_2_10_1.json’);
+repeat(100, [2,10,2], ‘./data/GS_2_10_2.json’);
+repeat(100, [2,13,1], ‘./data/GS_2_13_1.json’);
+repeat(100, [2,13,2], ‘./data/GS_2_13_2.json’);
+repeat(100, [10,13,1], ‘./data/GS_10_13_1.json’);
+repeat(100, [10,13,2], ‘./data/GS_10_13_2.json’);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-keyword">var</span> end = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>().getTime();
+<span class="hljs-keyword">var</span> time = end - start;
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Execution time: '</span> + time/<span class="hljs-number">1000</span>/<span class="hljs-number">60</span>, <span class="hljs-string">'minutes'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>notable: index
+1, 2, 10, 13
+[1,2]
+[1,10]
+[1,13]
+[2,10]
+[2,13]
+[10,13]</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>var TS = game(conf1[‘p1’], conf1[‘p2’], conf1[‘first’]);
+fs.writeFileSync(‘./data/TS.json’, JSON.stringify(TS, null, 0));</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>//////////////////////////
+Time series TS legend: //
+//////////////////////////</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>TS data structure:
+TS[‘first_player’]
+TS[‘AI1’] personality of AI1
+TS[‘AI2’] personality of AI1
+TS[‘winner’]
+TS[time] = t_data;</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>where t_data is a data structure nested within, at ‘time’:
+t_data[‘turn’] whose turn is it
+t_data[‘n_attacks’] number of attacks
+t_data[‘all_outcomes’] outcomes to all n_attacks, is an array where length = number of actual engagements, i.e. # of dice rolls by defender
+entry value: -1: attacker loses an army; 0:tie, 1:defender loses an army
+t_data[‘n_conquered’] number of countries conquered in this turn
+t_data[‘end’] whether the game ends at this turn</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>t_data[‘p1’] player one’s data at this turn
+t_data[‘p2’] player two’s data at this turn
+where player’s data structure p is
+p[‘n_countries’] number of countries owned
+p[‘n_continents’] number of continents owned
+p[‘countries’] indices of countries owned
+p[‘continents’] indices of continents owned
+p[‘regions’] regions (connected subgraph) owned
+p[‘pressures’] the pressures of all 42 countries (indexed) from player’s perspective
+p[‘n_army_given’] the number of armies given to player from dealer this turn
+p[‘n_total_army’] the number of total armies player owns on the board</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>time, whose turn
+of both AIs,
+create players:
+countries owned
+continents owned
+regions
+pressures (invert perspective) at turn’s beginning (after previous move)
+armies given from dealer
+armies owned on board</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <h1 id="of-attacks-per-turn-and-">of attacks per turn and,</h1>
+<p>per attack, # of victories, i.e. outcome vec</p>
+<h1 id="of-countries-conquered">of countries conquered</h1>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>Time when game ends, or if is tie?
+winner
+player order
+personalities</p>
+
+            </div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

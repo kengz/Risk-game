@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>graph.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="AI-modules.html">
+                  AI-modules.js
+                </a>
+              
+                
+                <a class="source" href="arena.html">
+                  arena.js
+                </a>
+              
+                
+                <a class="source" href="dealer.html">
+                  dealer.js
+                </a>
+              
+                
+                <a class="source" href="functions.html">
+                  functions.js
+                </a>
+              
+                
+                <a class="source" href="graph.html">
+                  graph.js
+                </a>
+              
+                
+                <a class="source" href="initmap.html">
+                  initmap.js
+                </a>
+              
+                
+                <a class="source" href="kit.html">
+                  kit.js
+                </a>
+              
+                
+                <a class="source" href="main.html">
+                  main.js
+                </a>
+              
+                
+                <a class="source" href="matrix-computer.html">
+                  matrix-computer.js
+                </a>
+              
+                
+                <a class="source" href="player.html">
+                  player.js
+                </a>
+              
+                
+                <a class="source" href="priority-alg.html">
+                  priority-alg.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>graph.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>The graph class and graph methods</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Dependencies</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> _ = <span class="hljs-built_in">require</span>(<span class="hljs-string">'underscore'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>INSERT:
+scan for region, disconnected subgraph, find min n max dist bet any pair of border points</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>The graph class = world map</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Graph</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">this</span>.nodes = [];
+    <span class="hljs-keyword">this</span>.addNode = addNode;
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">addNode</span><span class="hljs-params">(Name, continent)</span> </span>{
+        temp = <span class="hljs-keyword">new</span> Node(Name, continent);
+        <span class="hljs-keyword">this</span>.nodes.push(temp);
+        <span class="hljs-keyword">return</span> temp;
+    }
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>The node for graph. game = country index</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Node</span><span class="hljs-params">(Name, Continent)</span> </span>{
+    <span class="hljs-keyword">this</span>.name = Name;
+    <span class="hljs-keyword">this</span>.continent = Continent;
+    <span class="hljs-keyword">this</span>.adjList = [];
+    <span class="hljs-keyword">this</span>.addEdge = addEdge;
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">addEdge</span><span class="hljs-params">(neighbour)</span> </span>{
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.adjList.indexOf(neighbour) == -<span class="hljs-number">1</span>)
+            <span class="hljs-keyword">this</span>.adjList.push(neighbour);
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>fields for the game:
+player owning this node</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.owner = <span class="hljs-string">"none"</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>number of owner’s army on this node</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.army = <span class="hljs-number">0</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>pressure from AM matrix, previous and current</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.prevPressure = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">this</span>.pressure = <span class="hljs-number">0</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>worth, or value, from degree, etc</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.worth = <span class="hljs-number">0</span>;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>////////////////////////////////
+The helper methods for graph //
+////////////////////////////////</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">helper</span><span class="hljs-params">(dg)</span> </span>{
+    <span class="hljs-keyword">this</span>.regions = regions;
+    <span class="hljs-keyword">this</span>.borders = borders;
+    <span class="hljs-keyword">this</span>.attackable = attackable;
+    <span class="hljs-keyword">this</span>.dist = dist;
+    <span class="hljs-keyword">this</span>.shape = shape;
+    <span class="hljs-keyword">this</span>.continentFrac = continentFrac;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>the dynamic graph for use below</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> g = dg;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>split player’s countries into regions = connected subgraph, of the dynamic graph dg</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">regions</span><span class="hljs-params">(player)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>list of my regions</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> myregions = [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>my countries</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> minestatic = _.sortBy(player.countries);
+        <span class="hljs-keyword">var</span> mine = _.sortBy(player.countries);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>function to find next of your connected region</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">enumNextRegion</span><span class="hljs-params">()</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>add first base to new region</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> newreg = [mine[<span class="hljs-number">0</span>]];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>then remove first from nodes</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            mine = _.rest(mine);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>new region found, add</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            newreg = _.union(newreg, myconnected(newreg));
+            myregions.push(newreg);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>update mine</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            mine = _.difference(mine, newreg);
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>my nodes that are already checked</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> checked = [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>get my nodes that are connected, input radius arr</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">myconnected</span><span class="hljs-params">(radarr)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>next radius adj nodes from radarr</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> nextRad = [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>from next radius arr, expand radius further</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            _.each(radarr, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>adj to radarr element that’s mine</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">var</span> adjMine = _.difference(_.intersection(g.nodes[i].adjList, minestatic), checked);
+                nextRad.push(adjMine);
+            });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>the next radius from radarr</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            nextRad = _.uniq(_.flatten(nextRad));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>update checked</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            checked = _.union(checked, nextRad);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p>recurse while still has more</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">if</span> (nextRad.length != <span class="hljs-number">0</span>) {
+                <span class="hljs-keyword">return</span> _.flatten(
+                    _.union(
+                        nextRad,
+                        myconnected(nextRad)
+                        ))
+            } <span class="hljs-keyword">else</span> {
+                <span class="hljs-keyword">return</span> [];
+            }
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>call enum</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">while</span> (mine.length != <span class="hljs-number">0</span>) {
+            enumNextRegion();
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>sort regions by size</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        myregions = _.sortBy(myregions, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(r)</span> </span>{
+            <span class="hljs-keyword">return</span> -r.length;
+        });
+
+        <span class="hljs-keyword">return</span> myregions;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>enum the border nodes of a player
+Ordered by the regions</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">borders</span><span class="hljs-params">(player)</span> </span>{
+        <span class="hljs-keyword">var</span> bnodes = [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>console.log(“player flatten region”, player.name, _.flatten(player.regions));
+start from player regions for ordering
+for all my owned nodes n</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        _.each(_.flatten(player.regions), <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(n)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>all its neigh is assumed mine</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> neighsmine = <span class="hljs-literal">true</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <p>until check, see n’s neighs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            _.each(g.nodes[n].adjList, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <p>if found neigh not mine, make false</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">if</span> (g.nodes[i].owner != player.name) {neighsmine = <span class="hljs-literal">false</span>;
+                };
+            });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <p>but I want n with neigh = not mine</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">if</span> (!neighsmine) {
+                    bnodes.push(n);
+                }
+            })
+        <span class="hljs-keyword">return</span> bnodes;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>all the attackable nodes from player’s borders
+retain ordering from borders, from regions</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">attackable</span><span class="hljs-params">(player, borders)</span> </span>{
+        <span class="hljs-keyword">var</span> att = [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <p>for each border node of player</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        _.each(borders, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(b)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <p>check its neighs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            _.each(g.nodes[b].adjList, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <p>if not in player countries, is enemy</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">if</span> (!_.contains(player.countries, a)) {
+                    <span class="hljs-keyword">if</span> (!_.contains(att, a)) {
+                        att.push(a);
+                    }
+                };
+            })
+        })
+        <span class="hljs-keyword">return</span> att;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <p>min distance between nodes i,j</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">dist</span><span class="hljs-params">(i, j)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-41">&#182;</a>
+              </div>
+              <p>distance 0 first, init wave</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> d = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">var</span> wave = [i];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-42">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-42">&#182;</a>
+              </div>
+              <p>while next wave(radius-expand) has no j</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">while</span> (!_.contains(wave, j)) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-43">&#182;</a>
+              </div>
+              <p>expand wave</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            _.each(wave, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(n)</span> </span>{
+                _.each(g.nodes[n].adjList, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(k)</span> </span>{
+                    <span class="hljs-keyword">if</span> (!_.contains(wave, k)) wave.push(k);
+                })
+            })</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-44">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-44">&#182;</a>
+              </div>
+              <p>increment d for a radius expansion</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                d++;
+            }
+            <span class="hljs-keyword">return</span> d;
+        };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-45">&#182;</a>
+              </div>
+              <p>Calc the shape of a region, i.e. connected countries. by max - min
+Return a random max/min pair of pairs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">shape</span><span class="hljs-params">(player, region)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-46">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-46">&#182;</a>
+              </div>
+              <p>calc radius only for border nodes in a region</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> reg = _.intersection(region, player.borders);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-47">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-47">&#182;</a>
+              </div>
+              <p>var reg = region;
+the node-pair with min/max dist</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> minpair = {
+            d: <span class="hljs-number">50</span>,
+            nodes: []
+        },
+        maxpair = {
+            d: <span class="hljs-number">0</span>,
+            nodes: []
+        };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-48">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-48">&#182;</a>
+              </div>
+              <p>upperbound = reg size</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> up = reg.length;
+        <span class="hljs-keyword">if</span> (up &gt; <span class="hljs-number">1</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-49">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-49">&#182;</a>
+              </div>
+              <p>enum pair of reg</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; up - <span class="hljs-number">1</span>; i++) {
+                <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = i + <span class="hljs-number">1</span>; j &lt; up; j++) {
+                    <span class="hljs-keyword">var</span> dis = dist(reg[i], reg[j]);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-50">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-50">&#182;</a>
+              </div>
+              <p>if find new min pair, update</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                    <span class="hljs-keyword">if</span> (dis &lt; minpair.d) {
+                        minpair.d = dis;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-51">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-51">&#182;</a>
+              </div>
+              <p>nodes forming min-pairs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                        minpair.nodes = [i, j];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-52">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-52">&#182;</a>
+              </div>
+              <p>minpair[‘i’] = i;
+minpair[‘j’] = j;</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-53">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-53">&#182;</a>
+              </div>
+              <p>if another max found, add</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                    <span class="hljs-keyword">if</span> (dis == minpair.d) {
+                        minpair.nodes.push(i);
+                        minpair.nodes.push(j);
+                    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-54">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-54">&#182;</a>
+              </div>
+              <p>if find max pair, update</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                    <span class="hljs-keyword">if</span> (maxpair.d &lt; dis) {
+                        maxpair.d = dis;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-55">&#182;</a>
+              </div>
+              <p>nodes forming max-pairs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                        maxpair.nodes = [i, j];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-56">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-56">&#182;</a>
+              </div>
+              <p>maxpair[‘i’] = i;
+maxpair[‘j’] = j;</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-57">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-57">&#182;</a>
+              </div>
+              <p>if another max found, add</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                    <span class="hljs-keyword">if</span> (dis == maxpair.d) {
+                        maxpair.nodes.push(i);
+                        maxpair.nodes.push(j);
+                    }
+                };
+            };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-58">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-58">&#182;</a>
+              </div>
+              <p>the difference in radius</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> diff = maxpair.d - minpair.d;
+            <span class="hljs-keyword">var</span> roundness = diff/maxpair.d;
+            <span class="hljs-keyword">return</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-59">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-59">&#182;</a>
+              </div>
+              <p>measure roundness, 0 = round, 1 = not</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                roundness: roundness,
+                mins: _.map(_.uniq(minpair.nodes), <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i)</span> </span>{<span class="hljs-keyword">return</span> reg[i];}),
+                maxs: _.map(_.uniq(maxpair.nodes), <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i)</span> </span>{<span class="hljs-keyword">return</span> reg[i];})
+            }
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-60">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-60">&#182;</a>
+              </div>
+              <p>if reg has only one node</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">return</span> {
+                roundness: <span class="hljs-number">0</span>,
+                mins: reg,
+                maxs: reg
+            }
+        }
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-61">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-61">&#182;</a>
+              </div>
+              <p>continents</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> cont = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./srcdata/continents.json'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-62">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-62">&#182;</a>
+              </div>
+              <p>helper, compute fraction of continent owned</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">continentFrac</span><span class="hljs-params">(node)</span> </span>{
+        <span class="hljs-keyword">var</span> allyNum = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">var</span> owner = node.owner;
+        <span class="hljs-keyword">var</span> icont = node.continent;
+        <span class="hljs-keyword">var</span> contclist = cont[icont];
+        _.each(contclist, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(n)</span> </span>{
+            <span class="hljs-keyword">if</span> (g.nodes[n].owner == owner) allyNum++;
+        })
+        <span class="hljs-keyword">return</span> allyNum / contclist.length;
+    };
+
+
+    
+
+
+} <span class="hljs-comment">//helper ends</span>
+
+exports.Graph = Graph;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-63">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-63">&#182;</a>
+              </div>
+              <p>exports.regions = regions;
+exports.dist = dist;</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>exports.helper = helper;</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

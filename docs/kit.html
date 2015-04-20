@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>kit.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="AI-modules.html">
+                  AI-modules.js
+                </a>
+              
+                
+                <a class="source" href="arena.html">
+                  arena.js
+                </a>
+              
+                
+                <a class="source" href="dealer.html">
+                  dealer.js
+                </a>
+              
+                
+                <a class="source" href="functions.html">
+                  functions.js
+                </a>
+              
+                
+                <a class="source" href="graph.html">
+                  graph.js
+                </a>
+              
+                
+                <a class="source" href="initmap.html">
+                  initmap.js
+                </a>
+              
+                
+                <a class="source" href="kit.html">
+                  kit.js
+                </a>
+              
+                
+                <a class="source" href="main.html">
+                  main.js
+                </a>
+              
+                
+                <a class="source" href="matrix-computer.html">
+                  matrix-computer.js
+                </a>
+              
+                
+                <a class="source" href="player.html">
+                  player.js
+                </a>
+              
+                
+                <a class="source" href="priority-alg.html">
+                  priority-alg.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>kit.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>The kits of the game:
+cards, dice</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>dependencies</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> _ = <span class="hljs-built_in">require</span>(<span class="hljs-string">'underscore'</span>);
+<span class="hljs-keyword">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>////////
+Card //
+////////</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Card</span><span class="hljs-params">(countryIndex, picture)</span> </span>{
+    <span class="hljs-keyword">this</span>.name = countryIndex;
+    <span class="hljs-keyword">this</span>.picture = picture;
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Make a deck for 2 players = 42 countries + 2 wild. Saved to Json</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">makeDeck</span><span class="hljs-params">()</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>create the deck and save</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> clist = _.range(<span class="hljs-number">42</span>);
+    <span class="hljs-keyword">var</span> deck = {};
+    _.each(clist, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i)</span> </span>{
+        deck[i] = <span class="hljs-keyword">new</span> Card(i, i % <span class="hljs-number">3</span>);
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>add wild card. Note deck is used only midst game, not during initmap, so don’t worry about the additional wild cards</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    deck[<span class="hljs-number">42</span>] = <span class="hljs-keyword">new</span> Card(<span class="hljs-string">'wild1'</span>, <span class="hljs-string">'wild'</span>);
+    deck[<span class="hljs-number">43</span>] = <span class="hljs-keyword">new</span> Card(<span class="hljs-string">'wild2'</span>, <span class="hljs-string">'wild'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>console.log(deck);</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>write to deck object output</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    fs.writeFileSync(<span class="hljs-string">'./srcdata/deck.json'</span>, <span class="hljs-built_in">JSON</span>.stringify(deck, <span class="hljs-literal">null</span>, <span class="hljs-number">4</span>));
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>makeDeck();</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>need a deck object, to deal cards, and when empty, refresh</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>////////
+Dice //
+////////</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Dice</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">this</span>.roll = roll;
+    <span class="hljs-keyword">this</span>.rollk = rollk;
+    <span class="hljs-keyword">this</span>.bigFirst = bigFirst;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>roll once</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">roll</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> _.random(<span class="hljs-number">1</span>, <span class="hljs-number">6</span>);
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>roll k times in a row</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rollk</span><span class="hljs-params">(k)</span> </span>{
+        <span class="hljs-keyword">var</span> arr = [];
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; k; i++) {
+            arr.push(roll());
+        }
+        <span class="hljs-keyword">return</span> arr;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>sort from large value</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bigFirst</span><span class="hljs-params">(val)</span> </span>{
+        <span class="hljs-keyword">return</span> -val;
+    };
+}
+
+exports.Dice = Dice;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>var bar = new battle();
+console.log(bar.roll(3, 2));</p>
+
+            </div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

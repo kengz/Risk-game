@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>functions.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="AI-modules.html">
+                  AI-modules.js
+                </a>
+              
+                
+                <a class="source" href="arena.html">
+                  arena.js
+                </a>
+              
+                
+                <a class="source" href="dealer.html">
+                  dealer.js
+                </a>
+              
+                
+                <a class="source" href="functions.html">
+                  functions.js
+                </a>
+              
+                
+                <a class="source" href="graph.html">
+                  graph.js
+                </a>
+              
+                
+                <a class="source" href="initmap.html">
+                  initmap.js
+                </a>
+              
+                
+                <a class="source" href="kit.html">
+                  kit.js
+                </a>
+              
+                
+                <a class="source" href="main.html">
+                  main.js
+                </a>
+              
+                
+                <a class="source" href="matrix-computer.html">
+                  matrix-computer.js
+                </a>
+              
+                
+                <a class="source" href="player.html">
+                  player.js
+                </a>
+              
+                
+                <a class="source" href="priority-alg.html">
+                  priority-alg.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>functions.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>The function module:
+f(v) that distributes and apply to an array/matrix
+v = vector, mat = matrix</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Dependencies</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> _ = <span class="hljs-built_in">require</span>(<span class="hljs-string">'underscore'</span>);
+<span class="hljs-keyword">var</span> m = <span class="hljs-built_in">require</span>(<span class="hljs-string">'mathjs'</span>);
+<span class="hljs-keyword">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>degrees of the partition in RM</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> partdegs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./srcdata/RM-partdegree.json'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>posititon vector for metric</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> pos = _.range(<span class="hljs-number">1</span>,<span class="hljs-number">6</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>declare as object for export</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> fn = {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Generic functions</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Renormalize the functions below by weight sum</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    renorm: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(v)</span> </span>{
+        <span class="hljs-keyword">var</span> sum = m.sum(v);
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">f</span><span class="hljs-params">(x)</span> </span>{ <span class="hljs-keyword">return</span> x/sum; }
+        <span class="hljs-keyword">return</span> _.map(v, f);
+    },
+    vecdot: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(v1, v2)</span> </span>{
+        <span class="hljs-keyword">return</span> m.dotMultiply(v1, v2);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>sum a vector</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    sum: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(v)</span> </span>{
+        <span class="hljs-keyword">return</span> m.sum(v);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>sum the rows in matrix a, return column</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    sumrow: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a)</span> </span>{
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">f</span><span class="hljs-params">(x)</span> </span>{ <span class="hljs-keyword">return</span> m.sum(x); }
+        <span class="hljs-keyword">return</span> _.map(a, f);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>return mean of vector</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    mean: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(v)</span> </span>{
+        <span class="hljs-keyword">return</span> m.mean(v);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>composition of mean•sumrow, i.e. mean of column vector of chunk</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    msr: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a)</span> </span>{
+        <span class="hljs-keyword">return</span> _.compose(fn.mean, fn.sumrow)(a);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>for each partition of AM, reduce to mean-sum-row, then dotMultiply with degree of partition</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    scalPartByDeg: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(AMpart, partdeg)</span> </span>{
+        <span class="hljs-keyword">return</span> m.dotMultiply(_.map(AMpart, fn.msr), partdeg);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>//////////////
+Pressure: //
+//////////////
+reduce for each AM the vector of partition scalars into a single weighted average
+Current candidate is by Degree of partition. Used for all players</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Scalarize the partitioned AM into a scalar
+by summing row – taking mean per partition, 
+then summing all scalars in partitions
+Yields a scalar for each chunk, then sum them</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    pressureNaive: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(AMpart)</span> </span>{
+        <span class="hljs-keyword">return</span> m.sum(_.map(AMpart, fn.msr));
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>same as above, but sum the partitions to get a single scalar for AM</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    pressureDeg: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(AMpart, partdeg)</span> </span>{
+        <span class="hljs-keyword">return</span> m.dot(_.map(AMpart, fn.msr), partdeg);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>////////////////////////////////
+Metrics: weight-functions wf //
+////////////////////////////////
+/differ by player strategy
+Candidate strategy/ army-weight functions
+i.e. Threat-perception</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>Exp[-x]</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    ExpDecay: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(v)</span> </span>{
+        <span class="hljs-keyword">return</span> fn.renorm(
+            tmp = m.exp( m.dotMultiply( v, -<span class="hljs-number">1</span>) )
+            );
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>Exp[-x^2]</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Gauss: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(v)</span> </span>{
+        <span class="hljs-keyword">return</span> fn.renorm(
+            m.exp( m.dotMultiply( m.dotPow( v , <span class="hljs-number">2</span>), -<span class="hljs-number">1</span>))
+            );
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>if -ve: 1-Exp[x]/2; else Exp[-x]/2</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Survival: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(v)</span> </span>{
+        <span class="hljs-keyword">var</span> xscale = <span class="hljs-number">2</span>;
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">trans</span><span class="hljs-params">(x)</span> </span>{ <span class="hljs-keyword">return</span> xscale*x - <span class="hljs-number">5</span>; }
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">f</span><span class="hljs-params">(x)</span> </span>{
+            <span class="hljs-keyword">if</span> (trans(x) &lt; <span class="hljs-number">0</span>) { <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> - m.exp(trans(x))/<span class="hljs-number">2</span>; }
+            <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> m.exp(-trans(x))/<span class="hljs-number">2</span>; }
+        }
+        <span class="hljs-keyword">return</span> fn.renorm(
+            _.map(v, f)
+            );
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>1/(1+Exp[-x])</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Logistic: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(v)</span> </span>{
+        <span class="hljs-keyword">var</span> xscale = -<span class="hljs-number">2</span>;
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">trans</span><span class="hljs-params">(x)</span> </span>{ <span class="hljs-keyword">return</span> xscale*x + <span class="hljs-number">5</span>; }
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">f</span><span class="hljs-params">(x)</span> </span>{ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>/(<span class="hljs-number">1</span>+m.exp( -trans(x) )); }
+        <span class="hljs-keyword">return</span> fn.renorm(
+            _.map(v, f)
+            );
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>Logit, = inverse of logistic
+ln[p/(1-p)], where p is normalized</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Logit: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(v)</span> </span>{
+        <span class="hljs-keyword">var</span> xscale = -<span class="hljs-number">1</span>/<span class="hljs-number">6</span>;
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">trans</span><span class="hljs-params">(x)</span> </span>{ <span class="hljs-keyword">return</span> xscale*x + <span class="hljs-number">1</span>; }
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">f</span><span class="hljs-params">(x)</span> </span>{ <span class="hljs-keyword">return</span> m.log( trans(x) / (<span class="hljs-number">1</span> - trans(x) ) ) + <span class="hljs-number">6</span>;  }
+        <span class="hljs-keyword">return</span> fn.renorm(
+            _.map(v, f)
+            );
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>Constant metric</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Constant: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(v)</span> </span>{
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">f</span><span class="hljs-params">(x)</span> </span>{ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; }
+        <span class="hljs-keyword">return</span> fn.renorm(
+            _.map(v, f)
+            );
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>Linear (decreasing)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Linear: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(v)</span> </span>{
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">f</span><span class="hljs-params">(x)</span> </span>{ <span class="hljs-keyword">return</span> <span class="hljs-number">6</span>-x; }
+        <span class="hljs-keyword">return</span> fn.renorm(
+            _.map(v, f)
+            );
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>import the metricdata; survives with the fn object</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    metricdata: <span class="hljs-built_in">require</span>(<span class="hljs-string">'./srcdata/metric.json'</span>),</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>return the metric for wf, i.e. wfpos</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    metric: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(wf)</span> </span>{
+        <span class="hljs-keyword">return</span> fn.metricdata[wf];
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>//////////////////
+Worth function //
+//////////////////
+/all players use the same</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p>the metric to separate worthiness, each by value of x10. Yields array of powers of 10 for nodeWorth’s dot
+Saved in json for efficient recalling</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Worthiness: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>for use in dot product in nodeWorth: 10 powers</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> powers = [<span class="hljs-number">1</span>];
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">6</span>; i++) {
+            powers.unshift(_.first(powers)*<span class="hljs-number">10</span>);
+        };
+        <span class="hljs-keyword">return</span> powers;
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>Calc the worth of a node: order the criteria, dot with worthiness metric above</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    NodeWorth: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(contFrac, regionIndex, attackableIndex, roundness, minmax, degree, pressure)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>ordering on criterion to judge node’s worth
+index 0 if offset to ++</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> order = [contFrac, regionIndex+<span class="hljs-number">1</span>, attackableIndex+<span class="hljs-number">1</span>, roundness, minmax, degree, pressure];
+        <span class="hljs-keyword">var</span> worthiness = fn.Worthiness;
+
+        <span class="hljs-keyword">return</span> m.dot(order, fn.metric(<span class="hljs-string">'Worthiness'</span>));
+    }
+    
+
+}
+
+
+exports.fn = fn;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>Precalculate the pos vector transformed with wf</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">preCalculate</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">var</span> metric = {};
+    metric.ExpDecay = fn.ExpDecay(pos);
+    metric.Gauss = fn.Gauss(pos);
+    metric.Survival = fn.Survival(pos);
+    metric.Logistic = fn.Logistic(pos);
+    metric.Logit = fn.Logit(pos);
+    metric.Constant = fn.Constant(pos);
+    metric.Linear = fn.Linear(pos);
+    metric.Worthiness = fn.Worthiness();
+    fs.writeFileSync(<span class="hljs-string">"./srcdata/metric.json"</span>, <span class="hljs-built_in">JSON</span>.stringify(metric, <span class="hljs-literal">null</span>, <span class="hljs-number">4</span>));
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>preCalculate();</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <p>var ar = _.range(1,6);
+console.log(ar);
+console.log(“eDecay”, fn.ExpDecay(pos));
+console.log(“gauss”, fn.Gauss(ar));
+console.log(“survival”, fn.Survival(ar));
+console.log(“logistic”, fn.Logistic(ar));
+console.log(“logfrac”, fn.Logit(ar));
+console.log(“const”, fn.Constant(ar));
+console.log(“const”, fn.Linear(ar));</p>
+
+            </div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

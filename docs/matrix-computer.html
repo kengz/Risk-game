@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>matrix-computer.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="AI-modules.html">
+                  AI-modules.js
+                </a>
+              
+                
+                <a class="source" href="arena.html">
+                  arena.js
+                </a>
+              
+                
+                <a class="source" href="dealer.html">
+                  dealer.js
+                </a>
+              
+                
+                <a class="source" href="functions.html">
+                  functions.js
+                </a>
+              
+                
+                <a class="source" href="graph.html">
+                  graph.js
+                </a>
+              
+                
+                <a class="source" href="initmap.html">
+                  initmap.js
+                </a>
+              
+                
+                <a class="source" href="kit.html">
+                  kit.js
+                </a>
+              
+                
+                <a class="source" href="main.html">
+                  main.js
+                </a>
+              
+                
+                <a class="source" href="matrix-computer.html">
+                  matrix-computer.js
+                </a>
+              
+                
+                <a class="source" href="player.html">
+                  player.js
+                </a>
+              
+                
+                <a class="source" href="priority-alg.html">
+                  priority-alg.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>matrix-computer.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>This class provides:</p>
+<ol>
+<li>Useful functions to produce unique matrix</li>
+<li>Compute the Radius-Matrices (RM) static to worldmap and exports</li>
+<li>Compute the Army-Matrices (AM) dynamic to each game turn</li>
+</ol>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Dependencies</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
+<span class="hljs-keyword">var</span> _ = <span class="hljs-built_in">require</span>(<span class="hljs-string">'underscore'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>var g =  require(‘./initmap.js’).g;</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> g =  <span class="hljs-built_in">require</span>(<span class="hljs-string">'./arena.js'</span>).g;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>/////////////////////////////////////
+Helper fields for functions below //
+/////////////////////////////////////</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>the list 0-41, representing countries</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> clist = _.range(<span class="hljs-number">42</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Init matrix, set level</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> mat = [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>var level = 5;
+add country 0 to checked</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> checked = [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>new matrix for expanding mat</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> newmat = [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Helper method: Produce new set of unique arrays from old</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">uniqMat</span><span class="hljs-params">(old)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>open up fresh outputs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> fresh = [];
+	_.each(old, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(o)</span> </span>{
+		<span class="hljs-keyword">var</span> ouniq = <span class="hljs-literal">true</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>check if old is present in fresh</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		_.each(fresh, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(f)</span> </span>{
+			<span class="hljs-keyword">if</span> (same(o, f)) ouniq = <span class="hljs-literal">false</span>;
+		})</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>if not, add to fresh</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">if</span> (ouniq) {
+			fresh.push(o);
+		};
+	})
+	<span class="hljs-keyword">return</span> fresh;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Helper: determine if two arrays are the same</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> same = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ar1, ar2)</span> </span>{
+	<span class="hljs-keyword">var</span> same = <span class="hljs-literal">true</span>;
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; ar1.length; i++) {
+		<span class="hljs-keyword">if</span> (ar1[i] != ar2[i]) same = <span class="hljs-literal">false</span>;
+	};
+	<span class="hljs-keyword">return</span> same;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>///////////////////
+Radius Matrix:  //
+///////////////////
+/static; depends only on map</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Matrix helper recursive function:
+Scan for countries in next radius for “level” times</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">nextRadius</span><span class="hljs-params">(level)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>take each row in mat    </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	_.each(mat, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>the last element in row</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> last = _.last(row);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>if is a valid country index</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">if</span> (last!= -<span class="hljs-number">1</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>for its adj countries</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			_.each(g.nodes[last].adjList, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(adj)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>copy row</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>				<span class="hljs-keyword">var</span> newrow = _.without(row, <span class="hljs-literal">null</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>if neighbor is not in checked, i.e. next radius, add</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>				<span class="hljs-keyword">if</span> (!_.contains(checked, adj)) {
+					newrow.push(adj);
+				}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>or else push -1 for “no country”</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>				<span class="hljs-keyword">else</span> {
+					newrow.push(-<span class="hljs-number">1</span>);
+				}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>push new row to newmat</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>				newmat.push( newrow );
+
+			})
+		}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>if last country is invalid, carry over by appending -1</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">else</span> {
+			<span class="hljs-keyword">var</span> newrow = _.without(row, <span class="hljs-literal">null</span>);
+			newrow.push(-<span class="hljs-number">1</span>);
+			newmat.push( newrow );
+		}
+	})</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>done with every row</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>reset mat as the expanded version (no duplicate rows); reset mat</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	mat = uniqMat(newmat);
+	newmat = [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p>update checked countries</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	checked = _.union(checked, _.flatten(mat));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>decrement level</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	level--;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>recurse</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">if</span> (level &gt; <span class="hljs-number">1</span>) {
+		nextRadius(level);
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>finally, when done, return mat</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">return</span> mat;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>Compute a Radius Matrix. Calls the nextRadius method.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">computeRM</span><span class="hljs-params">(i)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>init checked</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	checked = [i];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <p>init mat with first radius</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	mat = []; newmat = [];
+	_.each(g.nodes[i].adjList, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(adj)</span> </span>{
+		mat.push([adj]);
+	})</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <p>update checked</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	checked = _.union(checked, _.flatten(mat));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <p>call the recursive nextRadius method</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">return</span> nextRadius(<span class="hljs-number">5</span>);
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>The primary function to compute all the Radius Matrices. </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">computeRMs</span><span class="hljs-params">()</span> </span>{
+	<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"computing RMs in matrix-computer.js"</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <p>the All-Radius Matrices object, i.e. radius matrices for all countries</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> RMs = {};
+	_.each(clist, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i)</span> </span>{
+		<span class="hljs-keyword">var</span> mat = computeRM(i);
+		RMs[i] = mat;
+	});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <p>save to output</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	fs.writeFileSync(<span class="hljs-string">"./srcdata/radius-matrices.json"</span>, <span class="hljs-built_in">JSON</span>.stringify(RMs, <span class="hljs-literal">null</span>, <span class="hljs-number">4</span>));
+	<span class="hljs-keyword">return</span> RMs;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <p>computeRMs();</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <p>import the radius matrices for use below</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> RMs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./srcdata/radius-matrices.json'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-41">&#182;</a>
+              </div>
+              <p>////////////////
+RM partition //
+////////////////
+/This is directly dependent of the RM generated</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-42">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-42">&#182;</a>
+              </div>
+              <p>partition RMs[i] by the first entry of RMrow.
+returns array whose entry = number of rows with same first node,
+array.length = the degree of country i</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> alldegs = [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-43">&#182;</a>
+              </div>
+              <p>The partition degrees: i.e. degree of the chunk’s head node</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> partdeg;
+
+<span class="hljs-keyword">var</span> f = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./functions.js'</span>).fn;
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">partRM</span><span class="hljs-params">(i)</span> </span>{
+	partdeg = [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-44">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-44">&#182;</a>
+              </div>
+              <p>Init part and prevhead term</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> part = [<span class="hljs-number">0</span>];
+	<span class="hljs-keyword">var</span> prevhead = RMs[i][<span class="hljs-number">0</span>][<span class="hljs-number">0</span>];
+	_.each(RMs[i], <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-45">&#182;</a>
+              </div>
+              <p>if row diff from previous head term, push new counter = 1</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">if</span> (row[<span class="hljs-number">0</span>] != prevhead) {
+			part.push(<span class="hljs-number">1</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-46">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-46">&#182;</a>
+              </div>
+              <p>push deg</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			partdeg.push(g.nodes[prevhead].adjList.length);
+		}
+		<span class="hljs-keyword">else</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-47">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-47">&#182;</a>
+              </div>
+              <p>else increment this counter by 1</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			part.push(part.pop()+<span class="hljs-number">1</span>);
+		}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-48">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-48">&#182;</a>
+              </div>
+              <p>update prevhead for next turn</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		prevhead = row[<span class="hljs-number">0</span>];
+	})</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-49">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-49">&#182;</a>
+              </div>
+              <p>push deg of final chunk</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	partdeg.push(g.nodes[prevhead].adjList.length);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-50">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-50">&#182;</a>
+              </div>
+              <p>renormalize partdegs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	alldegs.push(f.renorm(partdeg));
+	<span class="hljs-keyword">return</span> part;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-51">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-51">&#182;</a>
+              </div>
+              <p>Primary function: partition all RMs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">partRMs</span><span class="hljs-params">()</span> </span>{
+	RMpart = {};
+	_.each(clist, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i)</span> </span>{
+		RMpart[i] = partRM(i);
+	})</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-52">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-52">&#182;</a>
+              </div>
+              <p>save to output</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	fs.writeFileSync(<span class="hljs-string">"./srcdata/RM-partition.json"</span>, <span class="hljs-built_in">JSON</span>.stringify(RMpart, <span class="hljs-literal">null</span>, <span class="hljs-number">4</span>));
+	fs.writeFileSync(<span class="hljs-string">"./srcdata/RM-partdegree.json"</span>, <span class="hljs-built_in">JSON</span>.stringify(alldegs, <span class="hljs-literal">null</span>, <span class="hljs-number">4</span>));
+	<span class="hljs-keyword">return</span> RMpart;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-53">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-53">&#182;</a>
+              </div>
+              <p>partRMs();</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-54">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-54">&#182;</a>
+              </div>
+              <p>///////////////
+Node-Matrix //
+///////////////
+/With dynamic graph dg passed as param</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-55">&#182;</a>
+              </div>
+              <p>Convert static RM to Node-Matrix, for a country, from dynamic graph dg</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RMtoNM</span><span class="hljs-params">(country, dg)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-56">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-56">&#182;</a>
+              </div>
+              <p>a radius matrix, copied</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> NM = [];
+	<span class="hljs-keyword">var</span> RM = RMs[country];
+	_.each(RM, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span> </span>{
+		<span class="hljs-keyword">var</span> NMrow = [];
+		_.each(row, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(country)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-57">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-57">&#182;</a>
+              </div>
+              <p>dynamic dependency on g here
+push whole node to use pointer: (object by reference)
+entry is undefined if invalid index -1
+forces can be transformed into +- by node.owner</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			NMrow.push( { node: dg.nodes[country] } );
+		});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-58">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-58">&#182;</a>
+              </div>
+              <p>end of a row, push NMrow to NM</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		NM.push(NMrow);
+	})
+	<span class="hljs-keyword">return</span> NM;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-59">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-59">&#182;</a>
+              </div>
+              <p>Convert static all RMs to Node-Matrices, from input dynamic graph dg</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">RMstoNMs</span><span class="hljs-params">(dg)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-60">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-60">&#182;</a>
+              </div>
+              <p>The All Army-Matrices object. Is dynamic of graph g and game turn.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> NMs = {};
+	_.each(clist, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i)</span> </span>{
+		<span class="hljs-keyword">var</span> mat = RMtoNM(i, dg);
+		NMs[i] = mat;
+	});
+	<span class="hljs-keyword">return</span> NMs;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-61">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-61">&#182;</a>
+              </div>
+              <p>///////////////
+Army Matrix //
+///////////////
+/With external Node-matrix passed as param.</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-62">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-62">&#182;</a>
+              </div>
+              <p>convert One NM to val, +- according to player == owner</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NMtoAM</span><span class="hljs-params">(i, player, NMs)</span> </span>{
+	<span class="hljs-keyword">var</span> AM = [];
+	_.each(NMs[i], <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row)</span> </span>{
+		<span class="hljs-keyword">var</span> AMrow = [];
+		_.each(row, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ptr)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-63">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-63">&#182;</a>
+              </div>
+              <p>if country invalid, push 0</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span> (ptr.node == <span class="hljs-literal">undefined</span>)
+				AMrow.push(<span class="hljs-number">0</span>);
+			<span class="hljs-keyword">else</span>
+			{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-64">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-64">&#182;</a>
+              </div>
+              <p>if country owned by player, push positive</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>				<span class="hljs-keyword">if</span> (ptr.node.owner == player)
+					AMrow.push(ptr.node.army);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-65">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-65">&#182;</a>
+              </div>
+              <p>else push negative army number</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>				<span class="hljs-keyword">else</span> 
+					AMrow.push(-<span class="hljs-number">1</span> * ptr.node.army);	
+			}
+		})</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-66">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-66">&#182;</a>
+              </div>
+              <p>end of row, push row to AM</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		AM.push(AMrow);
+	})
+	<span class="hljs-keyword">return</span> AM;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-67">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-67">&#182;</a>
+              </div>
+              <p>The primary function to convert Node matrices to Army Matrices. </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">NMstoAMs</span><span class="hljs-params">(player, NMs)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-68">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-68">&#182;</a>
+              </div>
+              <p>The All Army-Matrices object. Is dynamic of graph g and game turn.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> AMs = {};
+	_.each(clist, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i)</span> </span>{
+		<span class="hljs-keyword">var</span> mat = NMtoAM(i, player, NMs);
+		AMs[i] = mat;
+	});
+	<span class="hljs-keyword">return</span> AMs;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-69">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-69">&#182;</a>
+              </div>
+              <p>///////////////////////
+Pressure calculator //
+///////////////////////</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-70">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-70">&#182;</a>
+              </div>
+              <p>‘partition’ of matrix here = partition by chunk: all has the same first entry</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> RMpart = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./srcdata/RM-partition.json'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-71">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-71">&#182;</a>
+              </div>
+              <p>import the functions module</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> f = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./functions.js'</span>).fn;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-72">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-72">&#182;</a>
+              </div>
+              <p>g gotten from above</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-73">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-73">&#182;</a>
+              </div>
+              <p>Import from matrix computer
+var matcomp = require(‘./matrix-computer.js’);
+the function to create Node-Matrices and Army-Matrices from g here
+var RMstoNMs = matcomp.RMstoNMs;
+var NMstoAMs = matcomp.NMstoAMs;</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-74">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-74">&#182;</a>
+              </div>
+              <p>DYNAMIC: All DYM moved into arena
+The dynamic Node Matrices, made from NM with initialized g.
+Called just once per game, then this g object is refered to by descendants
+var NMs = RMstoNMs(g);</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-75">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-75">&#182;</a>
+              </div>
+              <p>DYNAMIC
+The dynamic Army Matrices from NMs. Called at every turn when armies shift
+var AMs = NMstoAMs(‘p1’, NMs);</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-76">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-76">&#182;</a>
+              </div>
+              <p>Helper: Apply the candidate weight function wf to army numbers in every row,
+then partition AMs[i]</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">wfpAM</span><span class="hljs-params">(i, wf, AMs)</span> </span>{
+	<span class="hljs-keyword">var</span> AMpart = [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-77">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-77">&#182;</a>
+              </div>
+              <p>the partition structure</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> guide = RMpart[i];
+	<span class="hljs-keyword">var</span> leap = <span class="hljs-number">0</span>;
+	_.each(guide, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(step)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-78">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-78">&#182;</a>
+              </div>
+              <p>for each partition(chunk) consisting of step rows</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> chunk = [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-79">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-79">&#182;</a>
+              </div>
+              <p>grab the corresponding rows in AM, compute</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> r = leap; r &lt; leap+step; r++) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-80">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-80">&#182;</a>
+              </div>
+              <p>console.log(r);
+for AMs[i], row r; dot the army with the metric using weight wf</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			chunk.push( f.vecdot( AMs[i][r], f.metric(wf) ) );
+		}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-81">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-81">&#182;</a>
+              </div>
+              <p>reset index for next chunk</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		leap += step;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-82">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-82">&#182;</a>
+              </div>
+              <p>push computed chunk</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		AMpart.push(chunk);
+	})</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-83">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-83">&#182;</a>
+              </div>
+              <p>return the AM, transformed and partitioned</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">return</span> AMpart;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-84">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-84">&#182;</a>
+              </div>
+              <p>The degree of the partitions of RM. Its structure is the same as partAM</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> partdegs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./srcdata/RM-partdegree.json'</span>);
+<span class="hljs-keyword">var</span> RMs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./srcdata/radius-matrices.json'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-85">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-85">&#182;</a>
+              </div>
+              <p>Helper: calculate the pressure: Turn AM into wfpAM, then reduce it to chunks-scalars, then dot with chunk-degree for final pressure
+Renormalized over partdegs, reflect average number of armies surrounding the origin.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">calcPressure</span><span class="hljs-params">(wf, AMs)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-86">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-86">&#182;</a>
+              </div>
+              <p>for every of the 42 countries</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">return</span> _.map(clist, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-87">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-87">&#182;</a>
+              </div>
+              <p>eval the pressure for each AM
+return wfpAM(i, wf, AMs);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">return</span> f.pressureDeg( wfpAM(i, wf, AMs) , partdegs[i] );
+	});
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-88">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-88">&#182;</a>
+              </div>
+              <p>DYNAMIC
+Primary: per-turn, update AMs, recalc pressure for player.
+i.e. army = +ve if owned by player, -ve if enermy, 0 if invalid.
+function updatePressures(player, wf) {
+    // update AMs
+    AMs = NMstoAMs(player, NMs);
+    // dot it as wanted
+    return calcPressure(wf, AMs);
+}</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-89">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-89">&#182;</a>
+              </div>
+              <p>console.log(updatePressures(‘p1’, ‘Gauss’));</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-90">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-90">&#182;</a>
+              </div>
+              <p>var start = new Date().getTime();
+for (i = 0; i &lt; 100; ++i) {
+    // initMap();
+    // wfpAM(0, ‘Gauss’, AMs);
+    calcPressure(‘Gauss’, AMs);
+    // dotAMs(f.Gauss);
+    // f.Gauss(pos);
+    // var boo = updatePressures(‘p1’, ‘Gauss’);
+    // console.log(boo.length);
+}
+var end = new Date().getTime();
+var time = end - start;
+console.log(‘Execution time: ‘ + time);
+// console.log(g);</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-91">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-91">&#182;</a>
+              </div>
+              <p>Export modules</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>exports.uniqMat = uniqMat;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-92">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-92">&#182;</a>
+              </div>
+              <p>exports.computeRMs = computeRMs;</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>exports.RMstoNMs = RMstoNMs;
+exports.NMstoAMs = NMstoAMs;
+exports.calcPressure = calcPressure;</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

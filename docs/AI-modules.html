@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>AI-modules.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="AI-modules.html">
+                  AI-modules.js
+                </a>
+              
+                
+                <a class="source" href="arena.html">
+                  arena.js
+                </a>
+              
+                
+                <a class="source" href="dealer.html">
+                  dealer.js
+                </a>
+              
+                
+                <a class="source" href="functions.html">
+                  functions.js
+                </a>
+              
+                
+                <a class="source" href="graph.html">
+                  graph.js
+                </a>
+              
+                
+                <a class="source" href="initmap.html">
+                  initmap.js
+                </a>
+              
+                
+                <a class="source" href="kit.html">
+                  kit.js
+                </a>
+              
+                
+                <a class="source" href="main.html">
+                  main.js
+                </a>
+              
+                
+                <a class="source" href="matrix-computer.html">
+                  matrix-computer.js
+                </a>
+              
+                
+                <a class="source" href="player.html">
+                  player.js
+                </a>
+              
+                
+                <a class="source" href="priority-alg.html">
+                  priority-alg.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>AI-modules.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>dependencies</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> _ = <span class="hljs-built_in">require</span>(<span class="hljs-string">'underscore'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Useful globals
+deck for converting card indices to cards</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> deck = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./srcdata/deck.json'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>combinatorics library</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> cmb = <span class="hljs-built_in">require</span>(<span class="hljs-string">'js-combinatorics'</span>).Combinatorics;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>AI = brain of player, will control the player object
+contains the trait
+will make moves and decisions</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Game Stages:</p>
+<ol>
+<li>Priority Algorithm</li>
+<li>Placement Algorithm</li>
+<li>Attack Algorithm</li>
+</ol>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <ol>
+<li>Priority permutation: id [0,1,2,3] = 
+[enumAttack, enumWeaken, enumThreat, enumLost];
+Personalities:
+attack-then-defend: [0,1,2,3]
+opportunist-attack-then-defend: [1,0,2,3]
+defend-then-attack: [2,3,0,1]
+conservative-defend-then-attack: [3,2,0,1]</li>
+</ol>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <ol>
+<li>wf: weight function/metric. i.e. Threat-perception. Use only the last 2.</li>
+<li>Sequence of enumerating sublists of priority list. See priority-alg.js. Use only the last 2.</li>
+<li>placement in priority to balance press
+cautious: balance all your pressure &gt; 0 first, then extra for priority
+tactical: place armies in priority first till +4 pressure; if leftover repeat in priority +=4</li>
+<li>pressure threshold to init attack. Also used in keeping cards: rusher = always trade in when can.
+carry: accumulate forces and attack when likely to win</li>
+</ol>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>global for AI, traits(key): variants: values</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> traitsMap = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./srcdata/AI-traits.json'</span>);
+<span class="hljs-keyword">var</span> traitsKey = _.initial(_.keys(traitsMap));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>console.log(traitsKey);</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>AI brain controls the player</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">AI</span><span class="hljs-params">(player, persona, dg)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>global graph object</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> g = dg;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>//////////
+Fields //
+//////////
+player which has all the fields</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.player = player;
+    <span class="hljs-keyword">this</span>.name = player.name;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Personality map of AI, e.g. priority: ‘agressive’</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.personality = _.object(traitsKey, persona);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>get this AI’s trait, e.g. priority -&gt; [0,1,2,3]</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.trait = trait;
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">trait</span><span class="hljs-params">(key)</span> </span>{
+        <span class="hljs-keyword">return</span> traitsMap[key][<span class="hljs-keyword">this</span>.personality[key]];
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>The attack-origin map and priority list
+enumerate with sublists size = 3 x4 = 12</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.priorityList = [];
+    <span class="hljs-keyword">this</span>.attOrgMap = {};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>///////////
+Methods //
+///////////</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.tradeIn = tradeIn;
+    <span class="hljs-keyword">this</span>.getArmies = getArmies;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>place armies, with threshold step t = 5</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.placeArmies = placeArmies;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>count number of armies owned on map</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.countArmy = countArmy;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>count number of countries owned</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.countCountries = countCountries;
+    <span class="hljs-keyword">this</span>.countContinents = countContinents;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>The attack moves</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.attack = attack;
+    <span class="hljs-keyword">this</span>.defend = defend;
+    <span class="hljs-keyword">this</span>.moveIn = moveIn;
+    <span class="hljs-keyword">this</span>.fortify = fortify;
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fortify</span><span class="hljs-params">()</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>console.log(“fortify”);
+find border node with lowest pressure
+find none-border node with AM higher than it
+if is neigh of it, then move in all but 1</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>borders sorted by pressure from lowest</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> coun = _.sortBy(<span class="hljs-keyword">this</span>.player.countries, byPressure);
+        <span class="hljs-keyword">var</span> fortified = <span class="hljs-literal">false</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>call on coun till fortified one, or none</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; coun.length; i++) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>fortify by moving troops from internal node with high pressure</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> found = hiPressNonBorderNeigh(coun[i], <span class="hljs-keyword">this</span>.player);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>console.log(“to fortify node”, found);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">if</span> (found != <span class="hljs-literal">undefined</span>) {
+            	<span class="hljs-keyword">this</span>.moveIn(found, coun[i]);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>if move in once, done, break</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                fortified = <span class="hljs-literal">true</span>;
+                <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+            }
+        };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p>after trying all, if none, then move anything to a highest pressure border node</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (!fortified) {
+            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; coun.length; i++) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>console.log(“fortifying by accumulation”);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">var</span> neighs = _.intersection(coun, g.nodes[coun[i]].adjList);
+                <span class="hljs-keyword">var</span> maxNeigh = _.last(neighs);
+                <span class="hljs-keyword">if</span> (maxNeigh != <span class="hljs-literal">undefined</span>) {
+                    <span class="hljs-keyword">this</span>.moveIn(maxNeigh, coun[i]);
+                    fortified = <span class="hljs-literal">true</span>;
+                    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+                };
+            };
+        };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>helper: return an ideal hi pressure non-border neighbor that can transfer troop to border node[i]</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">hiPressNonBorderNeigh</span><span class="hljs-params">(i, plyr)</span> </span>{
+            <span class="hljs-keyword">var</span> nonBorderNeigh = _.difference(g.nodes[i].adjList, plyr.borders);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>console.log(“found neigh”, nonBorderNeigh);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> neighPressDiff = _.map(nonBorderNeigh, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(k)</span> </span>{
+                <span class="hljs-keyword">return</span> g.nodes[k].pressure - g.nodes[i].pressure;
+            });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>the max pressure difference</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> max = _.max(neighPressDiff);
+            <span class="hljs-keyword">if</span> (max &gt; <span class="hljs-number">3</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>console.log(“found big hike”);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">var</span> mInd = _.findIndex(neighPressDiff, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(m)</span> </span>{
+                    <span class="hljs-keyword">return</span> <span class="hljs-built_in">Math</span>.floor(<span class="hljs-built_in">Math</span>.abs(m-max))==<span class="hljs-number">0</span>;
+                });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <p>console.log(“to return”, mInd, nonBorderNeigh[mInd]);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">return</span> nonBorderNeigh[mInd];
+            };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <p>else return undefine</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <p>sort helper</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">byPressure</span><span class="hljs-params">(i)</span> </span>{
+            <span class="hljs-keyword">return</span> g.nodes[i].pressure;
+        }
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>move in: always move all but one</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">moveIn</span><span class="hljs-params">(org, tar)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <p>console.log(“moveIn”);
+failsafe</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (g.nodes[tar].owner != <span class="hljs-keyword">this</span>.name &amp;&amp; g.nodes[tar].army != <span class="hljs-number">0</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <p>console.log(“moveIn error!”)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <p>console.log(“before moveIn”, g.nodes[org].army, g.nodes[tar].army);
+extract</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> num = g.nodes[org].army;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <p>transfer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        g.nodes[tar].army = num - <span class="hljs-number">1</span>;
+        g.nodes[org].army = <span class="hljs-number">1</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-41">&#182;</a>
+              </div>
+              <p>console.log(“after moveIn”, g.nodes[org].army, g.nodes[tar].army);
+console.log(“transferred all but one”, g.nodes[org].army, g.nodes[tar].army);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-42">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-42">&#182;</a>
+              </div>
+              <p>defending when enemy rolls ‘red’ number of dice</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">defend</span><span class="hljs-params">(att)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-43">&#182;</a>
+              </div>
+              <p>console.log(“defend”);
+object returned from attack()</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> org = att.origin;
+        <span class="hljs-keyword">var</span> tar = att.target;
+        <span class="hljs-keyword">var</span> red = att.roll;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-44">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-44">&#182;</a>
+              </div>
+              <p>to counter, always use max rolls possible</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> need = _.min([<span class="hljs-number">2</span>, red]);
+        <span class="hljs-keyword">var</span> afford = _.min([need, g.nodes[tar].army]);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-45">&#182;</a>
+              </div>
+              <p>return white rolls</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">return</span> afford;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-46">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-46">&#182;</a>
+              </div>
+              <p>attack based on priorityList and personality threshold. Called until return undefined.
+Return attack request {origin, tar, roll} to dealer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">attack</span><span class="hljs-params">()</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-47">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-47">&#182;</a>
+              </div>
+              <p>console.log(“attack”);
+extract personality</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> att = <span class="hljs-keyword">this</span>.personality[<span class="hljs-string">'attack'</span>];
+        <span class="hljs-keyword">var</span> playername = <span class="hljs-keyword">this</span>.player.name;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-48">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-48">&#182;</a>
+              </div>
+              <p>for each target, attack if source.army - target.army &gt; threshold</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> prio = <span class="hljs-keyword">this</span>.priorityList;
+        <span class="hljs-keyword">var</span> attOrg = <span class="hljs-keyword">this</span>.attOrgMap;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-49">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-49">&#182;</a>
+              </div>
+              <p>return att request to dealer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">return</span> strike(<span class="hljs-keyword">this</span>.trait(<span class="hljs-string">'attack'</span>), playername);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-50">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-50">&#182;</a>
+              </div>
+              <p>helper: based on personality threshold, initiate attack by sending request to dealer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">strike</span><span class="hljs-params">(threshold, playername)</span> </span>{
+            <span class="hljs-keyword">if</span> (prio.length == <span class="hljs-number">0</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-51">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-51">&#182;</a>
+              </div>
+              <p>console.log(“priority list empty!”);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-52">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-52">&#182;</a>
+              </div>
+              <p>target in prio list, loop</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span>; j &lt; prio.length; j++) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-53">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-53">&#182;</a>
+              </div>
+              <p>att origin
+i = node index at prio[j]</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">var</span> i = prio[j];
+                <span class="hljs-keyword">var</span> o = attOrg[i];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-54">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-54">&#182;</a>
+              </div>
+              <p>verify is enemy and origin is self,
+origin must have at least 2 armies,
+enemy is still attackable</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">if</span> (g.nodes[i].owner != playername &amp;&amp;
+                    g.nodes[o].owner == playername &amp;&amp;
+                    g.nodes[o].army &gt;= <span class="hljs-number">2</span> &amp;&amp;
+                    g.nodes[i].army &gt; <span class="hljs-number">0</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-55">&#182;</a>
+              </div>
+              <p>console.log(“attempt attack”);
+check if army number &gt;= threshold/2, so that can keep attacking after first time</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                    <span class="hljs-keyword">var</span> diff = g.nodes[o].army - g.nodes[i].army;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-56">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-56">&#182;</a>
+              </div>
+              <p>loop until wanna attack, return</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                    <span class="hljs-keyword">if</span> (diff &gt;= threshold / <span class="hljs-number">2</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-57">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-57">&#182;</a>
+              </div>
+              <p>number of dice to roll</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                        <span class="hljs-keyword">var</span> roll = _.min([<span class="hljs-number">3</span>, diff]);
+                        <span class="hljs-keyword">return</span> {
+                            origin: o,
+                            target: i,
+                            roll: roll
+                        }
+                    };
+                };
+            }
+        };
+
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-58">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-58">&#182;</a>
+              </div>
+              <p>count number of continents owned</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">countContinents</span><span class="hljs-params">()</span> </span>{
+    	<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.player.continents.length;
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-59">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-59">&#182;</a>
+              </div>
+              <p>count number of countries owned</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">countCountries</span><span class="hljs-params">()</span> </span>{
+    	<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.player.countries.length;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-60">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-60">&#182;</a>
+              </div>
+              <p>Count its army currently deployed</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">countArmy</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">var</span> sum = <span class="hljs-number">0</span>;
+        _.each(<span class="hljs-keyword">this</span>.player.countries, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i)</span> </span>{
+            sum += g.nodes[i].army;
+        })
+        <span class="hljs-keyword">return</span> sum;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-61">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-61">&#182;</a>
+              </div>
+              <p>place armies based on personality, balance pressures</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">placeArmies</span><span class="hljs-params">()</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-62">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-62">&#182;</a>
+              </div>
+              <p>console.log(“placeArmies”);
+the army counterpressure threshold</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> threshold = <span class="hljs-number">4</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-63">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-63">&#182;</a>
+              </div>
+              <p>extract personality</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> placem = <span class="hljs-keyword">this</span>.personality[<span class="hljs-string">'placement'</span>];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-64">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-64">&#182;</a>
+              </div>
+              <p>the pressures and priority list copied for use</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> press = <span class="hljs-keyword">this</span>.player.pressures;
+        <span class="hljs-keyword">var</span> prio = <span class="hljs-keyword">this</span>.priorityList;
+        <span class="hljs-keyword">var</span> attOrg = <span class="hljs-keyword">this</span>.attOrgMap;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-65">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-65">&#182;</a>
+              </div>
+              <p>deplete armyreserve</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> stock = <span class="hljs-keyword">this</span>.player.armyreserve;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-66">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-66">&#182;</a>
+              </div>
+              <p>console.log(“army reserve”, stock, prio);
+console.log(“countries owned”, this.player.countries);
+console.log(“attackable”, this.player.attackable);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">this</span>.player.armyreserve = <span class="hljs-number">0</span>;
+
+        <span class="hljs-keyword">if</span> (placem == <span class="hljs-string">'cautious'</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-67">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-67">&#182;</a>
+              </div>
+              <p>balance all pri pressure &gt;0 first,</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            distribute(<span class="hljs-number">0</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-68">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-68">&#182;</a>
+              </div>
+              <p>then topup priority by half threshold</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">while</span> (stock &gt; <span class="hljs-number">0</span>) {
+                distribute(threshold / <span class="hljs-number">2</span>);
+            };
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-69">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-69">&#182;</a>
+              </div>
+              <p>priority pressure &gt;4 +=4 repeatedly</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (placem == <span class="hljs-string">'tactical'</span>) {
+            <span class="hljs-keyword">while</span> (stock &gt; <span class="hljs-number">0</span>) {
+                distribute(threshold);
+            };
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-70">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-70">&#182;</a>
+              </div>
+              <p>helper: distribute ‘num’ army by priorityList</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">distribute</span><span class="hljs-params">(t)</span> </span>{
+            <span class="hljs-keyword">var</span> t = <span class="hljs-built_in">Math</span>.floor(t);
+            _.each(prio, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-71">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-71">&#182;</a>
+              </div>
+              <p>army needed</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">var</span> need = _.max([t + <span class="hljs-built_in">Math</span>.ceil(-press[i]), t]);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-72">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-72">&#182;</a>
+              </div>
+              <p>affordable, either need or stock left</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">var</span> afford = _.min([need, stock]);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-73">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-73">&#182;</a>
+              </div>
+              <p>take out, give army to node</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                stock -= afford;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-74">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-74">&#182;</a>
+              </div>
+              <p>add army to your attack origin of i</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">var</span> org = attOrg[i];
+                g.nodes[org].army += afford;
+            });
+        };
+
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-75">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-75">&#182;</a>
+              </div>
+              <p>get armies from dealer(given). 
+Add to reserve for placement</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getArmies</span><span class="hljs-params">(given)</span> </span>{
+        <span class="hljs-keyword">this</span>.player.armyreserve += given;
+        <span class="hljs-keyword">return</span> given;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-76">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-76">&#182;</a>
+              </div>
+              <p>AI trade in cards based on personality, to call giveArmies from dealer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">tradeIn</span><span class="hljs-params">()</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-77">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-77">&#182;</a>
+              </div>
+              <p>console.log(“tradeIn”);
+extract personality</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> att = <span class="hljs-keyword">this</span>.personality[<span class="hljs-string">'attack'</span>];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-78">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-78">&#182;</a>
+              </div>
+              <p>the sets of card(indices) to trade in</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> tradeSets = [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-79">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-79">&#182;</a>
+              </div>
+              <p>Rule: if hand has 5 or more cards, must trade</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.player.cards.length &gt; <span class="hljs-number">4</span>) {
+            tradeSets.push(findTradeable(<span class="hljs-keyword">this</span>.player));
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-80">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-80">&#182;</a>
+              </div>
+              <p>Personality:
+if is rusher, always trade in all cards</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (att == <span class="hljs-string">'rusher'</span>) {
+            <span class="hljs-keyword">var</span> nextSet = findTradeable(<span class="hljs-keyword">this</span>.player);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-81">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-81">&#182;</a>
+              </div>
+              <p>trade till can’t</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">while</span> (nextSet != <span class="hljs-literal">undefined</span>) {
+                tradeSets.push(nextSet);
+                nextSet = findTradeable(<span class="hljs-keyword">this</span>.player);
+            }
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-82">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-82">&#182;</a>
+              </div>
+              <p>if is carry, trade in all only if region big</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (att == <span class="hljs-string">'carry'</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-83">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-83">&#182;</a>
+              </div>
+              <p>use big force when has big region</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.player.regions[<span class="hljs-number">0</span>].length &gt; <span class="hljs-number">5</span>) {
+                <span class="hljs-keyword">var</span> nextSet = findTradeable(<span class="hljs-keyword">this</span>.player);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-84">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-84">&#182;</a>
+              </div>
+              <p>trade till can’t</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">while</span> (nextSet != <span class="hljs-literal">undefined</span>) {
+                    tradeSets.push(nextSet);
+                    nextSet = findTradeable(<span class="hljs-keyword">this</span>.player);
+                }
+            }
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-85">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-85">&#182;</a>
+              </div>
+              <p>helper: find tradeable set in player’s hand</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">findTradeable</span><span class="hljs-params">(player)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-86">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-86">&#182;</a>
+              </div>
+              <p>console.log(“findTradeable”);
+hand = indices of cards</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> hand = player.cards;
+            <span class="hljs-keyword">var</span> setToTrade = <span class="hljs-literal">undefined</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-87">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-87">&#182;</a>
+              </div>
+              <p>if have 3 cards n more,</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">if</span> (hand.length &gt; <span class="hljs-number">2</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-88">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-88">&#182;</a>
+              </div>
+              <p>enum subset</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">var</span> subset = cmb.combination(hand, <span class="hljs-number">3</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-89">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-89">&#182;</a>
+              </div>
+              <p>loop till found tradeable set</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">while</span> (s = subset.next()) {
+                    <span class="hljs-keyword">var</span> sum = <span class="hljs-number">0</span>;
+                    _.each(s, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(c)</span> </span>{
+                        sum += deck[c].picture;
+                    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-90">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-90">&#182;</a>
+              </div>
+              <ol>
+<li>same pictures, sum%3 = 0</li>
+<li>diff pictures, sum%3 = 0</li>
+<li>any 2 pics w/ 1 wild, sum &lt; 0</li>
+</ol>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                    <span class="hljs-keyword">if</span> (sum &lt; <span class="hljs-number">0</span> || sum % <span class="hljs-number">3</span> == <span class="hljs-number">0</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-91">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-91">&#182;</a>
+              </div>
+              <p>found, break and trade it</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                        setToTrade = s;
+                        <span class="hljs-keyword">break</span>;
+                    }
+                }
+            }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-92">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-92">&#182;</a>
+              </div>
+              <p>update hand</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            player.cards = _.difference(hand, setToTrade);
+            <span class="hljs-keyword">return</span> setToTrade;
+        };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-93">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-93">&#182;</a>
+              </div>
+              <p>convert one set (ind arr) to cards arr</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">toCards</span><span class="hljs-params">(setToTrade)</span> </span>{
+            <span class="hljs-keyword">return</span> _.map(setToTrade, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i)</span> </span>{
+                <span class="hljs-keyword">return</span> deck[i];
+            });
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-94">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-94">&#182;</a>
+              </div>
+              <p>Finally, convert all tradeSets to cards</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> tradeSetsAsCards = _.map(tradeSets, toCards);
+            <span class="hljs-keyword">return</span> tradeSetsAsCards;
+        };
+
+    };
+
+    exports.AI = AI;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-95">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-95">&#182;</a>
+              </div>
+              <p>// Export traits as personalities to json
+var fs = require(‘fs’);
+var traitsMap = require(‘./srcdata/AI-traits.json’);</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-96">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-96">&#182;</a>
+              </div>
+              <p>// export the vectors of AI personalities
+function exportPers() {
+    // delete unwanted
+    delete traitsMap.help;
+    delete traitsMap.wf[“Linear”];
+    delete traitsMap.wf[“Gauss”];
+    delete traitsMap.wf[“ExpDecay”];
+    delete traitsMap.priority[“opportunist-attack-then-defend”];
+    delete traitsMap.priority[“conservative-defend-then-attack”];</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-97">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-97">&#182;</a>
+              </div>
+              <pre><code><span class="hljs-comment">// get vector of sets of trait values</span>
+<span class="hljs-keyword">var</span> tKeys = _.keys(traitsMap);
+<span class="hljs-keyword">var</span> a = _.map(tKeys, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(k)</span> </span>{
+    <span class="hljs-keyword">return</span> _.keys(traitsMap[k]);
+})
+</code></pre>
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-98">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-98">&#182;</a>
+              </div>
+              <pre><code><span class="hljs-comment">// take the cartesianProduct for personalities</span>
+cp = cmb.cartesianProduct(a[<span class="hljs-number">0</span>], a[<span class="hljs-number">1</span>], a[<span class="hljs-number">2</span>], a[<span class="hljs-number">3</span>]);
+<span class="hljs-keyword">var</span> pers = cp.toArray();
+<span class="hljs-built_in">console</span>.log(pers);
+</code></pre>
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-99">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-99">&#182;</a>
+              </div>
+              <pre><code>fs.writeFileSync(<span class="hljs-string">'./srcdata/AI-personalities.json'</span>, <span class="hljs-built_in">JSON</span>.stringify(pers, <span class="hljs-literal">null</span>, <span class="hljs-number">4</span>));
+</code></pre><p>}</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-100">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-100">&#182;</a>
+              </div>
+              <p>exportPers();</p>
+
+            </div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

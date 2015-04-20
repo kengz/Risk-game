@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>arena.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="AI-modules.html">
+                  AI-modules.js
+                </a>
+              
+                
+                <a class="source" href="arena.html">
+                  arena.js
+                </a>
+              
+                
+                <a class="source" href="dealer.html">
+                  dealer.js
+                </a>
+              
+                
+                <a class="source" href="functions.html">
+                  functions.js
+                </a>
+              
+                
+                <a class="source" href="graph.html">
+                  graph.js
+                </a>
+              
+                
+                <a class="source" href="initmap.html">
+                  initmap.js
+                </a>
+              
+                
+                <a class="source" href="kit.html">
+                  kit.js
+                </a>
+              
+                
+                <a class="source" href="main.html">
+                  main.js
+                </a>
+              
+                
+                <a class="source" href="matrix-computer.html">
+                  matrix-computer.js
+                </a>
+              
+                
+                <a class="source" href="player.html">
+                  player.js
+                </a>
+              
+                
+                <a class="source" href="priority-alg.html">
+                  priority-alg.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>arena.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>Arena: Hosts an instance of the game. The place for all gamesteps and computations.
+All dynamic objects exist in here, and interact here, to maximize speed. All other classes need to exchange dynamic object through here.</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>///////////////////////////////////
+Reinforce-attack call sequence: //
+///////////////////////////////////</p>
+<ol>
+<li>update worths and pressures for nodes (between enemy turns to detect changes)</li>
+<li>enumPriority w/ AI personality(permutation)</li>
+<li>Reinforce based on priority lists and origin-map</li>
+<li>attack by list</li>
+</ol>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Master Game wrapper: init and run everything in this file = an instance of game, with AI personalities, and player order: 
+if 1, AI1 first; if 0, AI2 first</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Game</span><span class="hljs-params">(pers1, pers2, firstplayer)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>//////////////////////////////
+the time-series for a game //
+//////////////////////////////
+Enumeration</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> TS = {};
+TS[<span class="hljs-string">'first_player'</span>] = firstplayer;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>set winner to tie first, if exist, reset below</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>TS[<span class="hljs-string">'winner'</span>] = <span class="hljs-string">'tie'</span>;
+TS[<span class="hljs-string">'AI1'</span>] = pers1;
+TS[<span class="hljs-string">'AI2'</span>] = pers2;
+
+
+TS[<span class="hljs-string">'p1_countries'</span>] = [];
+TS[<span class="hljs-string">'p1_continents'</span>] = [];
+TS[<span class="hljs-string">'p1_army_given'</span>] = [];
+TS[<span class="hljs-string">'p1_total_army'</span>] = [];
+TS[<span class="hljs-string">'p2_countries'</span>] = [];
+TS[<span class="hljs-string">'p2_continents'</span>] = [];
+TS[<span class="hljs-string">'p2_army_given'</span>] = [];
+TS[<span class="hljs-string">'p2_total_army'</span>] = [];
+TS[<span class="hljs-string">'n_attacks'</span>] = [];
+TS[<span class="hljs-string">'n_conquered'</span>] = [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>/////////////////////////////
+dependencies, enumeration //
+/////////////////////////////</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> _ = <span class="hljs-built_in">require</span>(<span class="hljs-string">'underscore'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>primary dynamic objects:</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> g; <span class="hljs-comment">//graph (the board/map)</span>
+<span class="hljs-keyword">var</span> bench, p1, p2, p3; <span class="hljs-comment">// bench = players</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Global dealer: gives cards and armies </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> dealerM = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./dealer.js'</span>).dealer;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Global AI mod constructor</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> AIM = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./AI-modules.js'</span>).AI;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Global Priority algorithm to update AI info for calc</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> PrioAlg = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./priority-alg.js'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>/////////////////////////////////////////
+Imports, Initialization, Constructors //
+/////////////////////////////////////////</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-keyword">var</span> control = <span class="hljs-literal">false</span>; <span class="hljs-comment">//control test: don't randomize</span>
+<span class="hljs-keyword">var</span> init = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./initmap.js'</span>).initMap(control);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>create graph g.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>g = init.g;
+exports.g = g;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>create all players</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>bench = init.bench;
+p1 = bench[<span class="hljs-number">0</span>];
+p2 = bench[<span class="hljs-number">1</span>];
+p3 = bench[<span class="hljs-number">2</span>];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Construct a global dealer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> dealer = <span class="hljs-keyword">new</span> dealerM(g);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Construct a global priorty algorithm for AI calc</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> PA = <span class="hljs-keyword">new</span> PrioAlg.PA(g, bench);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>size of 4 sublists of priorityList</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> priorityStep = <span class="hljs-number">4</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>///////////////////
+AI construction //
+///////////////////</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>Construct AI’s with players controlled</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> AI1 = <span class="hljs-keyword">new</span> AIM(p1, pers1, g);
+<span class="hljs-keyword">var</span> AI2 = <span class="hljs-keyword">new</span> AIM(p2, pers2, g);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>third neutral AI runs with control</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> control = [<span class="hljs-string">'Survival'</span>, <span class="hljs-string">'agressive'</span>, <span class="hljs-string">'cautious'</span>, <span class="hljs-string">'rusher'</span>];
+<span class="hljs-keyword">var</span> AI3 = <span class="hljs-keyword">new</span> AIM(p3, control, g);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>The list of 3 AIs; third is neutral, doesn’t do much</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> AIlist = [AI3];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>the active AIs (without AI3)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> AIs = [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>Player order, add differently to lists</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">if</span> (firstplayer == <span class="hljs-string">'p1'</span>) {
+    AIlist.push(AI1);
+    AIlist.push(AI2);
+    AIs.push(AI1);
+    AIs.push(AI2);
+}
+<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (firstplayer == <span class="hljs-string">'p2'</span>) {
+    AIlist.push(AI2);
+    AIlist.push(AI1);
+    AIs.push(AI2);
+    AIs.push(AI1);
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>//////////////////////////
+Primary-helper methods //
+//////////////////////////</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>AI updating its info before moves</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">AIupdate</span><span class="hljs-params">(ai)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>update worths, pressures, using AI’s ‘wf’ trait</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    PA.updateForPriority(ai.player, ai.trait(<span class="hljs-string">'wf'</span>));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>return map of all best origins(own) of attack</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> attOrgMap = PA.mapAttOrigins(ai.player);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p>enumerate the priority target list, step = 3</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> priorityList = PA.enumPriority(ai.player, ai.trait(<span class="hljs-string">'priority'</span>), priorityStep);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>set orgMap and plist for AI</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    ai.attOrgMap = attOrgMap;
+    ai.priorityList = priorityList;
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>Finish the initialization: AI updates and places remaining armies.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">initAIsetup</span><span class="hljs-params">()</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>note: for fairness place AI3 first</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>remaining 26 armies per player, each AI take turn place 2</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">26</span>/<span class="hljs-number">2</span>; i++) {
+        _.each(AIlist, placeTwo);
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>get and place one army</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">placeTwo</span><span class="hljs-params">(ai)</span> </span>{
+        AIupdate(ai);
+        <span class="hljs-keyword">var</span> army_given = ai.getArmies(<span class="hljs-number">2</span>);
+        ai.placeArmies();
+    }
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <p>One game turn of ai</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">gameturn</span><span class="hljs-params">(ai)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <p>push data to its time series array</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">pushTS</span><span class="hljs-params">(ai, key, value)</span> </span>{
+        <span class="hljs-keyword">var</span> idkey = ai.name+<span class="hljs-string">'_'</span>+key;
+        TS[idkey].push(value);
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <ol>
+<li>first update info: Priority Algorithm</li>
+</ol>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    AIupdate(ai);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>update for TS
+count: var starts with ‘n_var’</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    pushTS(ai, <span class="hljs-string">'countries'</span>, ai.countCountries())
+    pushTS(other(ai), <span class="hljs-string">'countries'</span>, other(ai).countCountries())
+    pushTS(ai, <span class="hljs-string">'continents'</span>, ai.countContinents())
+    pushTS(other(ai), <span class="hljs-string">'continents'</span>, other(ai).countContinents())</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <ol>
+<li>then get armies and place them: Placement alg</li>
+</ol>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> army_given = ai.getArmies(
+        dealer.giveArmies(ai.player, ai.tradeIn())
+        );
+    ai.placeArmies();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <p>update for TS</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    pushTS(ai, <span class="hljs-string">'army_given'</span>, army_given);
+    pushTS(other(ai), <span class="hljs-string">'army_given'</span>, <span class="hljs-number">0</span>);
+    pushTS(ai, <span class="hljs-string">'total_army'</span>, ai.countArmy());
+    pushTS(other(ai), <span class="hljs-string">'total_army'</span>, other(ai).countArmy());</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <ol>
+<li>then attack: Attack alg. include owner/army transfer</li>
+</ol>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> attres = dealer.mediateAttacks(ai, other(ai));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <p>update for TS</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    TS[<span class="hljs-string">'n_attacks'</span>].push(attres[<span class="hljs-string">'n_attacks'</span>]);
+    TS[<span class="hljs-string">'n_conquered'</span>].push(attres[<span class="hljs-string">'n_conquered'</span>]);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-41">&#182;</a>
+              </div>
+              <p>t_data[‘all_outcomes’] = attres[‘all_outcomes’];</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-42">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-42">&#182;</a>
+              </div>
+              <ol>
+<li>attacks end; fortify</li>
+</ol>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    ai.fortify();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-43">&#182;</a>
+              </div>
+              <ol>
+<li>after all attacks ended, update continents</li>
+</ol>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    dealer.updateContinents(bench);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-44">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-44">&#182;</a>
+              </div>
+              <p>Check end of game, i.e. opponent has no countries. 
+Then ai is winner.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> end = <span class="hljs-literal">false</span>;
+    <span class="hljs-keyword">if</span> (other(ai).player.countries.length == <span class="hljs-number">0</span>) {
+        end = <span class="hljs-literal">true</span>;
+    };
+    <span class="hljs-keyword">return</span> end;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-45">&#182;</a>
+              </div>
+              <p>////////////////////////////
+The main runGame method. //
+////////////////////////////
+Runs an instance of the game
+Init and run till end of a game, or max-time</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">runGame</span><span class="hljs-params">(max)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-46">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-46">&#182;</a>
+              </div>
+              <p>init</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    initAIsetup();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-47">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-47">&#182;</a>
+              </div>
+              <p>timer for game, ++ per turn</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> time = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (time &lt; max) {
+        time++;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-48">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-48">&#182;</a>
+              </div>
+              <p>console.log(“\nTURN”, time);
+check end of game</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> end = <span class="hljs-literal">false</span>;
+        <span class="hljs-keyword">var</span> winner = <span class="hljs-string">"No One"</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-49">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-49">&#182;</a>
+              </div>
+              <p>take turn. player order, if odd, first player</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (time % <span class="hljs-number">2</span> == <span class="hljs-number">1</span>) {
+            end = gameturn(AIs[<span class="hljs-number">0</span>]);
+            winner = AIs[<span class="hljs-number">0</span>].name;
+        } <span class="hljs-keyword">else</span> {
+            end = gameturn(AIs[<span class="hljs-number">1</span>]);
+            winner = AIs[<span class="hljs-number">1</span>].name;
+        };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-50">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-50">&#182;</a>
+              </div>
+              <p>end game if winner arises</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (end) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-51">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-51">&#182;</a>
+              </div>
+              <p>set winner in TS</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            TS[<span class="hljs-string">'winner'</span>] = winner;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-52">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-52">&#182;</a>
+              </div>
+              <p>console.log(“\n=====================”);
+console.log(“Game ends with winner”, winner);
+console.log(“at turn”, time);
+console.log(“Printing stats:”);
+printStats(AI1);
+printStats(AI2);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">break</span>;
+        };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-53">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-53">&#182;</a>
+              </div>
+              <p>or doesn’t end</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (time==max) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-54">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-54">&#182;</a>
+              </div>
+              <p>console.log(“\n=====================”);
+console.log(“Game ends without winner”);
+console.log(“at turn”, time);
+console.log(“Printing stats:”);
+printStats(AI1);
+printStats(AI2);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        };
+    }
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-55">&#182;</a>
+              </div>
+              <p>Call and time the runGame</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> max = <span class="hljs-number">300</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-56">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-56">&#182;</a>
+              </div>
+              <p>Timer
+var start = new Date().getTime();</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>runGame(max);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-57">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-57">&#182;</a>
+              </div>
+              <p>var end = new Date().getTime();
+var time = end - start;
+console.log(‘Execution time: ‘ + time);</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-58">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-58">&#182;</a>
+              </div>
+              <p>//////////////////////
+Finally, return TS //
+//////////////////////</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">return</span> TS;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-59">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-59">&#182;</a>
+              </div>
+              <p>///////////
+Helpers //
+///////////</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">printStats</span><span class="hljs-params">(ai)</span> </span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"------------------------"</span>);
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"AI:\t\t"</span>, ai.name);
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Countries:\t"</span>, ai.countCountries());
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Continent:\t"</span>, ai.countContinents());
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Armies:\t\t"</span>, ai.countArmy());
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"------------------------"</span>);
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-60">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-60">&#182;</a>
+              </div>
+              <p>Helper: return the other AI different from ai, in AIs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">other</span><span class="hljs-params">(ai)</span> </span>{
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; AIs.length; i++) {
+        <span class="hljs-keyword">if</span> (AIs[i].name != ai.name) {
+            <span class="hljs-keyword">return</span> AIs[i];
+        }
+    };
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-61">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-61">&#182;</a>
+              </div>
+              <p>Debugger to check owner of nodes</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">checkOwner</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">var</span> co = [];
+    _.each(_.range(<span class="hljs-number">42</span>), <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(i)</span> </span>{
+        co.push(g.nodes[i].owner);
+    });
+    <span class="hljs-keyword">var</span> map = _.object(_.range(<span class="hljs-number">42</span>), co);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-62">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-62">&#182;</a>
+              </div>
+              <p>console.log(map);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> c1 = [], c2 = [], c3 = [];
+    _.each(_.keys(map), <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(k)</span> </span>{
+        <span class="hljs-keyword">var</span> val = map[k];
+        <span class="hljs-keyword">if</span> (val == <span class="hljs-string">'p1'</span>) { c1.push(<span class="hljs-built_in">parseInt</span>(k)); }
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (val == <span class="hljs-string">'p2'</span>) { c2.push(<span class="hljs-built_in">parseInt</span>(k)); }
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (val == <span class="hljs-string">'p3'</span>) { c3.push(<span class="hljs-built_in">parseInt</span>(k)); }
+    })</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-63">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-63">&#182;</a>
+              </div>
+              <p>console.log(“owners”, co);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"checking owners from ARENA"</span>);
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"p1 from g\t\t"</span>, _.sortBy(c1));
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"p2 from g\t\t"</span>, _.sortBy(c2));
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"p3 from g\t\t"</span>, _.sortBy(c3));
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"p1 from player\t"</span>, _.sortBy(p1.countries));
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"p2 from player\t"</span>, _.sortBy(p2.countries));
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"p3 from player\t"</span>, _.sortBy(p3.countries));
+    <span class="hljs-keyword">var</span> d1 = _.difference(c1, p1.countries);
+    <span class="hljs-keyword">if</span> (d1.length != <span class="hljs-number">0</span>) {<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"error p1!"</span>, d1)};
+    <span class="hljs-keyword">var</span> d2 = _.difference(c2, p2.countries);
+    <span class="hljs-keyword">if</span> (d2.length != <span class="hljs-number">0</span>) {<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"error p2!"</span>, d2)};
+    <span class="hljs-keyword">var</span> d3 = _.difference(c3, p3.countries);
+    <span class="hljs-keyword">if</span> (d3.length != <span class="hljs-number">0</span>) {<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"error p3!"</span>, d3)};
+}
+
+
+
+
+}
+
+
+exports.Game = Game;</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
