@@ -8,6 +8,8 @@ Look inside the folder [paper](https://github.com/kengz/Risk-game/tree/master/pa
 ## Implemented Code Documentation
 Look at the `html` files inside the [docs](https://github.com/kengz/Risk-game/tree/master/docs) folder, compiled with `Docco`.
 
+## Chosen AI Personalities
+Since there is 16 possible AI personalities, comparing all combination would require over 200 data sets (including varying player order), we handpicked only 5 personalities that seem stronger. This gives us 30 data sets, which is more reasonable to handle.
 
 ## Data Output (Ben, read this)
 Download the `data` folder for the `JSON` files and data-transformer. There's a smaller test file titled `GS_test_1_1_1.json` for your experimentation.

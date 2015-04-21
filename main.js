@@ -6,7 +6,7 @@ var _ = require('underscore');
 var fs = require('fs');
 
 // For configs
-var ps = require('./srcdata/AI-personalities.json');
+var ps = require('./srcdata/filtered-AI-personalities.json');
 var pls = ['p0','p1','p2'];
 
 // The game constructor from arena
@@ -32,10 +32,47 @@ function repeat(n, c, o) {
 
 var start = new Date().getTime();
 
+
+///////////////
+// test runs //
+///////////////
+repeat(30, [0,0,1], './data/GS_0_0_1.json');
+repeat(30, [0,1,1], './data/GS_0_1_1.json');
+repeat(30, [0,2,1], './data/GS_0_2_1.json');
+repeat(30, [0,3,1], './data/GS_0_3_1.json');
+repeat(30, [0,4,1], './data/GS_0_4_1.json');
+repeat(30, [1,1,1], './data/GS_1_1_1.json');
+repeat(30, [1,2,1], './data/GS_1_2_1.json');
+repeat(30, [1,3,1], './data/GS_1_3_1.json');
+repeat(30, [1,4,1], './data/GS_1_4_1.json');
+repeat(30, [2,2,1], './data/GS_2_2_1.json');
+repeat(30, [2,3,1], './data/GS_2_3_1.json');
+repeat(30, [2,4,1], './data/GS_2_4_1.json');
+repeat(30, [3,3,1], './data/GS_3_3_1.json');
+repeat(30, [3,4,1], './data/GS_3_4_1.json');
+repeat(30, [4,4,1], './data/GS_4_4_1.json');
+
+repeat(30, [0,0,2], './data/GS_0_0_2.json');
+repeat(30, [0,1,2], './data/GS_0_1_2.json');
+repeat(30, [0,2,2], './data/GS_0_2_2.json');
+repeat(30, [0,3,2], './data/GS_0_3_2.json');
+repeat(30, [0,4,2], './data/GS_0_4_2.json');
+repeat(30, [1,1,2], './data/GS_1_1_2.json');
+repeat(30, [1,2,2], './data/GS_1_2_2.json');
+repeat(30, [1,3,2], './data/GS_1_3_2.json');
+repeat(30, [1,4,2], './data/GS_1_4_2.json');
+repeat(30, [2,2,2], './data/GS_2_2_2.json');
+repeat(30, [2,3,2], './data/GS_2_3_2.json');
+repeat(30, [2,4,2], './data/GS_2_4_2.json');
+repeat(30, [3,3,2], './data/GS_3_3_2.json');
+repeat(30, [3,4,2], './data/GS_3_4_2.json');
+repeat(30, [4,4,2], './data/GS_4_4_2.json');
+
+
 // array: pers1, pers2, firstplayer
 // note: 1,2 are indices for p1, p2 resp
 // repeat(3, [1,1,1], './data/GS_test_1_1_1.json');
-// 
+
 // repeat(100, [1,1,1], './data/GS_1_1_1.json');
 // repeat(100, [1,1,2], './data/GS_1_1_2.json');
 // repeat(500, [1,1,1], './data/GS_1_1_1_500.json');

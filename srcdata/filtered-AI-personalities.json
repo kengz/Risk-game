@@ -1,0 +1,32 @@
+[
+    [
+        "Constant",
+        "defensive",
+        "cautious",
+        "rusher"
+    ],
+    [
+        "Survival",
+        "agressive",
+        "tactical",
+        "rusher"
+    ],
+    [
+        "Constant",
+        "defensive",
+        "cautious",
+        "carry"
+    ],
+    [
+        "Survival",
+        "defensive",
+        "cautious",
+        "carry"
+    ],
+    [
+        "Survival",
+        "agressive",
+        "tactical",
+        "carry"
+    ]
+]

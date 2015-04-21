@@ -249,7 +249,7 @@ function runGame(max) {
 }
 
 // Call and time the runGame
-var max = 300;
+var max = 100;
 // Timer
 // var start = new Date().getTime();
 runGame(max);
