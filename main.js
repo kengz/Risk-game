@@ -36,37 +36,37 @@ var start = new Date().getTime();
 ///////////////
 // test runs //
 ///////////////
-repeat(30, [0,0,1], './data/GS_0_0_1.json');
-repeat(30, [0,1,1], './data/GS_0_1_1.json');
-repeat(30, [0,2,1], './data/GS_0_2_1.json');
-repeat(30, [0,3,1], './data/GS_0_3_1.json');
-repeat(30, [0,4,1], './data/GS_0_4_1.json');
-repeat(30, [1,1,1], './data/GS_1_1_1.json');
-repeat(30, [1,2,1], './data/GS_1_2_1.json');
-repeat(30, [1,3,1], './data/GS_1_3_1.json');
-repeat(30, [1,4,1], './data/GS_1_4_1.json');
-repeat(30, [2,2,1], './data/GS_2_2_1.json');
-repeat(30, [2,3,1], './data/GS_2_3_1.json');
-repeat(30, [2,4,1], './data/GS_2_4_1.json');
-repeat(30, [3,3,1], './data/GS_3_3_1.json');
-repeat(30, [3,4,1], './data/GS_3_4_1.json');
-repeat(30, [4,4,1], './data/GS_4_4_1.json');
+// repeat(500, [0,0,1], './data/GS_0_0_1.json');
+// repeat(500, [0,1,1], './data/GS_0_1_1.json');
+// repeat(500, [0,2,1], './data/GS_0_2_1.json');
+// repeat(500, [0,3,1], './data/GS_0_3_1.json');
+// repeat(500, [0,4,1], './data/GS_0_4_1.json');
+// repeat(500, [1,1,1], './data/GS_1_1_1.json');
+// repeat(500, [1,2,1], './data/GS_1_2_1.json');
+// repeat(500, [1,3,1], './data/GS_1_3_1.json');
+// repeat(500, [1,4,1], './data/GS_1_4_1.json');
+// repeat(500, [2,2,1], './data/GS_2_2_1.json');
+// repeat(500, [2,3,1], './data/GS_2_3_1.json');
+// repeat(500, [2,4,1], './data/GS_2_4_1.json');
+// repeat(500, [3,3,1], './data/GS_3_3_1.json');
+// repeat(500, [3,4,1], './data/GS_3_4_1.json');
+// repeat(500, [4,4,1], './data/GS_4_4_1.json');
 
-repeat(30, [0,0,2], './data/GS_0_0_2.json');
-repeat(30, [0,1,2], './data/GS_0_1_2.json');
-repeat(30, [0,2,2], './data/GS_0_2_2.json');
-repeat(30, [0,3,2], './data/GS_0_3_2.json');
-repeat(30, [0,4,2], './data/GS_0_4_2.json');
-repeat(30, [1,1,2], './data/GS_1_1_2.json');
-repeat(30, [1,2,2], './data/GS_1_2_2.json');
-repeat(30, [1,3,2], './data/GS_1_3_2.json');
-repeat(30, [1,4,2], './data/GS_1_4_2.json');
-repeat(30, [2,2,2], './data/GS_2_2_2.json');
-repeat(30, [2,3,2], './data/GS_2_3_2.json');
-repeat(30, [2,4,2], './data/GS_2_4_2.json');
-repeat(30, [3,3,2], './data/GS_3_3_2.json');
-repeat(30, [3,4,2], './data/GS_3_4_2.json');
-repeat(30, [4,4,2], './data/GS_4_4_2.json');
+// repeat(500, [0,0,2], './data/GS_0_0_2.json');
+repeat(500, [0,1,2], './data/GS_0_1_2.json');
+// repeat(500, [0,2,2], './data/GS_0_2_2.json');
+// repeat(500, [0,3,2], './data/GS_0_3_2.json');
+// repeat(500, [0,4,2], './data/GS_0_4_2.json');
+// repeat(500, [1,1,2], './data/GS_1_1_2.json');
+// repeat(500, [1,2,2], './data/GS_1_2_2.json');
+// repeat(500, [1,3,2], './data/GS_1_3_2.json');
+// repeat(500, [1,4,2], './data/GS_1_4_2.json');
+// repeat(500, [2,2,2], './data/GS_2_2_2.json');
+// repeat(500, [2,3,2], './data/GS_2_3_2.json');
+// repeat(500, [2,4,2], './data/GS_2_4_2.json');
+// repeat(500, [3,3,2], './data/GS_3_3_2.json');
+// repeat(500, [3,4,2], './data/GS_3_4_2.json');
+// repeat(500, [4,4,2], './data/GS_4_4_2.json');
 
 
 // array: pers1, pers2, firstplayer
