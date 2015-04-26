@@ -9,12 +9,12 @@ var fs = require('fs');
 // var ps = require('./srcdata/filtered-AI-personalities.json');
 var ps = require('./srcdata/AI-personalities.json');
 var pls = ['p0','p1','p2'];
+// The max turn for a game
+var max = 300;
 
 // The game constructor from arena
 var game = require('./arena.js').Game;
 
-// The max turn for a game
-var max = 300;
 // repeat games for a fixed config: personalities, player order.
 function repeat(n, c, o) {
 	// the game-series
@@ -39,7 +39,7 @@ var start = new Date().getTime();
 // Unfiltered Runs: change ps src file
 // repeat(30, [11,0,1], './selectiondata/GS_11_0_1.json');
 // repeat(30, [11,1,1], './selectiondata/GS_11_1_1.json');
-// repeat(30, [11,2,1], './selectiondata/GS_11_2_1.json');
+// repeat(500, [11,2,1], './data/GS_11_2_1.json');
 // repeat(30, [11,3,1], './selectiondata/GS_11_3_1.json');
 // repeat(30, [11,4,1], './selectiondata/GS_11_4_1.json');
 // repeat(30, [11,5,1], './selectiondata/GS_11_5_1.json');
@@ -57,7 +57,7 @@ var start = new Date().getTime();
 
 // repeat(30, [11,0,2], './selectiondata/GS_11_0_2.json');
 // repeat(30, [11,1,2], './selectiondata/GS_11_1_2.json');
-// repeat(30, [11,2,2], './selectiondata/GS_11_2_2.json');
+repeat(500, [11,2,2], './data/GS_11_2_2.json');
 // repeat(30, [11,3,2], './selectiondata/GS_11_3_2.json');
 // repeat(30, [11,4,2], './selectiondata/GS_11_4_2.json');
 // repeat(30, [11,5,2], './selectiondata/GS_11_5_2.json');
@@ -110,37 +110,6 @@ var start = new Date().getTime();
 // repeat(500, [3,4,2], './data/GS_3_4_2.json');
 // repeat(500, [4,4,2], './data/GS_4_4_2.json');
 
-
-// array: pers1, pers2, firstplayer
-// note: 1,2 are indices for p1, p2 resp
-// repeat(3, [1,1,1], './data/GS_test_1_1_1.json');
-
-// repeat(100, [1,1,1], './data/GS_1_1_1.json');
-// repeat(100, [1,1,2], './data/GS_1_1_2.json');
-// repeat(500, [1,1,1], './data/GS_1_1_1_500.json');
-// repeat(500, [1,1,2], './data/GS_1_1_2_500.json');
-// 
-// repeat(100, [1,2,1], './data/GS_1_2_1.json');
-// repeat(100, [1,2,2], './data/GS_1_2_2.json');
-// repeat(500, [1,2,1], './data/GS_1_2_1_500.json');
-// repeat(500, [1,2,2], './data/GS_1_2_2_500.json');
-// 
-// repeat(100, [1,10,1], './data/GS_1_10_1.json');
-// repeat(100, [1,10,2], './data/GS_1_10_2.json');
-// repeat(500, [1,10,1], './data/GS_1_10_1_500.json');
-// repeat(500, [1,10,2], './data/GS_1_10_2_500.json');
-// 
-// repeat(100, [1,13,1], './data/GS_1_13_1.json');
-// repeat(100, [1,13,2], './data/GS_1_13_2.json');
-// repeat(500, [1,13,1], './data/GS_1_13_1_500.json');
-// repeat(500, [1,13,2], './data/GS_1_13_2_500.json');
-// 
-// repeat(100, [2,10,1], './data/GS_2_10_1.json');
-// repeat(100, [2,10,2], './data/GS_2_10_2.json');
-// repeat(100, [2,13,1], './data/GS_2_13_1.json');
-// repeat(100, [2,13,2], './data/GS_2_13_2.json');
-// repeat(100, [10,13,1], './data/GS_10_13_1.json');
-// repeat(100, [10,13,2], './data/GS_10_13_2.json');
 
 var end = new Date().getTime();
 var time = end - start;
