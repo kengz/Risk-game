@@ -6,12 +6,15 @@ var _ = require('underscore');
 var fs = require('fs');
 
 // For configs
-var ps = require('./srcdata/filtered-AI-personalities.json');
+// var ps = require('./srcdata/filtered-AI-personalities.json');
+var ps = require('./srcdata/AI-personalities.json');
 var pls = ['p0','p1','p2'];
 
 // The game constructor from arena
 var game = require('./arena.js').Game;
 
+// The max turn for a game
+var max = 300;
 // repeat games for a fixed config: personalities, player order.
 function repeat(n, c, o) {
 	// the game-series
@@ -19,7 +22,7 @@ function repeat(n, c, o) {
 	for (var i = 1; i < n+1; i++) {
 		// save an instance of a game's time-series TS
 		// GS[i] = game(c['p1'], c['p2'], c['first']);
-		GS[i] = new game(ps[c[0]], ps[c[1]], pls[c[2]]);
+		GS[i] = new game(ps[c[0]], ps[c[1]], pls[c[2]], max);
 	};
 	// fs.writeFileSync('./data/GS.json', JSON.stringify(GS, null, 0));
 	fs.writeFileSync(o, JSON.stringify(GS, null, 0));
@@ -31,6 +34,45 @@ function repeat(n, c, o) {
 
 
 var start = new Date().getTime();
+
+
+// Unfiltered Runs: change ps src file
+// repeat(30, [11,0,1], './selectiondata/GS_11_0_1.json');
+// repeat(30, [11,1,1], './selectiondata/GS_11_1_1.json');
+// repeat(30, [11,2,1], './selectiondata/GS_11_2_1.json');
+// repeat(30, [11,3,1], './selectiondata/GS_11_3_1.json');
+// repeat(30, [11,4,1], './selectiondata/GS_11_4_1.json');
+// repeat(30, [11,5,1], './selectiondata/GS_11_5_1.json');
+// repeat(30, [11,6,1], './selectiondata/GS_11_6_1.json');
+// repeat(30, [11,7,1], './selectiondata/GS_11_7_1.json');
+
+// repeat(30, [11,8,1], './selectiondata/GS_11_8_1.json');
+// repeat(30, [11,9,1], './selectiondata/GS_11_9_1.json');
+// repeat(30, [11,10,1], './selectiondata/GS_11_10_1.json');
+// repeat(30, [11,11,1], './selectiondata/GS_11_11_1.json');
+// repeat(30, [11,12,1], './selectiondata/GS_11_12_1.json');
+// repeat(30, [11,13,1], './selectiondata/GS_11_13_1.json');
+// repeat(30, [11,14,1], './selectiondata/GS_11_14_1.json');
+// repeat(30, [11,15,1], './selectiondata/GS_11_15_1.json');
+
+// repeat(30, [11,0,2], './selectiondata/GS_11_0_2.json');
+// repeat(30, [11,1,2], './selectiondata/GS_11_1_2.json');
+// repeat(30, [11,2,2], './selectiondata/GS_11_2_2.json');
+// repeat(30, [11,3,2], './selectiondata/GS_11_3_2.json');
+// repeat(30, [11,4,2], './selectiondata/GS_11_4_2.json');
+// repeat(30, [11,5,2], './selectiondata/GS_11_5_2.json');
+// repeat(30, [11,6,2], './selectiondata/GS_11_6_2.json');
+// repeat(30, [11,7,2], './selectiondata/GS_11_7_2.json');
+
+// repeat(30, [11,8,2], './selectiondata/GS_11_8_2.json');
+// repeat(30, [11,9,2], './selectiondata/GS_11_9_2.json');
+// repeat(30, [11,10,2], './selectiondata/GS_11_10_2.json');
+// repeat(30, [11,11,2], './selectiondata/GS_11_11_2.json');
+// repeat(30, [11,12,2], './selectiondata/GS_11_12_2.json');
+// repeat(30, [11,13,2], './selectiondata/GS_11_13_2.json');
+// repeat(30, [11,14,2], './selectiondata/GS_11_14_2.json');
+// repeat(30, [11,15,2], './selectiondata/GS_11_15_2.json');
+
 
 
 ///////////////
@@ -53,7 +95,7 @@ var start = new Date().getTime();
 // repeat(500, [4,4,1], './data/GS_4_4_1.json');
 
 // repeat(500, [0,0,2], './data/GS_0_0_2.json');
-repeat(500, [0,1,2], './data/GS_0_1_2.json');
+// repeat(500, [0,1,2], './data/GS_0_1_2.json');
 // repeat(500, [0,2,2], './data/GS_0_2_2.json');
 // repeat(500, [0,3,2], './data/GS_0_3_2.json');
 // repeat(500, [0,4,2], './data/GS_0_4_2.json');

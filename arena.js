@@ -12,7 +12,7 @@
 
 // Master Game wrapper: init and run everything in this file = an instance of game, with AI personalities, and player order: 
 // if 1, AI1 first; if 0, AI2 first
-function Game(pers1, pers2, firstplayer) {
+function Game(pers1, pers2, firstplayer, maxturn) {
 
 ////////////////////////////////
 // the time-series for a game //
@@ -249,7 +249,7 @@ function runGame(max) {
 }
 
 // Call and time the runGame
-var max = 300;
+var max = maxturn;
 // Timer
 // var start = new Date().getTime();
 runGame(max);
