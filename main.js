@@ -38,11 +38,11 @@ var start = new Date().getTime();
 
 // Unfiltered Runs: change ps src file
 // repeat(30, [11,0,1], './selectiondata/GS_11_0_1.json');
-// repeat(30, [11,1,1], './selectiondata/GS_11_1_1.json');
+// repeat(500, [11,1,1], './selectiondata/GS_11_1_1.json');
 // repeat(500, [11,2,1], './data/GS_11_2_1.json');
 // repeat(30, [11,3,1], './selectiondata/GS_11_3_1.json');
 // repeat(30, [11,4,1], './selectiondata/GS_11_4_1.json');
-// repeat(30, [11,5,1], './selectiondata/GS_11_5_1.json');
+// repeat(500, [11,5,1], './selectiondata/GS_11_5_1.json');
 // repeat(30, [11,6,1], './selectiondata/GS_11_6_1.json');
 // repeat(30, [11,7,1], './selectiondata/GS_11_7_1.json');
 
@@ -56,11 +56,11 @@ var start = new Date().getTime();
 // repeat(30, [11,15,1], './selectiondata/GS_11_15_1.json');
 
 // repeat(30, [11,0,2], './selectiondata/GS_11_0_2.json');
-// repeat(30, [11,1,2], './selectiondata/GS_11_1_2.json');
-repeat(500, [11,2,2], './data/GS_11_2_2.json');
+// repeat(500, [11,1,2], './selectiondata/GS_11_1_2.json');
+// repeat(500, [11,2,2], './data/GS_11_2_2.json');
 // repeat(30, [11,3,2], './selectiondata/GS_11_3_2.json');
 // repeat(30, [11,4,2], './selectiondata/GS_11_4_2.json');
-// repeat(30, [11,5,2], './selectiondata/GS_11_5_2.json');
+// repeat(500, [11,5,2], './selectiondata/GS_11_5_2.json');
 // repeat(30, [11,6,2], './selectiondata/GS_11_6_2.json');
 // repeat(30, [11,7,2], './selectiondata/GS_11_7_2.json');
 
