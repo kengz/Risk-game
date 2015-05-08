@@ -362,46 +362,106 @@ A game can have as many participating AIs as permitted by the rules. During the 
 As opposed to physical game, the virtual game has no limit on the number of army pieces $-$ it just keeps creating more as needed; nor it has the limit on the cards $-$ it keeps reshuffling a new deck once an old one runs out.
 
 
+Next we present the results from our implementation.
+
+\section{Implementation Results}
+
+\subsection{Formalization of Problem}
+Our initial approach to the problem is one that focuses on the gross number of countries and armies an AI possesses throughout the game. As the game progresses, we monitor how the AI’s interact in their attempt to win both armies and territories based on their personalities. From this, conclusions were drawn regarding personality types, player order effect, as well as game starting conditions. 
 
 
-\section{Our Experiments}
+\subsection{Algorithms and Decisions}
 
-We begin our study from the simplest case: games with 2 players. Note that according to the rules, there is an inactive neutral player, and we mimic that by adding a third AI that is muted.
-
-
-
+\subsubsection{Initial Concerns}
+An initial issue was normalization of the time axis across several games. While games were initially capped at 100 rounds, where the game was declared a draw, the games that did not end in a draw had variable game length. The majority of the data analysis done in this project was done where there was a definitive winner. From this, the time axis was normalized by considering games in terms of percentage of game length. To the AI the length of the game is unknown during gameplay. However, the analysis can show where pivotal points occur across the game. While initially, players will be unable to use this information an understanding of both territorial and army control will influence their decisions.
 
 
+\subsubsection{The Difference Plots}
+In this analysis, the percentage of both armies and countries in total will be compared to the percentage of the game in where these points occur. These points for players \emph{p1, p2} will be found using the following 
+$$\emph{diff\_army} = \frac{\emph{p1\_army - p2\_army}}{\emph{p1\_army - p2\_army}}$$
+$$\emph{diff\_country} = \frac{\emph{p1\_country - p2\_country}}{\emph{p1\_country - p2\_country}}$$
+
+This data is stored in a matrix that holds both army numbers and round numbers. In this matrix, data from games resulting in draws is discounted. The equation will hold for any winner. From this we expect a divergent trend from zero as the game proceeds to an end. From this matrix the difference in both armies and countries are calculated and plotted in R. From this, R will produce a trend line. This trend line will provide information for both the initial game play configuration and the development of the game. 
 
 
-Draft:
+\subsubsection{The Fun Function}
+In this analysis a fun function was built to hold and later display some basic analysis of the games played. The fun function includes, total wins of both AI’s, probability of winning, odds of winning, the average total armies, the average total armies during a win, the maximum number of armies needed to win , the minimum number of armies needed to win, average turns, and average turns without ties. When a game play data set is passed from the JSON through the rjson package, the function returns this summary of game play. 
 
-1. Formalization of problem
+Imbedded in this function is the survival plot of two AI’s. The survival package in R allows from the plotting of the survival of both armies over the course of the game. As before, the data is filtered to view only games that have a definitive winner. These graphs show the deterioration of the two AI’s over the course of the game. From this, conclusions regarding how the game develops can be made. 
 
-2. Algorithms and decisions
 
-3. AI Implementation and variations
 
-4. results, performance, analysis
+\subsection{Results, Performance, and Analysis }
+We immediately see several trends given by the fun function. A clear player order effect was found between nearly every AI. While some AI’s were simply more powerful and able to win regardless of characteristics, in nearly every case we see that more wins are generated from the AI if they play first compared to when they play second. For some more closely related AI’s, the odds of winning changes in its favor given the player order effect. From this we can conclude that for certain comparable AI’s, player order may greatly affect the outcome of the game. 
 
-5. AI behaviors, surprises
+Furthermore, in every case, the trend line from the total army plot simply shifted its intercept value but held consistent slope. This intercept can be credited to first round play. After the first round (when the first point is calculated) the army advantage can be a one player advantage. This first round however rarely changes the results of the game. Consider figure 1. 
 
+\begin{center}
+\includegraphics[scale=0.6]{images/Figure_1.jpg}\\
+{\footnotesize Figure 1.}
+\end{center}
+
+Here the green and red dots represent AI0’s and AI4’s percent total armies respectively over time. Again, the dots only represent games in which a definitive winner was found. Here we see that AI0 has a clear advantage but when the player order is changed, AI4 wins more games. Notice, however, while the trend line shifts down, that the slope stays constant. This implies that while the game is certainly affected by player order, on average, the game develops the same regardless of player order. 
+
+For the same AI match, the fun function provides two survival charts. Now consider figure 2. 
+
+
+\begin{center}
+\includegraphics[scale=0.6]{images/Figure_2.jpg}\\
+{\footnotesize Figure 2.}
+\end{center}
+
+In the first plot we see that player two holds several armies until near round 50. Suddenly over the next two rounds however, we see an incredible drop off. AI0 has mostly defensive characteristics. From this it appears that AI0 condenses its portion of the graph and builds armies. Somewhere near halfway through the game, it branches out and gains several territories in a very small period of time. When the order of the game is reversed we see a much more even trend. Both AI’s seem to lose armies at a consistent rate. This effect could be accredited to player order effect or the characteristics of the players in regards to their section of the sub graph. 
+
+
+While these trends, in general, hold true, one AI in particular defied the general trends. We will call this AI, AI3. AI3, in general, tended to produce more wins when playing in the second player position. This trend was tested more rigorously against 15 new AI’s. From this data, the fun function produced the win records for both AI3 and the other AI’s for both player order. The difference between wins was then calculated. That is $\Delta \emph{win} = \emph{AI3\_wins} - \emph{AIOpponent\_wins}$. This figure was calculated for both player orders. This data is represented in figure 3.
+
+
+
+\begin{center}
+\includegraphics[scale=0.6]{images/Figure_3.jpg}\\
+{\footnotesize Figure 3.}
+\end{center}
+
+
+As in figure 3, on average AI3 wins 3.625 games while playing second in comparison to playing first where the AI won only 0.5 games on average. This in turn would seem to offer a solution to the player order effect, mentioned above. By simply playing the AI3 characteristics (“Survival”, “Defensive”, “Cautious”, “Carry”), on average the advantage would go to the second player, thus making player order obsolete. 
+
+
+Another nuanced observation shows that this conclusion may not be entirely true. Under further observation, another AI which we will call AI4 (“Survival”, “Aggressive”, “Tactical”, “Rusher”) seemed to be superior to AI3 in both player orders. A more rigorous study of these two AI’s revealed that the assumption was correct. The fun function showed that on average, AI4 wins more often than AI3. Consider figure 4 and figure 5. 
+
+
+
+\begin{center}
+\includegraphics[scale=0.6]{images/Figure_4.jpg}\\
+{\footnotesize Figure 4.}\\
+\includegraphics[scale=0.6]{images/Figure_5.jpg}\\
+{\footnotesize Figure 5.}
+\end{center}
+
+Notice that these two figures show very low correlation when player order changes. When AI3 goes first, it grosses more wins than AI4. When AI3 goes second, however, AI4 wins the majority of the games. While by a narrow margin, when AI4 goes first, AI4 wins 56 more games than AI3 in a 500 game trial. Thus if AI3 plays second they will on average lose to AI4. 
+
+
+\subsection{AI behaviors and Surprises}
+In this project several AI’s were posed against each other in a game of Risk. Initially, it was predicted that a large player order effect would affect the game. This hypothesis held true for the majority of AI’s that were tested in this experiment. AI3 however, proved that by using the correct strategy, a player would actually hold an advantage by going second in the game. From this however, AI4 proved that their still exist AI’s that can beat AI3 while being the first player to move. 
+
+From this project, we advise future Risk players to abstain from declaring their player strategy until the player order is determined. From this, we advise that second players play a cautious, defensive game, while first players play with aggressive tendencies. A consistent analysis of strategy will reveal the best strategy for either player to take throughout the duration of the game. 
 
 
 
 \section{Conclusion}
-This paper sets out to solve the problem of the identification of the class of a block code. We do so by introducing a new \emph{Canonical Bundled Form} as a unique class representation of the block code.
+We have reformalized the board game \emph{Risk} as a graph optimization, and implemented an AI to solve the problem, i.e. to play the game. Several decision algorithms were devised based on graph properties, and they in turn form the personalities of the AI. Our study of 4 binary traits, or a total of 16 personality variations of the AI, is merely the beginning. We have discovered some interesting AI behaviours and performance at a level beyond any human players. One can potentially investigate even more variations of the traits.
 
+For future studies, an analysis of subgraphs would provide deep insight into the value of individual territories. The AI’s are built in such a way that the priority function is based off of current demographic of troops and shape of their graph. Evaluating the graph as a whole would provide insight to the value of different subgraphs that would proactively affect the priority function. This conditional thinking is much more like the ideas of a human player and thus could inform future strategies. 
 
-The Bundled Form and its algorithm too solves the special problem of determining the equivalence between matrices under column/row swapping, and the general problem which allows column-wise letter-permutation to the sub-problem. Row-permutation can be done by transposing the matrices.
+Furthermore, game shifts could be analyzed using the fun function and the aforementioned subgraph analysis. This would allow for defensive players an understanding of which territories that are worth defending and worth conceding. This shift parameter would allow for insight to game length, army distribution, and other key factors.  
+
 
 
 
 
 \section{Citations}
 
-
-H. Fripertinger. Enumeration, construction and random generation of block codes. \emph{Designs, Codes and Cryptography,} Volume 14 Issue 3: 213-219, 1998.
+Hasbro, \emph{Risk, The World Conquest Game \circledR, Rules ©1959, 1963, 1975, 1980, 1990, 1993}, Parker Brothers, Division of Tonka Corporation, Beverly, MA 01915, U.S.A.
 
 
 
